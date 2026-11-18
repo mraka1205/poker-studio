@@ -28,7 +28,14 @@
 - تمام اشیاء مینیاتوری باید روی نمد پشمی میز (`@PokerRoom`) ثابت باشند یا محکم در دست عروسک نگه داشته شوند.
 
 ### ۵. استفاده از تگ‌های اینگریدینت گوگل فلو (Google Flow @Ingredients):
-- در `motion_prompt_en` حتماً از تگ‌های اختصاصی مانند **`@PokerRoom`**، **`@Arash`** و **`@Bijan`** استفاده کنید.
+- در `motion_prompt_en` حتماً از تگ‌های اختصاصی محیط، صندلی و کاراکترها استفاده کنید:
+  - محیط استودیو: **`@PokerRoom`**
+  - کاراکترها و صندلی‌ها:
+    - **`@Arash`** (صندلی ۱: `@Seat_1`) — اکشن‌های شاخص: لمس مضطرب عینک مفتولی، ورق زدن دفترچه کهنه، لرزش دست روی نمد
+    - **`@Keyvan`** (صندلی ۲: `@Seat_2`) — اکشن‌های شاخص: پوکرفیس مطلق، قفل دست‌ها زیر چانه، سُر دادن یک چیپ منفرد با دو انگشت
+    - **`@Rahim`** (صندلی ۳: `@Seat_3`) — اکشن‌های شاخص: نگاه شکاک از بالای عینک ته‌استکانی، کشیدن دست دور چیپ‌ها با سکه شانس، فولد محتاطانه
+    - **`@Farzad`** (صندلی ۴: `@Seat_4`) — اکشن‌های شاخص: چیپ‌شافل خشن، پوزخند رجزخوان، هل دادن محکم ستون چیپ‌ها
+    - **`@Bijan`** (صندلی ۵: `@Seat_5`) — اکشن‌های شاخص: در دست داشتن تسبیح کهربا، نوشیدن چای کمرباریک، چشمک خونسرد
 
 ### ۶. فرمول ساختاری پرامپت حرکتی (`motion_prompt_en`):
 ```text
@@ -54,6 +61,24 @@
       "target_video_sec": "2.5",
       "motion_prompt_en": "Steady macro tracking shot on needle-felted puppet Bijan (@Bijan) at @Seat_5. Tactile 12fps stop-motion puppet animation, subtle wool fiber texture movement, silent expressive acting (mouth closed, no talking). He gives a calm puppet nod and winks knowingly, sliding a single stack of miniature red chips forward flat across the emerald green wool felt of @PokerRoom, while holding tiny amber prayer beads steadily in his other hand without moving individual beads. No airborne chips. Tactile stop-motion feel",
       "camera_notes": "Steady tracking shot highlighting single grounded chip slide on felt"
+    },
+    {
+      "scene_id": "scene_03",
+      "target_video_sec": "2.0",
+      "motion_prompt_en": "Fast dynamic macro push-in towards needle-felted puppet Farzad (@Farzad) at @Seat_4. Tactile 12fps stop-motion puppet animation, silent expressive acting (mouth closed, no talking). He flashes an arrogant cocky smirk, leaning forward with his gold chain dangling and forcefully shoving an entire tall stack of black and red chips forward across the felt of @PokerRoom. Solid grounded chips sliding flat, no flying objects. Soft warm studio lighting",
+      "camera_notes": "Punch-in on aggressive all-in shove and cocky grin"
+    },
+    {
+      "scene_id": "scene_04",
+      "target_video_sec": "2.2",
+      "motion_prompt_en": "Slow clinical macro push-in on needle-felted puppet Keyvan (@Keyvan) at @Seat_2. Tactile 12fps stop-motion puppet animation, silent expressive acting (mouth closed, no talking). Unreadable stone-cold poker face behind dark-tinted glasses, hands steepled calmly beneath chin, effortlessly sliding a single 100BB black chip forward with two wool fingers flat on the green felt of @PokerRoom. Perfectly still posture, icy psychological dominance",
+      "camera_notes": "Slow macro tension hold on unreadable expression"
+    },
+    {
+      "scene_id": "scene_05",
+      "target_video_sec": "2.0",
+      "motion_prompt_en": "Gentle macro tilt down on needle-felted puppet Rahim (@Rahim) at @Seat_3. Tactile 12fps stop-motion puppet animation, silent expressive acting (mouth closed, no talking). He peers with deep suspicion over the rim of his vintage bifocal glasses, scowling with deep felt wrinkles, and tightly slides his two hole cards facedown to the dealer while cupping his arms protectively around his chip stack guarded by a lucky brass coin on @PokerRoom felt",
+      "camera_notes": "Tilt down capturing grumbling fold and chip protection"
     }
   ]
 }

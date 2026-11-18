@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   Mic, 
   Play, 
@@ -22,36 +22,38 @@ export default function AudioView({
   onAudioUpdated
 }) {
   const [playingTrack, setPlayingTrack] = useState(null);
-  const [audioElements, setAudioElements] = useState({});
+  const audioRef = useRef({});
   const [uploadingSegmentId, setUploadingSegmentId] = useState(null);
   const [activeEngine, setActiveEngine] = useState('elevenlabs'); // 'elevenlabs' or 'custom_voiceover'
+
+  useEffect(() => () => { Object.values(audioRef.current).forEach(a => a.pause()); }, []);
 
   const tracks = audioData?.tracks || [];
 
   const togglePlay = (segmentId, audioUrl) => {
+    if (!audioUrl) return;
     if (playingTrack === segmentId) {
-      if (audioElements[segmentId]) {
-        audioElements[segmentId].pause();
-      }
+      audioRef.current[segmentId]?.pause();
       setPlayingTrack(null);
-    } else {
-      // Pause any currently playing
-      if (playingTrack && audioElements[playingTrack]) {
-        audioElements[playingTrack].pause();
-      }
-      const audio = audioElements[segmentId] || new Audio(audioUrl);
-      audio.onended = () => setPlayingTrack(null);
-      audio.play().catch(e => console.error("Audio playback error", e));
-      setAudioElements(prev => ({ ...prev, [segmentId]: audio }));
-      setPlayingTrack(segmentId);
+      return;
     }
+    if (playingTrack && audioRef.current[playingTrack]) audioRef.current[playingTrack].pause();
+    let audio = audioRef.current[segmentId];
+    if (!audio || audio.dataset.src !== audioUrl) {
+      audio = new Audio(audioUrl);
+      audio.dataset.src = audioUrl;
+      audioRef.current[segmentId] = audio;
+    }
+    audio.onended = () => setPlayingTrack(null);
+    audio.play().catch(e => console.error('Audio playback error', e));
+    setPlayingTrack(segmentId);
   };
 
   const handleVoiceoverUpload = async (segmentId, file) => {
     if (!file) return;
     setUploadingSegmentId(segmentId);
     try {
-      const res = await uploadAsset(episodeId, 'audio', file);
+      const res = await uploadAsset(episodeId, 'audio', file, { segment_id: segmentId });
       if (onAudioUpdated) {
         onAudioUpdated(segmentId, res.url);
       }
@@ -135,11 +137,12 @@ export default function AudioView({
       {/* Audio Tracks List */}
       <div className="space-y-3">
         {tracks.map((track, idx) => {
-          const isPlaying = playingTrack === track.segment_id;
+          const trackId = track.segment_id || track.id;
+          const isPlaying = playingTrack === trackId;
 
           return (
             <div
-              key={track.segment_id || idx}
+              key={trackId || idx}
               className="p-4 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
             >
               
@@ -173,8 +176,9 @@ export default function AudioView({
               <div className="flex items-center gap-3 self-end md:self-auto flex-shrink-0">
                 {/* Audio Play/Pause Button */}
                 <button
-                  onClick={() => togglePlay(track.segment_id, track.audio_file)}
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all ${
+                  onClick={() => togglePlay(trackId, track.audio_file)}
+                  disabled={!track.audio_file}
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all disabled:opacity-40 ${
                     isPlaying
                       ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/20'
                       : 'bg-slate-800 hover:bg-slate-700 text-slate-200'
@@ -196,12 +200,12 @@ export default function AudioView({
                 {/* Upload Own Voiceover Button */}
                 <label className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 border border-slate-700 text-xs font-semibold text-slate-200 cursor-pointer transition-colors">
                   <Upload className="w-3.5 h-3.5 text-amber-400" />
-                  <span>{uploadingSegmentId === track.segment_id ? 'در حال آپلود...' : 'آپلود ویس'}</span>
+                  <span>{uploadingSegmentId === trackId ? 'در حال آپلود...' : 'آپلود ویس'}</span>
                   <input
                     type="file"
-                    accept="audio/mp3,audio/wav,audio/m4a"
+                    accept="audio/mpeg,audio/wav,audio/x-wav,audio/mp4,audio/x-m4a,.mp3,.wav,.m4a"
                     className="hidden"
-                    onChange={(e) => handleVoiceoverUpload(track.segment_id, e.target.files?.[0])}
+                    onChange={(e) => handleVoiceoverUpload(trackId, e.target.files?.[0])}
                   />
                 </label>
               </div>

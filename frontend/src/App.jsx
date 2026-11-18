@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Header from './components/Header';
 import PipelineProgressBar from './components/PipelineProgressBar';
 import CommandCenter from './components/CommandCenter';
@@ -16,14 +16,16 @@ import {
   fetchProjects, 
   fetchProjectState, 
   updateStageStatus, 
-  saveProjectState 
+  patchProjectState 
 } from './api';
 
 export default function App() {
   const [projects, setProjects] = useState([]);
-  const [currentEpisodeId, setCurrentEpisodeId] = useState('ep01-sample');
+  const [currentEpisodeId, setCurrentEpisodeId] = useState('');
   const [projectState, setProjectState] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
+  const loadSeq = useRef(0);
 
   // Nav state
   const [currentTab, setCurrentTab] = useState('dashboard'); // 'dashboard' or 'stages'
@@ -43,31 +45,42 @@ export default function App() {
   useEffect(() => {
     if (currentEpisodeId) {
       loadEpisodeState(currentEpisodeId);
+    } else {
+      setProjectState(null);
+      setLoading(false);
     }
   }, [currentEpisodeId]);
 
   const loadProjects = async () => {
     try {
       const data = await fetchProjects();
-      setProjects(data.projects || []);
-      if (data.projects && data.projects.length > 0 && !currentEpisodeId) {
-        setCurrentEpisodeId(data.projects[0].episode_id);
-      }
+      const list = data.projects || [];
+      setProjects(list);
+      setCurrentEpisodeId(prev =>
+        prev && list.some(p => p.episode_id === prev) ? prev : (list[0]?.episode_id || ''));
     } catch (err) {
       console.error('Failed to load projects', err);
     }
   };
 
-  const loadEpisodeState = async (episodeId) => {
-    setLoading(true);
+  const loadEpisodeState = async (episodeId, { silent = false, followStage = false } = {}) => {
+    const seq = ++loadSeq.current;
+    if (!silent) setLoading(true);
     try {
       const state = await fetchProjectState(episodeId);
+      if (seq !== loadSeq.current) return;
       setProjectState(state);
-      setActiveStageNumber(state.current_stage || 1);
+      setLoadError('');
+      if (!silent || followStage) setActiveStageNumber(state.current_stage || 1);
     } catch (err) {
+      if (seq !== loadSeq.current) return;
       console.error('Failed to load episode state', err);
+      if (!silent) {
+        setProjectState(null);
+        setLoadError('خطا در بارگذاری اپیزود: ' + err.message);
+      }
     } finally {
-      setLoading(false);
+      if (!silent && seq === loadSeq.current) setLoading(false);
     }
   };
 
@@ -75,7 +88,7 @@ export default function App() {
     if (!currentEpisodeId) return;
     try {
       await updateStageStatus(currentEpisodeId, stageNumber, 'approved');
-      await loadEpisodeState(currentEpisodeId);
+      await loadEpisodeState(currentEpisodeId, { silent: true, followStage: true });
       await loadProjects();
     } catch (err) {
       alert('خطا در تایید مرحله: ' + err.message);
@@ -87,57 +100,52 @@ export default function App() {
     setCurrentTab('stages');
   };
 
+  const persistUpdates = async (updates, { withEtag = false } = {}) => {
+    if (!projectState || projectState.episode_id !== currentEpisodeId) return false;
+    try {
+      const res = await patchProjectState(currentEpisodeId, updates, withEtag ? projectState._etag : null);
+      setProjectState(prev => (prev ? { ...prev, ...updates, _etag: res._etag || prev._etag } : prev));
+      return true;
+    } catch (err) {
+      alert(err.code === 409
+        ? 'محتوای این اپیزود روی دیسک تغییر کرده است (احتمالاً توسط ایجنت). دادهها دوباره بارگذاری میشوند.'
+        : 'خطا در ذخیره: ' + err.message);
+      await loadEpisodeState(currentEpisodeId, { silent: true });
+      return false;
+    }
+  };
+  const sceneKey = (s) => s.scene_id || s.id;
+
   const handleCharacterUpdated = async (charId, newUrl) => {
     if (!projectState) return;
-    const updatedChars = projectState.characters.map(c => 
-      c.id === charId ? { ...c, turnaround_sheet: newUrl, status: 'approved' } : c
-    );
-    const updatedState = { ...projectState, characters: updatedChars };
-    setProjectState(updatedState);
-    await saveProjectState(currentEpisodeId, updatedState);
+    await persistUpdates({ characters: projectState.characters.map(c =>
+      c.id === charId ? { ...c, turnaround_sheet: newUrl, status: 'approved' } : c) });
   };
-
   const handleUpdateCharacterStatus = async (charId, newStatus) => {
     if (!projectState) return;
-    const updatedChars = projectState.characters.map(c => 
-      c.id === charId ? { ...c, status: newStatus } : c
-    );
-    const updatedState = { ...projectState, characters: updatedChars };
-    setProjectState(updatedState);
-    await saveProjectState(currentEpisodeId, updatedState);
+    await persistUpdates({ characters: projectState.characters.map(c =>
+      c.id === charId ? { ...c, status: newStatus } : c) });
   };
-
-  const handleSceneAssetUpdated = async (sceneId, newUrl) => {
-    if (!projectState) return;
-    const updatedScenes = projectState.scenes.map(s => 
-      s.id === sceneId ? { ...s, visual_asset: newUrl, image_path: newUrl, status: 'approved' } : s
-    );
-    const updatedState = { ...projectState, scenes: updatedScenes };
-    setProjectState(updatedState);
-    await saveProjectState(currentEpisodeId, updatedState);
+  const handleSceneAssetUpdated = async (sceneId, field, value) => {
+    if (!projectState || (field !== 'image_path' && field !== 'video_path')) return;
+    const scenes = projectState.scenes.map(s => {
+      if (sceneKey(s) !== sceneId) return s;
+      return field === 'image_path'
+        ? { ...s, image_path: value, visual_asset: value, image_version: Date.now() }
+        : { ...s, video_path: value };
+    });
+    await persistUpdates({ scenes }, { withEtag: true });
   };
-
   const handleUpdateSceneStatus = async (sceneId, newStatus) => {
     if (!projectState) return;
-    const updatedScenes = projectState.scenes.map(s => 
-      s.id === sceneId ? { ...s, status: newStatus } : s
-    );
-    const updatedState = { ...projectState, scenes: updatedScenes };
-    setProjectState(updatedState);
-    await saveProjectState(currentEpisodeId, updatedState);
+    await persistUpdates({ scenes: projectState.scenes.map(s =>
+      sceneKey(s) === sceneId ? { ...s, status: newStatus } : s) }, { withEtag: true });
   };
-
   const handleAudioUpdated = async (segmentId, newUrl) => {
     if (!projectState) return;
-    const updatedTracks = (projectState.audio?.tracks || []).map(t => 
-      t.segment_id === segmentId ? { ...t, audio_file: newUrl, status: 'recorded' } : t
-    );
-    const updatedState = { 
-      ...projectState, 
-      audio: { ...projectState.audio, tracks: updatedTracks } 
-    };
-    setProjectState(updatedState);
-    await saveProjectState(currentEpisodeId, updatedState);
+    const tracks = (projectState.audio?.tracks || []).map(t =>
+      (t.segment_id || t.id) === segmentId ? { ...t, audio_file: newUrl, status: 'recorded' } : t);
+    await persistUpdates({ audio: { ...projectState.audio, tracks } });
   };
 
   const getStageStatus = (num) => {
@@ -179,6 +187,14 @@ export default function App() {
               در حال بارگذاری پروژه و اطلاعات استودیو...
             </div>
           </div>
+        ) : !projectState ? (
+          <div className="py-16 text-center space-y-3">
+            <p className="text-sm text-rose-300">{loadError || 'اپیزودی انتخاب نشده است.'}</p>
+            {currentEpisodeId && (
+              <button onClick={() => loadEpisodeState(currentEpisodeId)}
+                className="px-4 py-2 rounded-xl bg-amber-500 text-slate-950 text-xs font-bold">تلاش مجدد</button>
+            )}
+          </div>
         ) : (
           <>
             {/* Dashboard View ("استودیو امروز") */}
@@ -187,7 +203,7 @@ export default function App() {
                 projectState={projectState}
                 onNavigateToStage={(stageNum) => handleNavigateToStage(stageNum)}
                 onApproveStage={(stageNum) => handleApproveStage(stageNum)}
-                onRefresh={() => loadEpisodeState(currentEpisodeId)}
+                onRefresh={() => loadEpisodeState(currentEpisodeId, { silent: true })}
               />
             )}
 
@@ -203,7 +219,7 @@ export default function App() {
                     episodeId={currentEpisodeId}
                     stageStatus={getStageStatus(activeStageNumber)}
                     onApproveStage={() => handleApproveStage(activeStageNumber)}
-                    onRefresh={() => loadEpisodeState(currentEpisodeId)}
+                    onRefresh={() => loadEpisodeState(currentEpisodeId, { silent: true })}
                   />
                 )}
 
@@ -214,10 +230,8 @@ export default function App() {
                     episodeId={currentEpisodeId}
                     stageStatus={getStageStatus(3)}
                     onApprove={() => handleApproveStage(3)}
-                    onSaveScript={(updated) => {
-                      saveProjectState(currentEpisodeId, { ...projectState, script: updated });
-                      setProjectState(prev => ({ ...prev, script: updated }));
-                    }}
+                    onSaveScript={(updated) => persistUpdates({ script: updated })}
+                    onRefresh={() => loadEpisodeState(currentEpisodeId, { silent: true })}
                   />
                 )}
 
@@ -230,7 +244,7 @@ export default function App() {
                     onApproveStage={() => handleApproveStage(4)}
                     onUpdateCharacterStatus={handleUpdateCharacterStatus}
                     onCharacterUpdated={handleCharacterUpdated}
-                    onRefresh={() => loadEpisodeState(currentEpisodeId)}
+                    onRefresh={() => loadEpisodeState(currentEpisodeId, { silent: true })}
                   />
                 )}
 
@@ -254,7 +268,7 @@ export default function App() {
                     onApproveStage={() => handleApproveStage(6)}
                     onUpdateSceneStatus={handleUpdateSceneStatus}
                     onSceneAssetUpdated={handleSceneAssetUpdated}
-                    onRefresh={() => loadEpisodeState(currentEpisodeId)}
+                    onRefresh={() => loadEpisodeState(currentEpisodeId, { silent: true })}
                   />
                 )}
 
@@ -311,7 +325,7 @@ export default function App() {
         onClose={() => setIsUniverseModalOpen(false)}
         onUniverseUpdated={() => {
           loadProjects();
-          if (currentEpisodeId) loadEpisodeState(currentEpisodeId);
+          if (currentEpisodeId) loadEpisodeState(currentEpisodeId, { silent: true });
         }}
       />
 

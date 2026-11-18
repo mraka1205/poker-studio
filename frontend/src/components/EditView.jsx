@@ -13,6 +13,7 @@ import {
   Type
 } from 'lucide-react';
 import { generateSubtitles, fetchFfmpegCommand } from '../api';
+import { copyText as writeClipboard } from '../utils/clipboard';
 
 export default function EditView({
   editData = {},
@@ -59,7 +60,7 @@ export default function EditView({
   };
 
   const copyToClipboard = (text, setFlag) => {
-    navigator.clipboard.writeText(text);
+    writeClipboard(text);
     setFlag(true);
     setTimeout(() => setFlag(false), 2000);
   };

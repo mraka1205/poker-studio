@@ -5,9 +5,10 @@ import re
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, Any, Optional, List, Union
-from fastapi import FastAPI, HTTPException, UploadFile, File, Form, Query
+from fastapi import FastAPI, HTTPException, UploadFile, File, Form, Query, Body
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from backend.antigravity_cli import (
@@ -16,12 +17,32 @@ from backend.antigravity_cli import (
     start_images_generation,
     start_scene_regeneration,
 )
+from backend.services.paths import (
+    get_project_dir,
+    InvalidIdError,
+    validate_scene_id,
+    validate_episode_id,
+)
+from backend.services.state_store import (
+    apply_patch,
+    compute_etag,
+    EtagConflict,
+    read_state,
+    write_state,
+)
+from backend.services.tts_validator import validate_segments
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 PROJECTS_DIR = BASE_DIR / "projects"
 SKILLS_DIR = BASE_DIR / ".agent" / "skills"
 
 app = FastAPI(title="Poker Studio API", version="2.0.0")
+
+
+@app.exception_handler(InvalidIdError)
+async def _invalid_id_handler(request, exc):
+    return JSONResponse(status_code=400, content={"detail": str(exc)})
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -40,7 +61,7 @@ app.mount("/media", StaticFiles(directory=str(PROJECTS_DIR)), name="media")
 
 
 def get_project_path(episode_id: str) -> Path:
-    proj_path = PROJECTS_DIR / episode_id
+    proj_path = get_project_dir(episode_id)
     if not proj_path.exists() or not proj_path.is_dir():
         raise HTTPException(status_code=404, detail=f"Episode '{episode_id}' not found")
     return proj_path
@@ -51,8 +72,7 @@ def load_state(episode_id: str) -> Dict[str, Any]:
     state_file = proj_dir / "state.json"
     if not state_file.exists():
         raise HTTPException(status_code=404, detail="state.json not found in episode folder")
-    with open(state_file, "r", encoding="utf-8") as f:
-        data = json.load(f)
+    data = read_state(episode_id)
 
     # Automatically resolve scene image paths if files exist on disk
     assets_img_dir = proj_dir / "assets" / "images"
@@ -86,8 +106,7 @@ def load_state(episode_id: str) -> Dict[str, Any]:
 
     if updated:
         try:
-            with open(state_file, "w", encoding="utf-8") as f:
-                json.dump(data, f, ensure_ascii=False, indent=2)
+            write_state(episode_id, data)
         except Exception:
             pass
 
@@ -95,9 +114,8 @@ def load_state(episode_id: str) -> Dict[str, Any]:
 
 
 def save_state(episode_id: str, data: Dict[str, Any]):
-    state_file = get_project_path(episode_id) / "state.json"
-    with open(state_file, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+    get_project_path(episode_id)
+    write_state(episode_id, data)
 
 
 # ==========================================
@@ -196,7 +214,12 @@ async def upload_universe_asset(
     if asset_type not in ["environment", "character", "angle"]:
         raise HTTPException(status_code=400, detail="Invalid asset_type. Allowed: environment, character, angle")
 
-    safe_filename = file.filename.replace(" ", "_")
+    raw_name = Path(file.filename or "upload.bin").name
+    suffix = Path(raw_name).suffix.lower()
+    if suffix not in {".png", ".jpg", ".jpeg", ".webp"}:
+        raise HTTPException(status_code=400, detail="Unsupported file type")
+
+    safe_filename = raw_name.replace(" ", "_")
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
     
     if asset_type == "environment":
@@ -394,13 +417,43 @@ def list_projects():
 
 @app.get("/api/projects/{episode_id}")
 def get_project_state(episode_id: str):
-    return load_state(episode_id)
+    state = load_state(episode_id)
+    state["_etag"] = compute_etag(episode_id)
+    return state
 
 
 @app.put("/api/projects/{episode_id}")
 def update_project_state(episode_id: str, new_state: Dict[str, Any]):
-    save_state(episode_id, new_state)
-    return {"status": "success", "message": "State updated successfully"}
+    get_project_path(episode_id)
+    write_state(episode_id, new_state)
+    return {
+        "status": "success",
+        "message": "State updated successfully",
+        "_etag": compute_etag(episode_id),
+    }
+
+
+ALLOWED_PATCH_KEYS = {"script", "characters", "audio", "edit", "publish", "analytics", "idea", "bible", "scenes"}
+
+
+@app.patch("/api/projects/{episode_id}")
+def patch_project(episode_id: str, payload: dict = Body(...)):
+    updates = payload.get("updates")
+    base_etag = payload.get("base_etag")
+    if not isinstance(updates, dict) or not updates:
+        raise HTTPException(status_code=400, detail="updates must be a non-empty object")
+    bad = set(updates) - ALLOWED_PATCH_KEYS
+    if bad:
+        raise HTTPException(status_code=400, detail=f"Keys not patchable: {sorted(bad)}")
+    if "scenes" in updates and not base_etag:
+        raise HTTPException(status_code=400, detail="base_etag is required when patching scenes")
+    try:
+        new_etag = apply_patch(episode_id, updates, base_etag)
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="Episode not found")
+    except EtagConflict as exc:
+        raise HTTPException(status_code=409, detail=str(exc))
+    return {"status": "success", "_etag": new_etag}
 
 
 class StageActionRequest(BaseModel):
@@ -491,20 +544,18 @@ def create_project(req: NewProjectRequest):
     if not req.episode_id or not req.episode_id.strip():
         existing = [d.name for d in PROJECTS_DIR.iterdir() if d.is_dir()]
         ep_count = len([d for d in existing if d.startswith("ep")]) + 1
-        ascii_slug = re.sub(r'[^a-zA-Z0-9]+', '-', req.english_title or "").strip('-').lower()
+        slug = req.english_title or req.title or ""
+        ascii_slug = re.sub(r"[^a-z0-9]+", "-", slug.lower()).strip("-")
         if not ascii_slug:
-            ascii_slug = "poker-hand"
-        folder_name = f"ep{ep_count:02d}-{ascii_slug}"
+            ascii_slug = "episode"
+        folder_name = f"ep{ep_count:02d}-{ascii_slug}"[:56]
     else:
-        folder_name = req.episode_id.strip().lower().replace(" ", "-")
-        folder_name = re.sub(r'[^a-z0-9_-]', '', folder_name)
-        if not folder_name:
-            folder_name = f"ep-{datetime.now().strftime('%m%d%H%M')}"
+        folder_name = validate_episode_id(req.episode_id.strip())
 
-    proj_dir = PROJECTS_DIR / folder_name
+    proj_dir = get_project_dir(folder_name)
     if proj_dir.exists():
-        folder_name = f"{folder_name}-{datetime.now().strftime('%H%M%S')}"
-        proj_dir = PROJECTS_DIR / folder_name
+        folder_name = f"{folder_name[:55]}-{datetime.now().strftime('%H%M%S')}"
+        proj_dir = get_project_dir(folder_name)
         
     for sub in ["audio", "characters", "scenes", "exports", "assets/images"]:
         (proj_dir / sub).mkdir(parents=True, exist_ok=True)
@@ -558,8 +609,7 @@ def create_project(req: NewProjectRequest):
     }
     new_state["stages"][0]["status"] = "in_progress"
     
-    with open(proj_dir / "state.json", "w", encoding="utf-8") as f:
-        json.dump(new_state, f, ensure_ascii=False, indent=2)
+    write_state(folder_name, new_state)
         
     return {"status": "success", "episode_id": folder_name}
 
@@ -579,12 +629,24 @@ async def upload_asset(
     chosen_type = asset_type or target_type
     if not chosen_type or chosen_type not in ["characters", "scenes", "audio", "exports", "assets/images"]:
         raise HTTPException(status_code=400, detail="Invalid target/asset type.")
-        
+
+    raw_name = Path(file.filename or "upload.bin").name
+    suffix = Path(raw_name).suffix.lower()
+    if chosen_type == "audio":
+        allowed = {".mp3", ".wav", ".m4a"}
+    elif chosen_type == "exports":
+        allowed = {".mp4", ".mov", ".webm"}
+    else:
+        allowed = {".png", ".jpg", ".jpeg", ".webp"}
+
+    if suffix not in allowed:
+        raise HTTPException(status_code=400, detail="Unsupported file type")
+
     project_path = get_project_path(episode_id)
     target_dir = project_path / chosen_type
     target_dir.mkdir(parents=True, exist_ok=True)
     
-    safe_filename = file.filename.replace(" ", "_")
+    safe_filename = raw_name.replace(" ", "_")
     file_path = target_dir / safe_filename
     
     with open(file_path, "wb") as buffer:
@@ -691,7 +753,7 @@ Follow the comprehensive instructions in the Skill Guidelines below to generate 
   Description: {u_env.get('description_fa', '')}
 - Recurring Characters Roster:
 {u_chars_summary}
-NOTE: By default, use the channel's recurring stars (@Arash and @Bijan) for the core hand archetypes (Hero / Villain) to maintain story continuity across episodes.
+NOTE: You can cast any of the channel's 5 recurring stars (@Arash, @Bijan, @Rahim, @Farzad, @Keyvan) for the episode hand depending on the comedy scenario (or by default use @Arash and @Bijan).
 
 ---
 ### EPISODE CONTEXT:
@@ -1048,11 +1110,16 @@ def import_ai_studio_json(episode_id: str, stage: str, req: ImportJsonRequest):
         raise HTTPException(status_code=400, detail=f"Unsupported stage '{stage}' for JSON import")
 
     save_state(episode_id, state)
+    validation_issues = []
+    if stage_key in ["3", "script"]:
+        validation_issues = validate_segments(state.get("script", {}).get("segments", []))
+
     return {
         "status": "success",
         "message": f"داده‌های مرحله {stage} با موفقیت ذخیره شد",
         "current_stage": state.get("current_stage"),
-        "state": state
+        "state": state,
+        "validation_issues": validation_issues
     }
 
 
@@ -1071,6 +1138,7 @@ class UpdateSceneDetailsRequest(BaseModel):
 
 @app.post("/api/projects/{episode_id}/scenes/{scene_id}/update")
 def update_scene_details(episode_id: str, scene_id: str, req: UpdateSceneDetailsRequest):
+    validate_scene_id(scene_id)
     state = load_state(episode_id)
     scenes = state.get("scenes", [])
     found_scene = None
@@ -1116,11 +1184,17 @@ async def upload_scene_video(
     scene_id: str = Form(...),
     file: UploadFile = File(...)
 ):
+    validate_scene_id(scene_id)
+    raw_name = Path(file.filename or "upload.bin").name
+    suffix = Path(raw_name).suffix.lower()
+    if suffix not in {".mp4", ".mov", ".webm"}:
+        raise HTTPException(status_code=400, detail="Unsupported file type")
+
     project_path = get_project_path(episode_id)
     target_dir = project_path / "scenes"
     target_dir.mkdir(parents=True, exist_ok=True)
     
-    safe_filename = f"{scene_id}_motion_{file.filename.replace(' ', '_')}"
+    safe_filename = f"{scene_id}_motion_{raw_name.replace(' ', '_')}"
     file_path = target_dir / safe_filename
     
     with open(file_path, "wb") as buffer:
@@ -1275,6 +1349,7 @@ async def api_generate_images(episode_id: str):
 @app.post("/api/episodes/{episode_id}/scenes/{scene_id}/regenerate-image")
 @app.post("/api/projects/{episode_id}/scenes/{scene_id}/regenerate-image")
 async def api_regenerate_scene_image(episode_id: str, scene_id: str):
+    validate_scene_id(scene_id)
     get_project_path(episode_id)
     task = await start_scene_regeneration(episode_id, scene_id)
     return task.to_dict()
@@ -1290,6 +1365,13 @@ def api_get_task_status(episode_id: str):
     except Exception:
         pass
     return task.to_dict()
+
+
+@app.post("/api/episodes/{episode_id}/cancel-task")
+@app.post("/api/projects/{episode_id}/cancel-task")
+async def cancel_episode_task(episode_id: str):
+    import backend.antigravity_cli as cli
+    return cli.cancel_task(episode_id).to_dict()
 
 
 # Mount frontend dist static files at the end

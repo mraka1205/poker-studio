@@ -41,7 +41,12 @@
    - توصیف لنز ماکرو (مثلاً: Tight Medium Close-Up framed from chest up, 85mm macro portrait lens, shallow depth of field).
 
 4. **بلوک ژنتیکی کاراکتر فوکوس و بازیگری مینیاتوری (Focal Character DNA & Acting):**
-   - درج بلوک DNA ثابت کاراکتر از `universe.json` (مثلاً پشمی، عینک مفتولی، هودی دست‌بافت سورمه‌ای برای آرش).
+   - درج بلوک DNA ثابت کاراکتر از `universe.json`:
+     - **آرش (`@Arash`):** پشمی لاغر، عینک مفتولی گرد، هودی بافتنی سرمه‌ای، دفترچه یادداشت کهنه
+     - **کیوان (`@Keyvan`):** لاغر و مقتدر، یقه اسکی خاکستری زغالی، عینک دودی شیک، ساعت مات مشکی
+     - **آقا رحیم (`@Rahim`):** پیرمرد فرتوت و قوزکرده، عینک ته‌استکانی دوکانونی، ژاکت پشمی کرم/خردلی، سکه شانس برنجی
+     - **فرزاد (`@Farzad`):** چهارشانه با اعتمادبه‌نفس، پیرهن مخمل مشکی دکمه‌باز، زنجیر طلای ضخیم، تتوهای کوبلنی روی ساعد
+     - **بیژن (`@Bijan`):** شکم‌دار و خودمانی، سیبیل پرپشت جوگندمی، پیراهن طرح بته‌جقه، استکان چای کمرباریک و تسبیح کهربا
    - ژست بدنی، زاویه سر، پوزیشن دست‌های سیمی نمدی، میمیک دقیق چهره (چشم‌های مهره‌ای نگران، ابروهای گره‌خورده).
 
 5. **همسایگان صندلی در حاشیه کادر (`adjacent_players`):**
@@ -53,7 +58,7 @@
    - وضعیت استک بازیکن فوکوس (آل-این خالی، یا استک منظم محافظت‌شده).
 
 7. **پراپ‌های هویتی و لندمارک‌های پس‌زمینه (Persistent Props & Landmarks):**
-   - وسایل شاخص: استکان چای داغ و تسبیح بیژن، دفترچه یادداشت آرش، چیپ‌های منظم کیوان، استک محافظت‌شده رحیم.
+   - وسایل شاخص: استکان چای داغ و تسبیح بیژن، دفترچه یادداشت کهنه آرش، چیپ‌های منظم کیوان، استک محافظت‌شده با سکه شانس رحیم، گردنبند طلا و چیپ‌شافل خشن فرزاد.
    - لندمارک‌های پس‌زمینه بر اساس اطلس صندلی (دیوار آجری نمدی، قفسه کتاب، پرده مخمل، تخته‌نرد).
 
 8. **نورپردازی استودیویی و کادربندی عمودی ۹:۱۶ (Lighting & Composition):**
@@ -84,11 +89,23 @@
       "cards": "folded face-down",
       "props": "miniature pocket notebook"
     },
+    "seat_2": {
+      "character": "@Keyvan",
+      "chip_stack": "tall orderly 250BB towers",
+      "cards": "concealed face-down",
+      "props": "matte-black wrist watch, steeped fingers"
+    },
     "seat_3": {
       "character": "@Rahim",
-      "chip_stack": "all-in — empty rail",
+      "chip_stack": "tight 60BB stack behind arms",
       "cards": "A♠ A♦ face-up",
-      "props": "both hands on table rail"
+      "props": "brass lucky coin on chips"
+    },
+    "seat_4": {
+      "character": "@Farzad",
+      "chip_stack": "loose messy 180BB pile",
+      "cards": "7♠ 2♦ face-up",
+      "props": "gold chain necklace, pushed chips"
     },
     "seat_5": {
       "character": "@Bijan",
@@ -327,4 +344,15 @@
 8. **پراپ‌های ماندگار:** آیا وسایل اختصاصی (استکان چای و تسبیح بیژن، عینک و دفترچه آرش) حفظ شده‌اند؟
 9. **هندسه و دمای نور:** آیا نورپردازی ماکروی گرم استودیویی با سایه‌های نرم بدون تغییر مانده است؟
 10. **کادربندی:** آیا تصویر بدون هیچ حاشیه مشکی در نسبت ابعاد عمودی ۹:۱۶ تولید شده است؟
+
+---
+
+## ۸. قوانین اعتبارسنجی خودکار (توسط بکاند اعمال میشود؛ رد شدن = بازگردانی state.json)
+- `scene_id` دقیقاً به شکل `scene_NN` (مثل `scene_01`).
+- `visual_prompt_en`: بین ۸۰ تا ۲۲۰ کلمه، شامل `9:16`؛ از `scene_02` به بعد باید عبارت `Maintain exact visual continuity` را داشته باشد.
+- `duration_sec` عددی بین ۰.۵ تا ۸.
+- `static_image`: شیء `camera_direction` با `motion_type` مجاز، `zoom_intensity` بین ۱.۰ و ۱.۶ و `camera_prompt_en` غیرخالی.
+- `ai_video`: `motion_prompt_en` غیرخالی و شامل `mouth closed`؛ فلگهایی مثل `--ar` ممنوع.
+- `table_blueprint.community_cards.stage` یکی از `preflop|flop|turn|river` و `table_blueprint.pot.total_bb` عددی.
+- `sfx_cue` اجباری.
 

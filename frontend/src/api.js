@@ -22,6 +22,24 @@ export async function saveProjectState(episodeId, state) {
   return res.json();
 }
 
+export async function patchProjectState(episodeId, updates, baseEtag = null) {
+  const res = await fetch(`${API_BASE}/projects/${episodeId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ updates, base_etag: baseEtag })
+  });
+  if (res.status === 409) {
+    const e = new Error('STATE_CONFLICT');
+    e.code = 409;
+    throw e;
+  }
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || 'Failed to save changes');
+  }
+  return res.json();
+}
+
 export async function updateStageStatus(episodeId, stageNumber, status, notes = '') {
   const res = await fetch(`${API_BASE}/projects/${episodeId}/stage_status`, {
     method: 'POST',
@@ -42,21 +60,21 @@ export async function setEpisodeCurrentStage(episodeId, currentStage) {
   return res.json();
 }
 
-export async function uploadAsset(episodeId, targetType, file) {
-  const formData = new FormData();
-  formData.append('target_type', targetType);
-  formData.append('file', file);
-  const res = await fetch(`${API_BASE}/projects/${episodeId}/upload/${targetType}`, {
-    method: 'POST',
-    body: formData
-  });
+export async function uploadAsset(episodeId, targetType, file, extraFields = {}) {
+  const build = () => {
+    const fd = new FormData();
+    fd.append('target_type', targetType);
+    fd.append('file', file);
+    Object.entries(extraFields).forEach(([k, v]) => fd.append(k, v));
+    return fd;
+  };
+  let res = await fetch(`${API_BASE}/projects/${episodeId}/upload/${targetType}`, { method: 'POST', body: build() });
+  if (res.status === 404 || res.status === 405) {
+    res = await fetch(`${API_BASE}/projects/${episodeId}/upload`, { method: 'POST', body: build() });
+  }
   if (!res.ok) {
-    const res2 = await fetch(`${API_BASE}/projects/${episodeId}/upload`, {
-      method: 'POST',
-      body: formData
-    });
-    if (!res2.ok) throw new Error('Failed to upload file');
-    return res2.json();
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || 'Failed to upload file');
   }
   return res.json();
 }
@@ -103,16 +121,7 @@ export async function createNewEpisode(episodeData) {
 }
 
 export async function fetchAgentPrompt(episodeId, stage = 'script') {
-  try {
-    return await buildAiStudioPrompt(episodeId, stage);
-  } catch (err) {
-    return {
-      episode_id: episodeId,
-      skill_file: '02-persian-script-writer.md',
-      stage_desc: 'نگارش سناریو کمدی در آنتی‌گرویتی',
-      prompt: 'پرامپت در حال آماده‌سازی است...'
-    };
-  }
+  return buildAiStudioPrompt(episodeId, stage);
 }
 
 export async function fetchSkills() {
@@ -297,6 +306,15 @@ export async function fetchTaskStatus(episodeId) {
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.detail || 'Failed to fetch task status');
+  }
+  return res.json();
+}
+
+export async function cancelTask(episodeId) {
+  const res = await fetch(`${API_BASE}/episodes/${episodeId}/cancel-task`, { method: 'POST' });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || 'Failed to cancel task');
   }
   return res.json();
 }

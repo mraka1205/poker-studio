@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, BookOpen, FileText, Check, Copy } from 'lucide-react';
 import { fetchSkills, fetchSkillDetail } from '../api';
+import { copyText as writeClipboard } from '../utils/clipboard';
 
 export default function SkillViewerModal({ isOpen, onClose }) {
   const [skills, setSkills] = useState([]);
@@ -37,7 +38,7 @@ export default function SkillViewerModal({ isOpen, onClose }) {
   };
 
   const copyContent = () => {
-    navigator.clipboard.writeText(skillContent);
+    writeClipboard(skillContent);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };

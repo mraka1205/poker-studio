@@ -54,7 +54,6 @@ export default function IdeaBibleView({
         description="پرامپت مهارت ۰۱ را برای Gemini کپی کنید تا مفهوم GTO vs Exploit، جزئیات دست و ۴ تا ۶ جوک اصیل پوکر ایرانی بر اساس ایده خام ثبت‌شده در قالب JSON تولید شود."
         onSuccess={() => {
           if (onRefresh) onRefresh();
-          if (onApproveStage) onApproveStage();
         }}
       />
 

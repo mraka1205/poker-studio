@@ -10,10 +10,27 @@ import sys
 import json
 import time
 import shutil
+import re
 import asyncio
 import logging
 from pathlib import Path
 from typing import Dict, Any, Optional, List
+
+try:
+    from backend.services.paths import InvalidIdError, get_project_dir, validate_episode_id, validate_scene_id
+except ImportError:  # pragma: no cover
+    from services.paths import InvalidIdError, get_project_dir, validate_episode_id, validate_scene_id
+
+try:
+    from backend.services.state_store import (
+        read_state, update_state, snapshot_state, restore_state_from, write_json_atomic
+    )
+    from backend.services.scene_schema import normalize_scene, validate_scenes
+except ImportError:  # pragma: no cover
+    from services.state_store import (
+        read_state, update_state, snapshot_state, restore_state_from, write_json_atomic
+    )
+    from services.scene_schema import normalize_scene, validate_scenes
 
 logger = logging.getLogger("antigravity_cli")
 logger.setLevel(logging.INFO)
@@ -21,13 +38,14 @@ logger.setLevel(logging.INFO)
 # Base directories
 BASE_DIR = Path(__file__).resolve().parent.parent
 PROJECTS_DIR = BASE_DIR / "projects"
-GEMINI_DIR = Path(os.environ.get("USERPROFILE", "C:/Users/mrali")) / ".gemini"
-BRAIN_DIR = GEMINI_DIR / "antigravity" / "brain"
+_HOME = Path(os.environ.get("USERPROFILE") or Path.home())
+GEMINI_DIR = _HOME / ".gemini"
+BRAIN_DIR = Path(os.environ.get("ANTIGRAVITY_BRAIN_DIR") or (GEMINI_DIR / "antigravity" / "brain"))
 
 # Locate Antigravity binaries
-DEFAULT_LANGUAGE_SERVER = Path(
-    os.environ.get("LOCALAPPDATA", "C:/Users/mrali/AppData/Local")
-) / "Programs" / "antigravity" / "resources" / "bin" / "language_server.exe"
+_LOCALAPPDATA = Path(os.environ.get("LOCALAPPDATA") or (_HOME / "AppData" / "Local"))
+DEFAULT_LANGUAGE_SERVER = _LOCALAPPDATA / "Programs" / "antigravity" / "resources" / "bin" / "language_server.exe"
+PROMPT_DIR = BASE_DIR / ".agent_prompts"
 
 DEFAULT_AGENTAPI_BAT = GEMINI_DIR / "antigravity" / "bin" / "agentapi.bat"
 DEFAULT_ANTIGRAVITY_BAT = GEMINI_DIR / "antigravity" / "bin" / "antigravity.bat"
@@ -55,12 +73,26 @@ def get_cli_command() -> List[str]:
     raise RuntimeError("Antigravity CLI executable not found on this machine.")
 
 
+def _is_agentapi_cmd(cmd: List[str]) -> bool:
+    """True when the resolved CLI is the agentapi style (new-conversation --title=...)."""
+    return any(Path(part).name.lower().startswith("agentapi") for part in cmd)
+
+
+def _stage_prompt_file(prompt: str, title: str) -> Path:
+    """Write the long prompt to disk so argv stays short and shell-safe."""
+    PROMPT_DIR.mkdir(parents=True, exist_ok=True)
+    slug = re.sub(r"[^A-Za-z0-9]+", "-", title).strip("-")[:40] or "task"
+    path = PROMPT_DIR / f"{time.strftime('%Y%m%d-%H%M%S')}-{slug}.md"
+    path.write_text(prompt, encoding="utf-8")
+    return path
+
+
 class EpisodeTask:
     """Tracks the state of an Antigravity background task for an episode."""
     def __init__(self, episode_id: str, task_type: str):
+        self._status = "idle"
         self.episode_id = episode_id
         self.task_type = task_type  # "storyboard", "images", "regenerate_scene"
-        self.status = "idle"  # "idle", "running", "completed", "error"
         self.current_step = "آماده‌سازی برای شروع کار..."
         self.progress = 0
         self.total_scenes = 0
@@ -72,6 +104,23 @@ class EpisodeTask:
         self.generated_images: List[str] = []
         self.logs: List[str] = []
         self.target_scene_id: Optional[str] = None
+        self.cancel_requested = False
+        self.snapshot_path: Optional[str] = None
+
+    @property
+    def status(self) -> str:
+        return self._status
+
+    @status.setter
+    def status(self, value: str) -> None:
+        self._status = value
+        self._persist()
+
+    def _persist(self) -> None:
+        try:
+            write_json_atomic(get_project_dir(self.episode_id) / "task_status.json", self.to_dict())
+        except Exception as exc:  # persistence must never break the task
+            logger.warning("Could not persist task status for %s: %s", self.episode_id, exc)
 
     def add_log(self, message: str):
         timestamp = time.strftime("%H:%M:%S")
@@ -104,43 +153,80 @@ class EpisodeTask:
 
 # Global in-memory state tracking per episode
 _active_tasks: Dict[str, EpisodeTask] = {}
+_background_tasks: set = set()
+_SCENE_IMG_RE = re.compile(r"^scene_\d{2,3}\.(png|jpg|jpeg)$", re.IGNORECASE)
+MIN_IMAGE_BYTES = 50 * 1024
+
+
+def _spawn(coro) -> None:
+    t = asyncio.create_task(coro)
+    _background_tasks.add(t)
+    t.add_done_callback(_background_tasks.discard)
+
+
+def _load_persisted(task: EpisodeTask) -> None:
+    path = get_project_dir(task.episode_id) / "task_status.json"
+    if not path.exists():
+        return
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return
+    task.task_type = data.get("task_type", "idle")
+    task.conversation_id = data.get("conversation_id")
+    task.started_at = data.get("started_at", task.started_at)
+    task.logs = data.get("logs", [])[-60:]
+    task.target_scene_id = data.get("target_scene_id")
+    task.progress = data.get("progress", 0)
+    status = data.get("status", "idle")
+    if status == "running":
+        task.error_message = ("Server restarted while this task was running; the agent session may still be active "
+                              f"(conversation {task.conversation_id}). Check Antigravity, then re-run if needed.")
+        task._status = "error"
+    else:
+        task.error_message = data.get("error_message")
+        task._status = status
+    task.current_step = data.get("current_step", task.current_step)
 
 
 def get_task_for_episode(episode_id: str) -> EpisodeTask:
+    validate_episode_id(episode_id)
     if episode_id not in _active_tasks:
         task = EpisodeTask(episode_id, "idle")
         _active_tasks[episode_id] = task
+        _load_persisted(task)
         # Check existing images on disk
         _refresh_image_status(task)
     return _active_tasks[episode_id]
 
 
-def _refresh_image_status(task: EpisodeTask):
-    """Scans projects/<episode_id>/assets/images for existing scene images."""
-    proj_dir = PROJECTS_DIR / task.episode_id
+def _refresh_image_status(task: EpisodeTask) -> None:
+    try:
+        proj_dir = get_project_dir(task.episode_id)
+    except InvalidIdError:
+        return
     img_dir = proj_dir / "assets" / "images"
-    state_file = proj_dir / "state.json"
-
-    if state_file.exists():
-        try:
-            with open(state_file, "r", encoding="utf-8") as f:
-                state_data = json.load(f)
-                scenes = state_data.get("scenes", [])
-                task.total_scenes = len(scenes)
-        except Exception:
-            pass
-
-    found = []
+    try:
+        task.total_scenes = len(read_state(task.episode_id).get("scenes", []))
+    except Exception:
+        pass
+    found, fresh = [], []
     if img_dir.exists():
-        for f in img_dir.glob("scene_*.png"):
-            found.append(f.name)
-        for f in img_dir.glob("scene_*.jpg"):
-            found.append(f.name)
-    found.sort()
+        for f in sorted(img_dir.iterdir()):
+            if f.is_file() and _SCENE_IMG_RE.match(f.name):
+                found.append(f.name)
+                try:
+                    st = f.stat()
+                    if st.st_mtime >= task.started_at - 1 and st.st_size >= MIN_IMAGE_BYTES:
+                        fresh.append(f.name)
+                except OSError:
+                    pass
     task.generated_images = found
-    task.completed_scenes = len(found)
+    running = task.status == "running" and task.task_type in ("images", "regenerate_scene")
+    task.completed_scenes = len(fresh if running else found)
     if task.total_scenes > 0 and task.task_type == "images":
-        task.progress = min(100, int((task.completed_scenes / task.total_scenes) * 100))
+        pct = int(task.completed_scenes / task.total_scenes * 100)
+        task.progress = min(95, pct) if task.status == "running" else min(100, pct)
 
 
 async def _run_antigravity_cli_process(prompt: str, title: str) -> Optional[str]:
@@ -149,11 +235,16 @@ async def _run_antigravity_cli_process(prompt: str, title: str) -> Optional[str]
     returning the conversationId.
     """
     cmd = get_cli_command()
+    prompt_file = _stage_prompt_file(prompt, title)
+    short_prompt = (
+        f"Read the file {prompt_file.as_posix()} completely, then execute every instruction "
+        "in it exactly. Do not ask clarifying questions."
+    )
     # Format arguments depending on binary type
-    if "agentapi" in cmd:
-        full_cmd = cmd + [f"--title={title}", prompt]
+    if _is_agentapi_cmd(cmd):
+        full_cmd = cmd + [f"--title={title}", short_prompt]
     else:
-        full_cmd = cmd + ["--title", title, prompt]
+        full_cmd = cmd + ["--title", title, short_prompt]
 
     logger.info("Executing Antigravity CLI: %s", " ".join(full_cmd[:4]))
 
@@ -165,7 +256,12 @@ async def _run_antigravity_cli_process(prompt: str, title: str) -> Optional[str]
         stderr=asyncio.subprocess.PIPE,
     )
 
-    stdout, stderr = await proc.communicate()
+    try:
+        stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=120)
+    except asyncio.TimeoutError:
+        proc.kill()
+        await proc.wait()
+        raise RuntimeError("Antigravity CLI did not respond within 120 seconds.")
     out_text = stdout.decode("utf-8", errors="replace").strip()
     err_text = stderr.decode("utf-8", errors="replace").strip()
 
@@ -188,7 +284,6 @@ async def _run_antigravity_cli_process(prompt: str, title: str) -> Optional[str]
         pass
 
     # Fallback pattern match
-    import re
     match = re.search(r"([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})", out_text)
     if match:
         return match.group(1)
@@ -196,118 +291,181 @@ async def _run_antigravity_cli_process(prompt: str, title: str) -> Optional[str]
     raise RuntimeError(f"Could not extract conversationId from output: {out_text or 'Empty output'}")
 
 
-async def _monitor_task(task: EpisodeTask):
-    """
-    Monitors a running conversation by tailing transcript.jsonl
-    and checking project files on disk.
-    """
-    episode_id = task.episode_id
-    conv_id = task.conversation_id
-    transcript_file = BRAIN_DIR / conv_id / ".system_generated" / "logs" / "transcript.jsonl" if conv_id else None
+def _read_new_transcript_lines(path: Path, offset: int):
+    """Return (complete_lines, new_offset). Safe against partially written last line."""
+    if not path.exists():
+        return [], offset
+    if path.stat().st_size < offset:
+        offset = 0
+    with path.open("rb") as fh:
+        fh.seek(offset)
+        chunk = fh.read()
+    last_nl = chunk.rfind(b"\n")
+    if last_nl == -1:
+        return [], offset
+    complete = chunk[: last_nl + 1]
+    lines = [ln for ln in complete.decode("utf-8", errors="replace").splitlines() if ln.strip()]
+    return lines, offset + len(complete)
 
-    logger.info("Starting task monitor for episode %s (conv: %s)", episode_id, conv_id)
-    last_step_index = -1
-    consecutive_done_checks = 0
-    max_wait_seconds = 1800  # 30 minutes max
-    start_time = time.time()
 
-    initial_img_count = len(task.generated_images)
-
-    while time.time() - start_time < max_wait_seconds:
-        await asyncio.sleep(2.0)
-        _refresh_image_status(task)
-
-        # Check transcript if available
-        if transcript_file and transcript_file.exists():
-            try:
-                lines = transcript_file.read_text(encoding="utf-8").splitlines()
-                for line_str in lines:
-                    line_str = line_str.strip()
-                    if not line_str:
-                        continue
-                    entry = json.loads(line_str)
-                    step_idx = entry.get("step_index", 0)
-
-                    if step_idx > last_step_index:
-                        last_step_index = step_idx
-                        source = entry.get("source")
-                        entry_type = entry.get("type")
-                        status = entry.get("status")
-                        thinking = entry.get("thinking", "")
-                        tool_calls = entry.get("tool_calls", [])
-                        content = entry.get("content", "")
-
-                        # Extract step activity
-                        if tool_calls:
-                            for tc in tool_calls:
-                                tname = tc.get("name", "")
-                                targs = tc.get("args", {})
-                                if tname == "write_file":
-                                    target = targs.get("Path", "")
-                                    task.current_step = f"در حال نگارش فایل {Path(target).name}..."
-                                    task.add_log(f"ویرایش فایل: {Path(target).name}")
-                                elif tname in ["image-generator", "invoke_subagent"]:
-                                    task.current_step = "در حال فراخوانی مدل تصویرسازی بومی برای تولید فریم..."
-                                    task.add_log("درخواست تولید فریم تصویری")
-                                else:
-                                    task.current_step = f"اجرای ابزار {tname}..."
-                        elif thinking:
-                            # Shorten thought for UI display
-                            first_thought = thinking.strip().split("\n")[0][:100]
-                            task.current_step = f"تحلیل هوش مصنوعی: {first_thought}..."
-                        elif content and source == "MODEL":
-                            task.add_log(f"پیام ایجنت: {content[:80]}...")
-
-                        # Check if agent finished
-                        if status == "DONE" and entry_type == "PLANNER_RESPONSE" and not tool_calls:
-                            consecutive_done_checks += 1
-                        else:
-                            consecutive_done_checks = 0
-
-            except Exception as e:
-                logger.warning("Error reading transcript for %s: %e", conv_id, e)
-
-        # Progress calculation
-        if task.task_type == "storyboard":
-            if consecutive_done_checks >= 1:
-                task.progress = 100
-                task.status = "completed"
-                task.current_step = "نگارش استوری‌بورد و پرامپت‌ها با موفقیت به پایان رسید."
-                task.add_log("عملیات استوری‌بورد کامل شد.")
-                break
+def _process_transcript_entry(task: EpisodeTask, entry: Dict[str, Any]) -> bool:
+    """Update task.current_step/logs; return True if this entry looks like the agent's final answer."""
+    source = entry.get("source")
+    entry_type = entry.get("type")
+    status = entry.get("status")
+    thinking = entry.get("thinking", "")
+    tool_calls = entry.get("tool_calls", []) or []
+    content = entry.get("content", "")
+    if tool_calls:
+        for tc in tool_calls:
+            tname = tc.get("name", "")
+            targs = tc.get("args", {}) or {}
+            if tname == "write_file":
+                fname = Path(targs.get("Path", "")).name
+                task.current_step = f"در حال نگارش فایل {fname}..."
+                task.add_log(f"ویرایش فایل: {fname}")
+            elif tname in ("image-generator", "invoke_subagent"):
+                task.current_step = "در حال فراخوانی مدل تصویرسازی بومی برای تولید فریم..."
+                task.add_log("درخواست تولید فریم تصویری")
             else:
-                # Approximate storyboard progress over time
-                elapsed = time.time() - start_time
-                task.progress = min(90, int(elapsed * 2))
+                task.current_step = f"اجرای ابزار {tname}..."
+    elif thinking:
+        task.current_step = f"تحلیل هوش مصنوعی: {thinking.strip().splitlines()[0][:100]}..." if thinking.strip() else task.current_step
+    elif content and source == "MODEL":
+        task.add_log(f"پیام ایجنت: {str(content)[:80]}...")
+    return status == "DONE" and entry_type == "PLANNER_RESPONSE" and not tool_calls
 
-        elif task.task_type == "images":
-            if task.total_scenes > 0:
-                task.progress = min(100, int((task.completed_scenes / task.total_scenes) * 100))
-            if consecutive_done_checks >= 1 and (task.completed_scenes >= task.total_scenes or task.completed_scenes > initial_img_count):
-                task.progress = 100
-                task.status = "completed"
-                task.current_step = f"تولید تصاویر به پایان رسید ({task.completed_scenes} فریم موجود)."
-                task.add_log("تولید کامل تصاویر خاتمه یافت.")
+
+def _restore_snapshot(task: EpisodeTask) -> None:
+    if task.snapshot_path and Path(task.snapshot_path).exists():
+        restore_state_from(task.episode_id, Path(task.snapshot_path), keep_rejected_as="state.json.rejected")
+
+
+def _finalize_storyboard(task: EpisodeTask) -> List[str]:
+    ep = task.episode_id
+    try:
+        raw = read_state(ep).get("scenes")
+    except Exception as exc:
+        return [f"Cannot read state.json: {exc}"]
+    if not isinstance(raw, list) or not raw:
+        _restore_snapshot(task)
+        return ["Agent finished but state.json has no scenes[]. Previous state restored (rejected copy: state.json.rejected)."]
+    scenes = [normalize_scene(s, i, ep) for i, s in enumerate(raw) if isinstance(s, dict)]
+    errors = validate_scenes(scenes)
+    if errors:
+        _restore_snapshot(task)
+        return ["Storyboard rejected; previous state restored (rejected copy: state.json.rejected)."] + errors
+    update_state(ep, lambda s: s.__setitem__("scenes", scenes))
+    return []
+
+
+def _finalize_images(task: EpisodeTask) -> List[str]:
+    ep = task.episode_id
+    try:
+        scenes = read_state(ep).get("scenes", [])
+    except Exception as exc:
+        return [f"Cannot read state.json: {exc}"]
+    ids = [task.target_scene_id] if task.task_type == "regenerate_scene" else [s.get("scene_id") or s.get("id") for s in scenes]
+    img_dir = get_project_dir(ep) / "assets" / "images"
+    found, missing = {}, []
+    for sid in ids:
+        hit = None
+        for ext in ("png", "jpg", "jpeg"):
+            f = img_dir / f"{sid}.{ext}"
+            if f.exists() and f.stat().st_size >= MIN_IMAGE_BYTES and f.stat().st_mtime >= task.started_at - 1:
+                hit = (ext, int(f.stat().st_mtime))
                 break
-
-        elif task.task_type == "regenerate_scene":
-            if consecutive_done_checks >= 1:
-                task.progress = 100
-                task.status = "completed"
-                task.current_step = f"بازسازی تصویر {task.target_scene_id} با موفقیت انجام شد."
-                task.add_log(f"بازسازی فریم {task.target_scene_id} تکمیل شد.")
-                break
-            else:
-                task.progress = min(90, int((time.time() - start_time) * 3))
-
-    if task.status == "running":
-        if consecutive_done_checks >= 1:
-            task.status = "completed"
-            task.current_step = "عملیات ایجنت با موفقیت پایان یافت."
+        if hit:
+            found[sid] = hit
         else:
+            missing.append(str(sid))
+    if missing:
+        return [f"Missing or stale frames (<{MIN_IMAGE_BYTES // 1024}KB or not regenerated): {', '.join(missing)}"]
+
+    def _mutate(state: dict) -> None:
+        for sc in state.get("scenes", []):
+            sid = sc.get("scene_id") or sc.get("id")
+            if sid in found:
+                ext, ver = found[sid]
+                path = f"/media/{ep}/assets/images/{sid}.{ext}"
+                sc["image_path"] = path
+                sc["visual_asset"] = path
+                sc["image_version"] = ver
+                if sc.get("status") != "approved":
+                    sc["status"] = "ready_for_review"
+
+    update_state(ep, _mutate)
+    return []
+
+
+async def _finalize_task(task: EpisodeTask) -> None:
+    fn = _finalize_storyboard if task.task_type == "storyboard" else _finalize_images
+    errors = await asyncio.to_thread(fn, task)
+    if errors:
+        task.error_message = "\n".join(errors[:10])
+        task.current_step = "خروجی ایجنت معتبر نبود."
+        task.add_log("خطای اعتبارسنجی: " + errors[0])
+        task.status = "error"
+    else:
+        task.progress = 100
+        task.error_message = None
+        task.current_step = "عملیات با موفقیت و پس از اعتبارسنجی پایان یافت."
+        task.add_log("عملیات تکمیل و اعتبارسنجی شد.")
+        task.status = "completed"
+
+
+async def _monitor_task(task: EpisodeTask) -> None:
+    try:
+        await _monitor_task_inner(task)
+    except Exception as exc:  # never leave the task stuck in "running"
+        logger.exception("Monitor crashed for %s", task.episode_id)
+        task.error_message = f"Monitor crashed: {exc}"
+        task.add_log(f"خطای مانیتور: {exc}")
+        task.status = "error"
+
+
+async def _monitor_task_inner(task: EpisodeTask) -> None:
+    conv_id = task.conversation_id
+    transcript = BRAIN_DIR / conv_id / ".system_generated" / "logs" / "transcript.jsonl" if conv_id else None
+    offset, last_step, finished, stable = 0, -1, False, 0
+    start = time.time()
+    max_wait = 1800
+    while time.time() - start < max_wait:
+        await asyncio.sleep(2.0)
+        if task.cancel_requested:
+            task.current_step = "پایش متوقف شد (نشست ایجنت ممکن است هنوز در Antigravity فعال باشد)."
+            task.add_log("لغو توسط کاربر.")
+            task.status = "cancelled"
+            return
+        await asyncio.to_thread(_refresh_image_status, task)
+        if transcript is None:
+            task.error_message = "No conversationId; cannot monitor."
             task.status = "error"
-            task.error_message = "زمان اجرای عملیات ایجنت به پایان رسید (Timeout)."
-            task.add_log("خطا: تایم‌اوت در انتظار پایان وظیفه.")
+            return
+        if not transcript.exists() and time.time() - start > 120:
+            task.error_message = f"Transcript not found: {transcript}. Check ANTIGRAVITY_BRAIN_DIR."
+            task.status = "error"
+            return
+        lines, offset = await asyncio.to_thread(_read_new_transcript_lines, transcript, offset)
+        for line in lines:
+            try:
+                entry = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            idx = entry.get("step_index", 0)
+            if idx <= last_step:
+                continue
+            last_step = idx
+            finished = _process_transcript_entry(task, entry)
+        stable = stable + 1 if finished else 0
+        if stable >= 2:
+            await _finalize_task(task)
+            return
+        if task.task_type != "images":
+            task.progress = max(task.progress, min(90, int((time.time() - start) * 0.5)))
+    task.error_message = "زمان اجرای عملیات ایجنت به پایان رسید (Timeout)."
+    task.add_log("خطا: تایماوت در انتظار پایان وظیفه.")
+    task.status = "error"
 
 
 async def start_storyboard_generation(episode_id: str) -> EpisodeTask:
@@ -322,10 +480,17 @@ async def start_storyboard_generation(episode_id: str) -> EpisodeTask:
     task.status = "running"
     task.progress = 5
     task.error_message = None
+    task.cancel_requested = False
     task.started_at = time.time()
     task.logs = []
     task.current_step = "راه‌اندازی ایجنت کارگردان آنتی‌گرویتی برای نگارش استوری‌بورد..."
     task.add_log(f"درخواست شروع استوری‌بورد برای اپیزود {episode_id}")
+    try:
+        task.snapshot_path = str(snapshot_state(episode_id, "state.json.pre_storyboard.bak"))
+    except FileNotFoundError:
+        task.error_message = f"state.json not found for episode {episode_id}"
+        task.status = "error"
+        return task
 
     prompt = f"""You are the Lead Scene Director Agent for Poker Studio.
 Execute PHASE 1 (Storyboard Generation) strictly following `/.agent/skills/04-scene-director.md`.
@@ -363,11 +528,11 @@ CRITICAL CONSTRAINTS:
         task.conversation_id = conv_id
         task.add_log(f"نشست ایجنت با شناسه {conv_id} آغاز شد.")
         # Launch background monitor
-        asyncio.create_task(_monitor_task(task))
+        _spawn(_monitor_task(task))
     except Exception as e:
-        task.status = "error"
         task.error_message = str(e)
         task.add_log(f"خطا در اجرای ایجنت: {e}")
+        task.status = "error"
 
     return task
 
@@ -384,6 +549,8 @@ async def start_images_generation(episode_id: str) -> EpisodeTask:
     task.status = "running"
     task.progress = 5
     task.error_message = None
+    task.snapshot_path = None
+    task.cancel_requested = False
     task.started_at = time.time()
     task.logs = []
     task.current_step = "راه‌اندازی ایجنت تولید تصویر بومی آنتی‌گرویتی..."
@@ -424,11 +591,11 @@ CRITICAL CONTINUITY PROTOCOL:
         task.conversation_id = conv_id
         task.add_log(f"نشست ایجنت با شناسه {conv_id} آغاز شد.")
         # Launch background monitor
-        asyncio.create_task(_monitor_task(task))
+        _spawn(_monitor_task(task))
     except Exception as e:
-        task.status = "error"
         task.error_message = str(e)
         task.add_log(f"خطا در اجرای ایجنت: {e}")
+        task.status = "error"
 
     return task
 
@@ -437,6 +604,7 @@ async def start_scene_regeneration(episode_id: str, scene_id: str) -> EpisodeTas
     """
     Regenerates a single scene image via Antigravity CLI.
     """
+    validate_scene_id(scene_id)
     task = get_task_for_episode(episode_id)
     if task.status == "running":
         return task
@@ -446,6 +614,8 @@ async def start_scene_regeneration(episode_id: str, scene_id: str) -> EpisodeTas
     task.status = "running"
     task.progress = 10
     task.error_message = None
+    task.snapshot_path = None
+    task.cancel_requested = False
     task.started_at = time.time()
     task.logs = []
     task.current_step = f"راه‌اندازی ایجنت برای بازسازی فریم {scene_id}..."
@@ -491,10 +661,18 @@ CRITICAL CONTINUITY PROTOCOL FOR SCENE REGENERATION:
         task.conversation_id = conv_id
         task.add_log(f"نشست ایجنت با شناسه {conv_id} آغاز شد.")
         # Launch background monitor
-        asyncio.create_task(_monitor_task(task))
+        _spawn(_monitor_task(task))
     except Exception as e:
-        task.status = "error"
         task.error_message = str(e)
         task.add_log(f"خطا در اجرای ایجنت: {e}")
+        task.status = "error"
 
+    return task
+
+
+def cancel_task(episode_id: str) -> EpisodeTask:
+    task = get_task_for_episode(episode_id)
+    if task.status == "running":
+        task.cancel_requested = True
+        task.add_log("درخواست لغو ثبت شد.")
     return task

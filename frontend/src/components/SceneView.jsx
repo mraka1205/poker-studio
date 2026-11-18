@@ -38,8 +38,10 @@ import {
   triggerStoryboardGeneration,
   triggerImagesGeneration,
   triggerSceneRegeneration,
-  fetchTaskStatus
+  fetchTaskStatus,
+  cancelTask
 } from '../api';
+import { copyText as writeClipboard } from '../utils/clipboard';
 
 const MOTION_TYPE_CONFIG = {
   slow_zoom_in: { label: '🔍 زوم آرام به داخل (Slow Push-In)', color: 'text-amber-400 bg-amber-500/10 border-amber-500/30' },
@@ -102,6 +104,9 @@ export default function SceneView({
   const [savingCameraPromptId, setSavingCameraPromptId] = useState(null);
 
   const lastImageCountRef = useRef(0);
+  const onRefreshRef = useRef(onRefresh);
+  useEffect(() => { onRefreshRef.current = onRefresh; });
+  useEffect(() => { setImgErrorMap({}); }, [taskState.completed_scenes, taskState.status]);
 
   // Check initial task status on mount
   useEffect(() => {
@@ -125,31 +130,31 @@ export default function SceneView({
   // Polling loop when task is running
   useEffect(() => {
     if (!episodeId || taskState.status !== 'running') return;
-
     setBannerDismissed(false);
+    let failures = 0;
     const interval = setInterval(async () => {
       try {
         const status = await fetchTaskStatus(episodeId);
+        failures = 0;
         setTaskState(status);
-
-        const currentImgCount = (status.generated_images || []).length;
-        if (currentImgCount !== lastImageCountRef.current || status.status === 'completed') {
-          lastImageCountRef.current = currentImgCount;
-          if (onRefresh) {
-            onRefresh();
-          }
+        const count = (status.generated_images || []).length;
+        if (count !== lastImageCountRef.current || status.status !== 'running') {
+          lastImageCountRef.current = count;
+          if (onRefreshRef.current) onRefreshRef.current();
         }
       } catch (err) {
-        console.error('Task status poll error:', err);
+        failures += 1;
+        if (failures >= 5) {
+          setTaskState(prev => ({ ...prev, status: 'error', error_message: 'ارتباط با سرور قطع شد.', current_step: 'خطای ارتباط' }));
+        }
       }
     }, 2000);
-
     return () => clearInterval(interval);
-  }, [episodeId, taskState.status, onRefresh]);
+  }, [episodeId, taskState.status]);
 
   const copyText = (id, text, type = 'image') => {
     if (!text) return;
-    navigator.clipboard.writeText(text);
+    writeClipboard(text);
     if (type === 'image') {
       setCopiedPromptId(id);
       setTimeout(() => setCopiedPromptId(null), 2000);
@@ -335,6 +340,10 @@ export default function SceneView({
     }
   };
 
+  const handleCancelTask = async () => {
+    try { await cancelTask(episodeId); } catch (err) { alert('خطا در توقف عملیات: ' + err.message); }
+  };
+
   const isRunning = taskState.status === 'running';
 
   return (
@@ -494,7 +503,7 @@ export default function SceneView({
                       ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
                       : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
                   }`}>
-                    {taskState.status === 'running' ? 'در حال اجرا' : taskState.status === 'completed' ? 'تکمیل شد ✓' : 'خطا'}
+                    {taskState.status === 'running' ? 'در حال اجرا' : taskState.status === 'completed' ? 'تکمیل شد ✓' : taskState.status === 'cancelled' ? 'لغو شد' : 'خطا'}
                   </span>
                 </div>
                 <p className="text-[11px] text-slate-300 font-mono mt-0.5">
@@ -517,6 +526,13 @@ export default function SceneView({
                 <span>لاگ ایجنت ({taskState.logs?.length || 0})</span>
                 {showLogs ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
               </button>
+
+              {isRunning && (
+                <button onClick={handleCancelTask}
+                  className="px-2.5 py-1.5 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 text-xs font-bold border border-rose-500/40">
+                  توقف پایش
+                </button>
+              )}
 
               {!isRunning && (
                 <button
@@ -569,7 +585,7 @@ export default function SceneView({
       {/* Grid of Storyboard Scenes */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {scenes.map((scene, idx) => {
-          const sceneId = scene.id || scene.scene_id || `scene_${String(idx + 1).padStart(2, '0')}`;
+          const sceneId = scene.scene_id || scene.id || `scene_${String(idx + 1).padStart(2, '0')}`;
           const isAiVideo = scene.media_type === 'ai_video' || scene.shot_mode === 'ai_video';
           const visualPrompt = scene.visual_prompt_en || scene.visual_prompt || '';
           
@@ -591,7 +607,8 @@ export default function SceneView({
           const tableState = scene.poker_table_state || {};
           
           // Image path resolution
-          const resolvedImagePath = scene.image_path || scene.visual_asset || `/media/${episodeId}/assets/images/${sceneId}.png`;
+          const baseImagePath = scene.image_path || scene.visual_asset || `/media/${episodeId}/assets/images/${sceneId}.png`;
+          const resolvedImagePath = `${baseImagePath}${baseImagePath.includes('?') ? '&' : '?'}v=${scene.image_version || 0}`;
           const isImgError = imgErrorMap[sceneId];
           const hasImage = !isImgError && Boolean(resolvedImagePath);
           const hasVideo = Boolean(scene.video_path);
@@ -794,7 +811,7 @@ export default function SceneView({
                         </span>
                       </div>
                       
-                      {cameraPrompt && (
+                      {(cameraPrompt || editedCameraPrompts[sceneId] !== undefined) && (
                         <div className="flex items-center gap-1">
                           <button
                             onClick={() => handleSaveCameraPrompt(sceneId, cameraPrompt, cameraDir)}
@@ -885,7 +902,7 @@ export default function SceneView({
                       </div>
                       
                       <div className="flex items-center gap-1">
-                        {motionPrompt && (
+                        {(motionPrompt || editedMotionPrompts[sceneId] !== undefined) && (
                           <button
                             onClick={() => handleSaveMotionPrompt(sceneId, motionPrompt)}
                             disabled={savingMotionId === sceneId}

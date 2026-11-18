@@ -11,6 +11,7 @@ import {
   Eye, 
   Clock 
 } from 'lucide-react';
+import { copyText as writeClipboard } from '../utils/clipboard';
 
 export default function PublishView({
   publishData = {},
@@ -23,7 +24,7 @@ export default function PublishView({
   const [copiedTags, setCopiedTags] = useState(false);
 
   const copyToClipboard = (text, setFlag) => {
-    navigator.clipboard.writeText(text);
+    writeClipboard(text);
     setFlag(true);
     setTimeout(() => setFlag(false), 2000);
   };

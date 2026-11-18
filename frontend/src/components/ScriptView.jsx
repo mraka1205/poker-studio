@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   FileText, 
   Check, 
@@ -17,23 +17,38 @@ import {
   Trash2
 } from 'lucide-react';
 import AiStudioBridge from './AiStudioBridge';
+import { copyText as writeClipboard } from '../utils/clipboard';
 
-const SPEAKER_COLORS = {
-  Narration: { bg: 'bg-indigo-500/10', border: 'border-indigo-500/30', text: 'text-indigo-400', label: 'راوی (Narrator)' },
-  NARRATOR: { bg: 'bg-indigo-500/10', border: 'border-indigo-500/30', text: 'text-indigo-400', label: 'راوی (Narrator)' },
-  Kambiz: { bg: 'bg-amber-500/10', border: 'border-amber-500/30', text: 'text-amber-400', label: 'کامبیز جی‌تی‌او (HERO)' },
-  HERO: { bg: 'bg-amber-500/10', border: 'border-amber-500/30', text: 'text-amber-400', label: 'کامبیز جی‌تی‌او (HERO)' },
-  Asghar: { bg: 'bg-emerald-500/10', border: 'border-emerald-500/30', text: 'text-emerald-400', label: 'اصغر فیش (VILLAIN)' },
-  VILLAIN: { bg: 'bg-emerald-500/10', border: 'border-emerald-500/30', text: 'text-emerald-400', label: 'اصغر فیش (VILLAIN)' },
-  Behrouz: { bg: 'bg-rose-500/10', border: 'border-rose-500/30', text: 'text-rose-400', label: 'بهروز نیت (The Rock)' }
+const SPEAKER_STYLES = {
+  narrator: { bg: 'bg-indigo-500/10', border: 'border-indigo-500/30', text: 'text-indigo-400', label: 'راوی (Narrator)' },
+  narration: { bg: 'bg-indigo-500/10', border: 'border-indigo-500/30', text: 'text-indigo-400', label: 'راوی (Narrator)' },
+  arash: { bg: 'bg-amber-500/10', border: 'border-amber-500/30', text: 'text-amber-400', label: 'آرش (@Arash)' },
+  kambiz: { bg: 'bg-amber-500/10', border: 'border-amber-500/30', text: 'text-amber-400', label: 'کامبیز جیتیاو' },
+  hero: { bg: 'bg-amber-500/10', border: 'border-amber-500/30', text: 'text-amber-400', label: 'هیرو (HERO)' },
+  bijan: { bg: 'bg-emerald-500/10', border: 'border-emerald-500/30', text: 'text-emerald-400', label: 'بیژن (@Bijan)' },
+  asghar: { bg: 'bg-emerald-500/10', border: 'border-emerald-500/30', text: 'text-emerald-400', label: 'اصغر فیش' },
+  villain: { bg: 'bg-emerald-500/10', border: 'border-emerald-500/30', text: 'text-emerald-400', label: 'ویلن (VILLAIN)' },
+  rahim: { bg: 'bg-sky-500/10', border: 'border-sky-500/30', text: 'text-sky-400', label: 'آقا رحیم (@Rahim)' },
+  farzad: { bg: 'bg-rose-500/10', border: 'border-rose-500/30', text: 'text-rose-400', label: 'فرزاد (@Farzad)' },
+  keyvan: { bg: 'bg-cyan-500/10', border: 'border-cyan-500/30', text: 'text-cyan-400', label: 'کیوان (@Keyvan)' },
+  behrouz: { bg: 'bg-rose-500/10', border: 'border-rose-500/30', text: 'text-rose-400', label: 'بهروز نیت (The Rock)' }
 };
+
+function getSpeakerStyle(speaker) {
+  const key = String(speaker || '').replace(/^@/, '').trim().toLowerCase();
+  return SPEAKER_STYLES[key] || {
+    bg: 'bg-slate-500/10', border: 'border-slate-500/30', text: 'text-slate-300',
+    label: speaker || 'نامشخص'
+  };
+}
 
 export default function ScriptView({
   scriptData = {},
   episodeId,
   stageStatus,
   onApprove,
-  onSaveScript
+  onSaveScript,
+  onRefresh
 }) {
   const [copiedIndex, setCopiedIndex] = useState(null);
   const [copiedAll, setCopiedAll] = useState(false);
@@ -41,26 +56,57 @@ export default function ScriptView({
   const [editingSegId, setEditingSegId] = useState(null);
   const [regeneratingId, setRegeneratingId] = useState(null);
 
-  const segments = scriptData?.segments || [];
+  const [draft, setDraft] = useState(scriptData?.segments || []);
+  const [saveState, setSaveState] = useState('idle'); // idle | dirty | saving | saved | error
+  const draftRef = useRef(draft);
+  const dirtyRef = useRef(false);
+  const timerRef = useRef(null);
+  const scriptRef = useRef(scriptData);
+  useEffect(() => { scriptRef.current = scriptData; });
+
+  useEffect(() => {
+    if (!dirtyRef.current) {
+      const next = scriptData?.segments || [];
+      draftRef.current = next;
+      setDraft(next);
+    }
+  }, [scriptData]);
+
+  const flush = async () => {
+    clearTimeout(timerRef.current);
+    if (!dirtyRef.current) return;
+    dirtyRef.current = false;
+    setSaveState('saving');
+    const ok = await onSaveScript({ ...scriptRef.current, segments: draftRef.current });
+    if (ok === false) { dirtyRef.current = true; setSaveState('error'); } else { setSaveState('saved'); }
+  };
+  const flushRef = useRef(flush);
+  flushRef.current = flush;
+  useEffect(() => () => { if (dirtyRef.current) flushRef.current(); }, []);
 
   const copyText = (text, idx) => {
-    navigator.clipboard.writeText(text);
+    writeClipboard(text);
     setCopiedIndex(idx);
     setTimeout(() => setCopiedIndex(null), 2000);
   };
 
   const copyFullScript = () => {
     const text = JSON.stringify(scriptData, null, 2);
-    navigator.clipboard.writeText(text);
+    writeClipboard(text);
     setCopiedAll(true);
     setTimeout(() => setCopiedAll(false), 2000);
   };
 
   const handleUpdateSegment = (idx, field, value) => {
-    const updated = [...segments];
-    updated[idx] = { ...updated[idx], [field]: value };
-    onSaveScript({ ...scriptData, segments: updated });
+    const next = draftRef.current.map((s, i) => (i === idx ? { ...s, [field]: value } : s));
+    draftRef.current = next;
+    setDraft(next);
+    dirtyRef.current = true;
+    setSaveState('dirty');
+    clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => flushRef.current(), 800);
   };
+  const segments = draft;
 
   return (
     <div className="space-y-6">
@@ -72,7 +118,7 @@ export default function ScriptView({
         stageTitle="سناریونویسی"
         description="پرامپت مهندسی‌شده را برای Google AI Studio کپی کنید و خروجی ساختاریافته JSON شامل subtitle_fa و tts_fa را اینجا ثبت نمایید."
         onSuccess={() => {
-          if (onApprove) onApprove();
+          if (onRefresh) onRefresh();
         }}
       />
 
@@ -130,6 +176,10 @@ export default function ScriptView({
             {copiedAll ? 'کپی شد!' : 'کپی کل JSON'}
           </button>
 
+          <span className="text-[11px] text-slate-400 font-mono">
+            {saveState === 'dirty' ? 'ذخیره نشده…' : saveState === 'saving' ? 'در حال ذخیره…' : saveState === 'saved' ? 'ذخیره شد ✓' : saveState === 'error' ? 'خطا در ذخیره' : ''}
+          </span>
+
           {/* Approve Button */}
           {stageStatus === 'approved' ? (
             <div className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-bold">
@@ -151,7 +201,7 @@ export default function ScriptView({
       {/* Script Segments List */}
       <div className="space-y-4">
         {segments.map((seg, idx) => {
-          const spk = SPEAKER_COLORS[seg.speaker] || SPEAKER_COLORS.Narration;
+          const spk = getSpeakerStyle(seg.speaker);
           const isRegenerating = regeneratingId === (seg.id || idx);
 
           return (

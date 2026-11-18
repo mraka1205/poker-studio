@@ -24,7 +24,10 @@ export default {
           cyan: '#06B6D4',
           accent: '#6366F1'
         }
-      }
+      },
+      scale: { '102': '1.02' },
+      keyframes: { fadeIn: { from: { opacity: '0' }, to: { opacity: '1' } } },
+      animation: { fadeIn: 'fadeIn 0.25s ease-out' }
     },
   },
   plugins: [],

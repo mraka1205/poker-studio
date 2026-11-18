@@ -11,6 +11,7 @@ import {
   CheckCircle2
 } from 'lucide-react';
 import { buildAiStudioPrompt, importAiStudioJson } from '../api';
+import { copyText } from '../utils/clipboard';
 
 export default function AiStudioBridge({
   episodeId,
@@ -34,7 +35,8 @@ export default function AiStudioBridge({
     setErrorMsg('');
     try {
       const res = await buildAiStudioPrompt(episodeId, stage);
-      await navigator.clipboard.writeText(res.prompt);
+      const ok = await copyText(res.prompt);
+      if (!ok) throw new Error('کپی ممکن نشد؛ پرامپت را دستی کپی کنید.');
       setCopiedPrompt(true);
       setTimeout(() => setCopiedPrompt(false), 2500);
     } catch (err) {
@@ -54,7 +56,10 @@ export default function AiStudioBridge({
     setErrorMsg('');
     try {
       const res = await importAiStudioJson(episodeId, stage, jsonInput);
-      setSuccessMsg(res.message || 'داده‌ها با موفقیت اعتبارسنجی و ذخیره شد!');
+      const issues = res.validation_issues || [];
+      setSuccessMsg((res.message || 'داده‌ها با موفقیت اعتبارسنجی و ذخیره شد!') +
+        (issues.length ? ` — ${issues.length} هشدار کیفیت` : '') +
+        ' — پس از بازبینی، مرحله را دستی تایید کنید.');
       setJsonInput('');
       if (onSuccess) {
         onSuccess(res.state);

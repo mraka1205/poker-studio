@@ -17,6 +17,7 @@ import {
   Zap
 } from 'lucide-react';
 import { fetchAgentPrompt } from '../api';
+import { copyText as writeClipboard } from '../utils/clipboard';
 
 export default function CommandCenter({
   projectState,
@@ -28,26 +29,30 @@ export default function CommandCenter({
   const [copiedPrompt, setCopiedPrompt] = useState(false);
   const [copiedAnchor, setCopiedAnchor] = useState(false);
   const [loadingPrompt, setLoadingPrompt] = useState(false);
+  const [promptError, setPromptError] = useState('');
 
   useEffect(() => {
-    if (projectState?.episode_id) {
-      setLoadingPrompt(true);
-      const stageMap = { 1: 'bible', 2: 'bible', 3: 'script', 4: 'characters', 5: 'script', 6: 'scenes', 7: 'scenes', 8: 'script', 9: 'script' };
-      const targetStage = stageMap[projectState.current_stage] || 'script';
-      fetchAgentPrompt(projectState.episode_id, targetStage)
-        .then(data => {
-          setAgentPromptData(data);
-          setLoadingPrompt(false);
-        })
-        .catch(err => {
-          console.error('Error fetching agent prompt', err);
-          setLoadingPrompt(false);
-        });
+    const epId = projectState?.episode_id;
+    if (!epId) return;
+    const PROMPT_STAGES = { 1: 'bible', 2: 'bible', 3: 'script', 4: 'characters', 6: 'scenes' };
+    const stage = PROMPT_STAGES[projectState.current_stage];
+    setPromptError('');
+    if (!stage) {
+      setAgentPromptData(null);
+      setPromptError('برای این مرحله پرامپت ایجنت تعریف نشده است.');
+      return;
     }
+    let cancelled = false;
+    setLoadingPrompt(true);
+    fetchAgentPrompt(epId, stage)
+      .then(d => { if (!cancelled) setAgentPromptData(d); })
+      .catch(e => { if (!cancelled) { setAgentPromptData(null); setPromptError('خطا در دریافت پرامپت: ' + e.message); } })
+      .finally(() => { if (!cancelled) setLoadingPrompt(false); });
+    return () => { cancelled = true; };
   }, [projectState?.episode_id, projectState?.current_stage]);
 
   const copyToClipboard = (text, setFlag) => {
-    navigator.clipboard.writeText(text);
+    writeClipboard(text);
     setFlag(true);
     setTimeout(() => setFlag(false), 2000);
   };
@@ -61,6 +66,7 @@ export default function CommandCenter({
   const waitingScenes = (projectState?.scenes || []).filter(sc => sc.status === 'ready_for_review');
 
   const anchorCharacter = (projectState?.characters || []).find(c => c.is_style_anchor);
+  const anchorPrompt = anchorCharacter?.dna_block_en || anchorCharacter?.style_prompt || '';
 
   return (
     <div className="space-y-6">
@@ -182,7 +188,7 @@ export default function CommandCenter({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <img 
-                      src={char.avatar_url} 
+                      src={char.avatar_url || char.turnaround_sheet || char.face_sheet_image_path || ''} 
                       alt={char.name_fa} 
                       className="w-8 h-8 rounded-lg bg-slate-800 border border-purple-500/30"
                     />
@@ -204,15 +210,15 @@ export default function CommandCenter({
 
             {/* Waiting Scenes approval */}
             {waitingScenes.map(scene => (
-              <div key={scene.id} className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 space-y-2">
+              <div key={scene.scene_id || scene.id} className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div className="w-7 h-7 rounded-lg bg-slate-800 flex items-center justify-center text-slate-300 text-xs font-bold">
-                      #{scene.beat_index}
+                      #{scene.beat_index ?? ''}
                     </div>
                     <div>
-                      <h5 className="text-xs font-bold text-slate-200">{scene.title}</h5>
-                      <span className="text-[10px] text-slate-400">{scene.time_range} • {scene.sfx_cue}</span>
+                      <h5 className="text-xs font-bold text-slate-200">{scene.scene_title_fa || scene.title || scene.scene_id}</h5>
+                      <span className="text-[10px] text-slate-400">{scene.duration_sec ?? '?'}s • {scene.sfx_cue}</span>
                     </div>
                   </div>
 
@@ -248,7 +254,8 @@ export default function CommandCenter({
                 </div>
 
                 <button
-                  onClick={() => copyToClipboard(anchorCharacter.style_prompt, setCopiedAnchor)}
+                  onClick={() => copyToClipboard(anchorPrompt, setCopiedAnchor)}
+                  disabled={!anchorPrompt}
                   className="px-2.5 py-1 rounded-lg bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 border border-indigo-500/30 text-xs font-semibold flex items-center gap-1 transition-colors"
                 >
                   {copiedAnchor ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
@@ -257,7 +264,7 @@ export default function CommandCenter({
               </div>
 
               <div className="p-2.5 rounded-lg bg-slate-950/70 border border-slate-800 text-[11px] font-mono text-slate-300 ltr-content line-clamp-2">
-                {anchorCharacter.style_prompt}
+                {anchorPrompt}
               </div>
             </div>
           )}
@@ -319,7 +326,7 @@ export default function CommandCenter({
             {/* Prompt Viewport (Scrollable) */}
             <div className="relative">
               <pre className="p-4 rounded-xl bg-[#070b13] border border-slate-800/80 text-xs text-slate-300 font-mono overflow-x-auto max-h-[340px] whitespace-pre-wrap leading-relaxed ltr-content select-all">
-                {loadingPrompt ? 'در حال کامپایل پرامپت اختصاصی مرحله...' : (agentPromptData?.prompt || 'پرامپتی یافت نشد.')}
+                {loadingPrompt ? 'در حال کامپایل پرامپت اختصاصی مرحله...' : (agentPromptData?.prompt || promptError || 'پرامپتی یافت نشد.')}
               </pre>
             </div>
 
@@ -357,7 +364,7 @@ export default function CommandCenter({
                 <span className="text-[10px] text-slate-500 font-mono">مرحله ۴</span>
               </div>
               <div className="text-xs font-bold text-slate-200 group-hover:text-purple-400 transition-colors">کاراکترها و لنگر استایل</div>
-              <div className="text-[10px] text-slate-400 mt-0.5">۳ کاراکتر با فوتوشیت</div>
+              <div className="text-[10px] text-slate-400 mt-0.5">{`${projectState?.characters?.length ?? 0} کاراکتر`}</div>
             </button>
 
             <button
@@ -369,7 +376,7 @@ export default function CommandCenter({
                 <span className="text-[10px] text-slate-500 font-mono">مرحله ۶</span>
               </div>
               <div className="text-xs font-bold text-slate-200 group-hover:text-emerald-400 transition-colors">بیت‌های ۳ تا ۶ ثانیه‌ای</div>
-              <div className="text-[10px] text-slate-400 mt-0.5">۷ صحنه با وضعیت میز و SFX</div>
+              <div className="text-[10px] text-slate-400 mt-0.5">{`${projectState?.scenes?.length ?? 0} صحنه با وضعیت میز و SFX`}</div>
             </button>
           </div>
 

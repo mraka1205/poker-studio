@@ -16,6 +16,7 @@ import {
   CheckCircle2
 } from 'lucide-react';
 import { fetchUniverse, saveUniverse, uploadUniverseAsset } from '../api';
+import { copyText as writeClipboard } from '../utils/clipboard';
 
 export default function UniverseModal({ isOpen, onClose, onUniverseUpdated }) {
   const [activeTab, setActiveTab] = useState('environment'); // 'environment' or 'characters'
@@ -48,7 +49,7 @@ export default function UniverseModal({ isOpen, onClose, onUniverseUpdated }) {
 
   const copyText = (id, text) => {
     if (!text) return;
-    navigator.clipboard.writeText(text);
+    writeClipboard(text);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
   };

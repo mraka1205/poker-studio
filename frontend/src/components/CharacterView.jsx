@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   Users, 
   Sparkles, 
@@ -16,9 +16,12 @@ import {
 } from 'lucide-react';
 import AiStudioBridge from './AiStudioBridge';
 import { uploadAsset, fetchUniverse, syncUniverseCharacters, updateCharacterSeat } from '../api';
+import { copyText as writeClipboard } from '../utils/clipboard';
+
+const EMPTY_LIST = [];
 
 export default function CharacterView({
-  characters = [],
+  characters = EMPTY_LIST,
   episodeId,
   stageStatus,
   onApproveStage,
@@ -46,20 +49,17 @@ export default function CharacterView({
     loadUniverseData();
   }, [episodeId]);
 
+  const initializedFor = useRef(null);
   useEffect(() => {
-    // Auto-select characters that are already in the episode
-    if (universeChars.length > 0 && characters) {
-      const epCharIds = new Set(characters.map(c => c.id));
-      const epFlowTags = new Set(characters.map(c => c.flow_tag || `@${c.name_en}`));
-      
-      const preselected = universeChars
-        .filter(uc => epCharIds.has(uc.id) || epFlowTags.has(uc.flow_tag))
-        .map(uc => uc.id);
-      
-      // If none matched (e.g. new episode), default to all universe characters
-      setSelectedUniverseIds(preselected.length > 0 ? preselected : universeChars.map(uc => uc.id));
-    }
-  }, [universeChars, characters]);
+    if (!universeChars.length || initializedFor.current === episodeId) return;
+    initializedFor.current = episodeId;
+    const epCharIds = new Set(characters.map(c => c.id));
+    const epFlowTags = new Set(characters.map(c => c.flow_tag || `@${c.name_en}`));
+    const preselected = universeChars
+      .filter(uc => epCharIds.has(uc.id) || epFlowTags.has(uc.flow_tag))
+      .map(uc => uc.id);
+    setSelectedUniverseIds(preselected.length > 0 ? preselected : universeChars.map(uc => uc.id));
+  }, [universeChars, episodeId]);
 
   const loadUniverseData = async () => {
     try {
@@ -96,7 +96,8 @@ export default function CharacterView({
   };
 
   const copyPrompt = (id, promptText) => {
-    navigator.clipboard.writeText(promptText);
+    if (!promptText) return;
+    writeClipboard(promptText);
     setCopiedPromptId(id);
     setTimeout(() => setCopiedPromptId(null), 2000);
   };
@@ -127,7 +128,6 @@ export default function CharacterView({
         description="پرامپت مهارت ۰۳ را کپی کرده و در Gemini اجرا کنید تا پرامپت‌های مدل شیت چندزاویه‌ای کاراکترها (با ارجاع به Style Anchor) در قالب JSON تولید شود."
         onSuccess={() => {
           if (onRefresh) onRefresh();
-          if (onApproveStage) onApproveStage();
         }}
       />
 
@@ -379,11 +379,12 @@ export default function CharacterView({
 
                 {/* Image / Turnaround Sheet Viewport */}
                 <div className="relative aspect-square rounded-xl bg-slate-950 border border-slate-800 overflow-hidden flex items-center justify-center group">
-                  <img
-                    src={char.face_sheet_image_path || char.body_sheet_image_path || char.turnaround_sheet || char.avatar_url}
-                    alt={char.name_fa}
-                    className="w-full h-full object-cover transition-transform group-hover:scale-105"
-                  />
+                  {(() => {
+                    const sheetSrc = char.turnaround_sheet || char.face_sheet_image_path || char.body_sheet_image_path || char.avatar_url || '';
+                    return sheetSrc
+                      ? <img src={sheetSrc} alt={char.name_fa} className="w-full h-full object-cover transition-transform group-hover:scale-105" />
+                      : <span className="text-4xl">👤</span>;
+                  })()}
 
                   {/* Overlay Upload Button */}
                   <label className="absolute inset-0 bg-slate-950/70 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 cursor-pointer p-4 text-center">
