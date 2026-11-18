@@ -11,7 +11,6 @@ import IdeaBibleView from './components/IdeaBibleView';
 import PublishView from './components/PublishView';
 import SkillViewerModal from './components/SkillViewerModal';
 import NewEpisodeModal from './components/NewEpisodeModal';
-import SettingsModal from './components/SettingsModal';
 import UniverseModal from './components/UniverseModal';
 import { 
   fetchProjects, 
@@ -28,12 +27,11 @@ export default function App() {
 
   // Nav state
   const [currentTab, setCurrentTab] = useState('dashboard'); // 'dashboard' or 'stages'
-  const [activeStageNumber, setActiveStageNumber] = useState(3); // Default stage to view
+  const [activeStageNumber, setActiveStageNumber] = useState(6); // Default stage to view
 
   // Modals
   const [isSkillsModalOpen, setIsSkillsModalOpen] = useState(false);
   const [isNewModalOpen, setIsNewModalOpen] = useState(false);
-  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isUniverseModalOpen, setIsUniverseModalOpen] = useState(false);
 
   // Load project list on mount
@@ -112,7 +110,7 @@ export default function App() {
   const handleSceneAssetUpdated = async (sceneId, newUrl) => {
     if (!projectState) return;
     const updatedScenes = projectState.scenes.map(s => 
-      s.id === sceneId ? { ...s, visual_asset: newUrl, status: 'approved' } : s
+      s.id === sceneId ? { ...s, visual_asset: newUrl, image_path: newUrl, status: 'approved' } : s
     );
     const updatedState = { ...projectState, scenes: updatedScenes };
     setProjectState(updatedState);
@@ -156,7 +154,6 @@ export default function App() {
         onSelectEpisode={(id) => setCurrentEpisodeId(id)}
         onOpenNewModal={() => setIsNewModalOpen(true)}
         onOpenSkillsModal={() => setIsSkillsModalOpen(true)}
-        onOpenSettingsModal={() => setIsSettingsModalOpen(true)}
         onOpenUniverseModal={() => setIsUniverseModalOpen(true)}
         currentTab={currentTab}
         onSelectTab={(tab) => setCurrentTab(tab)}
@@ -289,7 +286,7 @@ export default function App() {
 
       {/* Footer */}
       <footer className="border-t border-slate-800/80 py-4 text-center text-xs text-slate-500">
-        <p>استودیو کمدی و آموزش پوکر ایرانی • طراحی شده با معماری هیبرید Google AI Studio + OpenRouter + نظارت انسان</p>
+        <p>استودیو کمدی و آموزش پوکر ایرانی • طراحی شده با پایپ‌لاین تولید مستقیم عامل هوشمند Antigravity</p>
       </footer>
 
       {/* Modals */}
@@ -307,11 +304,6 @@ export default function App() {
           setActiveStageNumber(1);
           setCurrentTab('stages');
         }}
-      />
-
-      <SettingsModal
-        isOpen={isSettingsModalOpen}
-        onClose={() => setIsSettingsModalOpen(false)}
       />
 
       <UniverseModal

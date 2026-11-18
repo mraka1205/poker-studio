@@ -17,7 +17,6 @@ import {
   Trash2
 } from 'lucide-react';
 import AiStudioBridge from './AiStudioBridge';
-import { runOpenRouterTask } from '../api';
 
 const SPEAKER_COLORS = {
   Narration: { bg: 'bg-indigo-500/10', border: 'border-indigo-500/30', text: 'text-indigo-400', label: 'راوی (Narrator)' },
@@ -63,24 +62,6 @@ export default function ScriptView({
     onSaveScript({ ...scriptData, segments: updated });
   };
 
-  const handleRegenerateDiacritics = async (idx, seg) => {
-    setRegeneratingId(seg.id || idx);
-    try {
-      const res = await runOpenRouterTask(episodeId, 'regenerate_tts_fa', null, {
-        subtitle_fa: seg.subtitle_fa,
-        speaker: seg.speaker,
-        emotion: seg.emotion
-      });
-      if (res.tts_fa) {
-        handleUpdateSegment(idx, 'tts_fa', res.tts_fa);
-      }
-    } catch (err) {
-      alert('خطا در بازسازی اعراب با OpenRouter: ' + err.message);
-    } finally {
-      setRegeneratingId(null);
-    }
-  };
-
   return (
     <div className="space-y-6">
       
@@ -108,7 +89,7 @@ export default function ScriptView({
           </div>
           <h2 className="text-xl font-black text-white">{scriptData?.title || 'سناریوی کمدی اپیزود'}</h2>
           <p className="text-xs text-slate-400 mt-0.5">
-            می‌توانید متون زیرنویس و تلفظ TTS را مستقیماً ویرایش کرده یا با OpenRouter اعراب‌گذاری آن را بروزرسانی نمایید.
+            می‌توانید متون زیرنویس و تلفظ TTS را مستقیماً ویرایش کرده یا با عامل هوشمند Antigravity اعراب‌گذاری آن را بروزرسانی نمایید.
           </p>
         </div>
 
@@ -205,17 +186,6 @@ export default function ScriptView({
                       🎭 {seg.emotion}
                     </span>
                   )}
-
-                  {/* Regenerate TTS Diacritics button (OpenRouter) */}
-                  <button
-                    onClick={() => handleRegenerateDiacritics(idx, seg)}
-                    disabled={isRegenerating}
-                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 text-[11px] font-semibold transition-colors"
-                    title="تولید مجدد اعراب و تلفظ فونتیک با OpenRouter"
-                  >
-                    <Sparkles className={`w-3.5 h-3.5 text-amber-400 ${isRegenerating ? 'animate-spin' : ''}`} />
-                    {isRegenerating ? 'در حال بازسازی...' : 'بازسازی اعراب (OpenRouter)'}
-                  </button>
 
                   <button
                     onClick={() => copyText(seg.subtitle_fa, idx)}

@@ -322,7 +322,8 @@
       "visual_asset": "/media/ep01-sample/scenes/scene_01.svg",
       "status": "approved",
       "visual_prompt_en": "Modern 2D cartoon adult animation style, Rick and Morty meets Archer comic style. vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16. Extreme close-up, dutch angle on Kambiz with round glasses and messy hair sweating with a terrified facial expression, looking down at the poker table. Intense, vibrant neon lighting, with a very tight shot on his face to emphasize the shock.",
-      "motion_prompt_en": "Slow, gentle camera zoom in on Kambiz's face. Kambiz, with round glasses and messy hair, sweats profusely, a single bead of sweat slowly trickling down his temple, mouth closed, no speaking, silent expressive acting, pure facial expression and physical reaction. His eyes are wide with a terrified facial expression, looking down at the poker table. No hand movement or any other physical action. Modern 2D cartoon adult animation style, Rick and Morty meets Archer comic style, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16."
+      "motion_prompt_en": "Slow, gentle camera zoom in on Kambiz's face. Kambiz, with round glasses and messy hair, sweats profusely, a single bead of sweat slowly trickling down his temple, mouth closed, no speaking, silent expressive acting, pure facial expression and physical reaction. His eyes are wide with a terrified facial expression, looking down at the poker table. No hand movement or any other physical action. Modern 2D cartoon adult animation style, Rick and Morty meets Archer comic style, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16.",
+      "image_path": "/media/ep01-sample/scenes/scene_01.svg"
     },
     {
       "id": "scene_02",
@@ -344,7 +345,8 @@
       "sfx_cue": "sfx_chip_riffle",
       "visual_asset": "/media/ep01-sample/scenes/scene_02.svg",
       "status": "ready_for_review",
-      "motion_prompt_en": "5-second clip. Slow, smooth push-in of the camera from the isometric high angle toward the center of the table. Asghar on the Big Blind slowly spreads a gentle closed-mouth smile, then uses one hand to push a neat stack of chips slowly forward across the felt. The stack stays flat and grounded on the table and slides in a single smooth motion. His other hand rests still, holding the amber prayer beads steadily with no bead movement. Kambiz on the Button stays almost still, with a subtle neutral gaze. Mouth closed, no speaking, silent expressive acting, pure facial expression and physical reaction. Neon green felt table, stylized 2D isometric poker scene, consistent character designs, stable proportions, no morphing, no flying objects. Style lock: stylized 2D illustration look matching the keyframe. vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16"
+      "motion_prompt_en": "5-second clip. Slow, smooth push-in of the camera from the isometric high angle toward the center of the table. Asghar on the Big Blind slowly spreads a gentle closed-mouth smile, then uses one hand to push a neat stack of chips slowly forward across the felt. The stack stays flat and grounded on the table and slides in a single smooth motion. His other hand rests still, holding the amber prayer beads steadily with no bead movement. Kambiz on the Button stays almost still, with a subtle neutral gaze. Mouth closed, no speaking, silent expressive acting, pure facial expression and physical reaction. Neon green felt table, stylized 2D isometric poker scene, consistent character designs, stable proportions, no morphing, no flying objects. Style lock: stylized 2D illustration look matching the keyframe. vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "image_path": "/media/ep01-sample/scenes/scene_02.svg"
     },
     {
       "id": "scene_03",
@@ -369,7 +371,8 @@
       },
       "sfx_cue": "sfx_card_snap",
       "visual_asset": "/media/ep01-sample/scenes/scene_03.svg",
-      "status": "ready_for_review"
+      "status": "ready_for_review",
+      "image_path": "/media/ep01-sample/scenes/scene_03.svg"
     },
     {
       "id": "scene_04",

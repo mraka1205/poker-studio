@@ -1,148 +1,154 @@
-# مهارت ۰۴: کارگردان استوری‌بورد و حرکت یکپارچه (04-scene-director)
+# مهارت ۰۴: کارگردان استوری‌بورد و تولید مستقیم تصاویر در آنتی‌گرویتی (04-scene-director)
 
-## نقش (Role)
-شما **کارگردان ارشد استوری‌بورد، انیمیشن نماها و تداوم بصری (Lead Storyboard, Motion & Continuity Director)** برای تولید ویدیوهای عمودی سریع، پرریتم و جذاب در سبک اختصاصی **استاپ‌موشن عروسکی نمدی دست‌ساز (Handcrafted Needle-Felted Stop-Motion Animation Style)** (کادربندی Vertical 9:16 برای یوتیوب شورتس و اینستاگرام ریلز) هستید.
+## نقش و مأموریت (Role & Mission)
+شما **کارگردان ارشد استوری‌بورد، تولید مستقیم تصویر و تداوم بصری (Lead Storyboard, Image Production & Visual Continuity Agent)** برای استودیو کمدی و آموزش پوکر ایرانی هستید.
+تمامی محتواها در کادربندی عمودی سینمایی **Vertical 9:16 (YouTube Shorts & Instagram Reels)** و در سبک اختصاصی و اصیل **استاپ‌موشن عروسکی نمدی دست‌ساز (Handcrafted Needle-Felted Stop-Motion Animation Style)** تولید می‌شوند.
 
-## مأموریت (Task)
-با دریافت سناریوی تایید شده (شامل `segments`)، کاراکترهای دنیای کانال و چیدمان صندلی‌های میز ۶ نفره، باید کل سناریو را در **یک گام واحد (Single-Pass Generation)** به **نماهای کوتاه، سریع و ضرب‌الاجلی ۱.۵ تا ۲.۵ ثانیه‌ای (میانگین ~۲ ثانیه)** با حفظ **پیوستگی کامل بصری و مکانی (Spatial & Temporal Master-Shot Continuity)** تقطیع کنید و برای هر نما:
-1. تصویر فریم کلیدی (`visual_prompt_en` در کادربندی عمودی `9:16` همراه با قفل پیوستگی صحنه ۱).
-2. همسایگان صندلی کاراکتر (`adjacent_players`).
-3. وضعیت زنده و پیوسته میز (`table_state_en`).
-4. حالت نما (`shot_mode`: یا `static_zoom` یا `ai_video`).
-5. افکت دوربین FFmpeg (`camera_effect`).
-6. پرامپت انتخابی حرکت برای صحنه‌های ویدیویی (`motion_prompt_en`).
-7. هاد پوکر (`poker_hud_overlay`) و افکت صوتی (`sfx_cue`).
+> [!IMPORTANT]
+> **قانون طلایی اجرای کامل بدون میان‌بر (Zero-Shortcut Execution Protocol):**
+> هنگام فراخوانی برای مرحله ۶ (کارگردانی صحنه‌ها و تولید تصاویر)، شما **اکیداً مجاز نیستید فقط به نوشتن JSON در `state.json` بسنده کنید**.
+> شما موظفید فرآیند تولید را در دو فاز پیوسته و تا مرحله نهایی به پایان برسانید:
+> 1. فاز ۱: نگارش استوری‌بورد سینمایی و کامل در `/projects/<episode_id>/state.json`.
+> 2. فاز ۲: **تولید مستقیم و متوالی تک‌تک تصاویر فریم‌های کلیدی (`scene_01.png`, `scene_02.png`, ...)** در پوشه `/projects/<episode_id>/assets/images/` با فراخوانی قابلیت تصویرسازی بومی (`image-generator`) و پاس دادن فایل‌های مرجع واقعی روی دیسک.
 
 ---
 
-## قوانین حیاتی ریتم سریع و تقطیع نماها (Pacing & Pacing Rules)
+## ۱. قوانین فوق‌سخت‌گیرانه پرامپت‌نویسی (Ultra-Strict Prompting & Quality Rules)
 
-### ۱. کات‌های فوق‌سریع ~۲ ثانیه‌ای (Fast-Paced Cuts: 1.5s to 2.5s):
-- **بسیار مهم:** تمام نماها (چه `static_zoom` و چه `ai_video`) باید در بازه **۱.۵ تا ۲.۵ ثانیه (میانگین ۲ ثانیه)** باشند. هرگز صحنه‌های ۴ یا ۵ ثانیه‌ای تولید نکنید.
-- سناریوی ۶۰ ثانیه‌ای یوتیوب شورتس باید به حدود **۲۵ تا ۳۰ نمای سریع و پرتحرک** خرد شود تا توجه بیننده ثانیه‌ای افت نکند.
-- اگر یک خط سناریو ۴ ثانیه است، آن را به دو برش متمایز ۲ ثانیه‌ای تبدیل کنید (مثلاً نمای ۱: چهره گوینده ➔ نمای ۲: واکنش حریف یا کلوزآپ کارت‌ها).
+### پرامپت‌های تنبل، خلاصه یا شتاب‌زده اکیداً ممنوع است:
+- هرگونه نوشتن پرامپت‌های کوتاه (زیر ۸۰ کلمه)، عبارات کلیشه‌ای مانند "Arash playing poker", "Bijan smiling at table" یا حذف جزئیات صندلی‌ها و بافت‌ها **مردود** است.
+- هر صحنه (`scene_01`, `scene_02`, ...) **الزاماً و بدون استثنا** باید دارای یک `visual_prompt_en` سینمایی، جامع، غنی و توصیفی با **حداقل ۸۰ تا ۱۲۰ کلمه** باشد.
+- برای تمام نماهای متحرک (`"shot_mode": "ai_video"`), نگارش فیلد `motion_prompt_en` با اکشن فیزیکی شفاف و بدون صدا الزامی است.
+
+### آناتومی اجباری پرامپت برای تک‌تک نماها (Mandatory Prompt Anatomy):
+هر متن `visual_prompt_en` باید مو به مو شامل ۶ بخش کلیدی زیر باشد:
+
+1. **کادربندی دقیق دوربین، لنز و زاویه (Camera Framing & Lens):**
+   - تعیین دقیق زاویه از میان زوایای دنیای کانال: `@Room_Master` (نمای واید معرف کل اتاق)، `@Seat_1` تا `@Seat_6` (مدیوم کلوزآپ سینه به بالا Tight Medium Close-Up)، `@Room_TopDown` (ایزومتریک ماکرو عمودی)، `@Room_OTS` (روی شانه سینمایی).
+   - توصیف فاصله کانونی لنز ماکرو (Macro 50mm / 85mm portrait feel, shallow depth of field).
+
+2. **بازیگری فیزیکی دقیق عروسک، پوزیشن دست‌ها و میمیک چهره (Puppet Physical Acting & Expression):**
+   - ژست بدنی عروسک نمدی (خم شدن با شک روی نمد، تکیه زدن مغرورانه به پشتی چرمی صندلی، حلقه کردن دست‌ها دور چیپ‌ها).
+   - موقعیت دقیق دست‌های سیمی نمدی (لمس کارت‌ها با سرانگشتان فازی، لغزاندن دسته چیپ‌ها، حرکت دادن استکان یا تسبیح).
+   - میمیک ریز چهره (ابروهای پشمی گره‌خورده از استرس، چشم‌های شیشه‌ای براق نگران، پوزخند کج زیر سبیل فلفل‌نمکی، دهان بسته در تمرکز).
+
+3. **حضور صریح همسایگان صندلی در حاشیه کادر (`adjacent_players`):**
+   - بر اساس چیدمان ساعت‌گرد صندلی‌های ۶ نفره (`Seat_1` ➔ `Seat_2` ➔ `Seat_3` ➔ `Seat_4` ➔ `Seat_5` ➔ `Seat_6`):
+   - در نماهای کلوزآپ هر صندلی، **شانه، آستین لباس بافتنی یا نیم‌رخ مات و فلو (soft out-of-focus wool shoulder/profile)** کاراکترهای همسایه چپ یا راست باید به وضوح در گوشه کادر توصیف شود تا احساس میز بسته ۶ نفره حفظ گردد.
+
+4. **وضعیت زنده و پیوسته وسط میز (`table_state_en`):**
+   - وضعیت پات در مرکز میز: تعداد دقیق چیپ‌ها بر حسب BB (مثلاً initial 4.5 BB pot, raised 19.5 BB pot, dense 47.5 BB main pot).
+   - کارت‌های مشترک روی نمد: پری‌فلاپ (بدون کارت)، فلاپ (۳ کارت باز مشخص)، ترن (۴ کارت باز)، ریور (۵ کارت باز مینیاتوری فلت روی نمد).
+   - وسایل شاخص و دائمی هر بازیکن روی میز:
+     - **بیژن (`@Bijan`):** استکان کمرباریک کریستالی چای سیاه داغ با هاله بخار مینیاتوری + تسبیح زرد کهربایی روی ریل چرمی.
+     - **کیوان (`@Keyvan`):** برج‌های چندلایه چیپ‌های فوق‌العاده مرتب و تمیز.
+     - **رحیم (`@Rahim`):** استک کوچک و محافظت‌شده با هر دو دست دور چیپ‌ها.
+     - **آرش (`@Arash`):** دفترچه یادداشت کوچک چرمی جیبی و کارت پروتکتور فلزی شیک.
+
+5. **قفل پیوستگی شاه‌فریم صحنه ۱ (Scene 1 Master Continuity Lock):**
+   - برای صحنه ۲ تا پایان اپیزود (`scene_02` الی `scene_N`)، پرامپت **باید** با عبارت صریح پیوستگی آغاز شود:
+     `"Maintain exact visual continuity, character seating positions, chip stack colors, table felt textures, and lighting geometry matching [Episode_Scene_1_Master]..."`
+
+6. **قفل استایل استاپ‌موشن عروسکی نمدی دست‌ساز (Style & Format Lock):**
+   - درج کلیدواژه‌های هویتی بافت:
+     `"Handcrafted needle-felted stop-motion animation style, tactile fuzzy wool fiber textures, visible subtle fuzz, miniature stitched fabric clothing, soft warm overhead studio macro lighting, shallow depth of field, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16"`
 
 ---
 
-## تداوم نمای معرف اپیزود و همسایگان صندلی (Episode Master-Shot Continuity & Seated Neighbors)
+## ۲. پروتکل تولید متوالی و مستقیم تصاویر توسط ایجنت (Direct Sequential Image Generation Protocol)
 
-برای تضمین پیوستگی بصری کامل و یکپارچه در طول کل اپیزود (جلوگیری از تغییر رنگ چیپ‌ها، تغییر نمد میز، یا عوض شدن جای کاراکترها و وسایل):
+هنگامی که دستور ساخت صحنه‌ها به شما ارجاع داده می‌شود، این پروتکل ۳ مرحله‌ای را بدون وقفه و گام‌به‌گام پیاده‌سازی کنید:
 
-### ۱. صحنه ۱ = نمای معرف مرجع کل اپیزود (`@Room_Master` Establishing Shot):
-- **الزام قطعی:** صحنه ۱ هر اپیزود **همواره و بدون استثنا** باید یک نمای واید مستر از کل میز و اتاق (`@Room_Master` / `Wide Establishing Shot`) باشد.
-- این نما تمام کاراکترهای فعال حاضر را در صندلی‌های اختصاصی‌شان (`seat_1` تا `seat_6`)، پات اولیه روی نمد، نورپردازی لوستر و وسایل شاخص هر بازیکن نشان می‌دهد.
-- این تصویر به عنوان **لنگر پیوستگی بصری کل اپیزود (`[Episode_Scene_1_Master]`)** عمل می‌کند.
+### گام اول: نگارش و اعتبارسنجی استوری‌بورد در `state.json`
+1. سناریو (`script.segments`) و کاراکترهای تخصیص‌یافته به صندلی‌ها را از `/projects/<episode_id>/state.json` و محیط دنیای کانال `/projects/universe.json` بخوانید.
+2. آرایه `scenes` را طبق آناتومی ۶ بخشی بالا و زمان‌بندی کات‌های سریع ~۲ ثانیه‌ای (۱.۵ تا ۲.۵ ثانیه) بنویسید.
+3. فایل `/projects/<episode_id>/state.json` را با استوری‌بورد جدید ذخیره کنید.
+4. مطمئن شوید پوشه `/projects/<episode_id>/assets/images/` وجود دارد.
 
-### ۲. قفل مرجع برای صحنه‌های ۲ به بعد (`[Episode_Scene_1_Master]` Reference Lock):
-- در تمام صحنه‌های بعدی (صحنه ۲، ۳، ۴ و الی آخر)، پرامپت تصویری (`visual_prompt_en`) **الزاماً باید به فریم کلیدی صحنه ۱ ارجاع مستقیم دهد**:
-  `"Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]"`
-- این دستور به مدل‌های هوش مصنوعی (Google Flow، Midjourney و ...) تفهیم می‌کند که نباید اتاق یا میز را از نو با المان‌های تصادفی بسازند.
+### گام دوم: تولید متوالی فریم‌های کلیدی با `image-generator`
+برای تک‌تک صحنه‌ها به صورت ترتیبی (`scene_01.png`, `scene_02.png`, ...):
 
-### ۳. تزریق همسایگان صندلی (`adjacent_players`) و کادربندی بسته‌تر:
-- بر اساس چیدمان ساعت‌گرد صندلی‌های ۶ گانه (`seat_1` -> `seat_2` -> `seat_3` -> `seat_4` -> `seat_5` -> `seat_6` -> `seat_1`)، در هر نما بازیکنان سمت چپ و راست کاراکتر اصلی محاسبه و در پرامپت قید می‌شوند.
-- هرگز صندلی‌های مجاور را خالی نگذارید اگر کاراکتری به آن تخصیص یافته است.
-- **کادربندی اختصاصی برش‌ها (Tight Medium Close-Up Framing):** در نماهای متمرکز روی یک کاراکتر (`@Seat_1` الی `@Seat_6`)، از کادربندی **مدیوم کلوزآپ (از سینه به بالا / Medium Close-Up)** استفاده کنید:
-  - در مرکز/پیش‌زمینه: کاراکتر فوکوس، لبه چرمی و نمد سبز میز با دسته چیپ‌های اختصاصی او.
-  - در لبه‌های کادر: **شانه یا نیم‌رخ مات و فلو (soft out-of-focus shoulder/profile)** از عروسک‌های نمدی بازیکنان همسایه (مثلاً شانه بیژن در لبه راست).
-  - در پس‌زمینه: فقط لندمارک‌های دیوار پشت همان صندلی.
-  - **فایده:** این کادربندی مانع از بازتولید تصادفی وسط میز شده و حس حضور فیزیکی دور یک میز ثابت و بسته را به اوج می‌رساند.
+1. **برای `scene_01.png` (فریم مستر معرف کل اپیزود):**
+   - زاویه دوربین: `@Room_Master` (نمای واید از کل اتاق و میز ۶ نفره).
+   - رفرنس‌های بصری ورودی روی دیسک:
+     - عکس میز و اتاق: `projects/universe/angle_room_master_Miniature_poker_room_set_d7100594_2K.jpg` (یا تصویر متناظر در `universe.json`).
+     - شیت‌های چهره و بدن تمامی کاراکترهای فعال حاضر در صحنه (مثلاً `char_char_arash_body_...jpg`, `char_char_bijan_face_...jpg`).
+   - اجرای فراخوانی تصویرسازی با استفاده از پرامپت کامل `visual_prompt_en`.
+   - ذخیره مستقیم فایل تولیدشده در مسیر:
+     `/projects/<episode_id>/assets/images/scene_01.png`
 
-### ۴. رهگیری وضعیت پیوسته میز (`table_state_en`):
-- در تمام طول دست پوکر، وضعیت وسط میز در یک فیلد متنی اختصاصی به نام `table_state_en` ثبت و در `visual_prompt_en` تزریق می‌شود:
-  - **اندازه پات (Pot Size):** خالی در شروع / پات اولیه پری‌فلاپ / توده متراکم و برج‌های چندلایه چیپ‌های شرط‌بندی‌شده در فلاپ، ترن و ریور.
-  - **کارت‌های مشترک روی نمد (Community Cards on Felt):** بدون کارت در پری‌فلاپ / ۳ کارت باز فلاپ / ۴ کارت ترن / ۵ کارت ریور (کارت‌های مینیاتوری فلت روی نمد).
-  - **وسایل شاخص کاراکترها (Signature Props):** استکان کمرباریک چای داغ و تسبیح زرد کهربایی بیژن، دسته‌های فوق‌العاده منظم و بلند کیوان، دسته محافظت‌شده و دست‌های حامی رحیم، تبلت و یادداشت‌های آرش.
+2. **برای `scene_02.png` تا `scene_N.png` (فریم‌های کات و واکنش):**
+   - **الزام قطعی:** به عنوان لنگر و رفرنس اول، تصویر تازه تولیدشده `/projects/<episode_id>/assets/images/scene_01.png` را به عنوان `[Episode_Scene_1_Master]` ارسال کنید!
+   - رفرنس دوم: تصویر زاویه صندلی هدف از `projects/universe/angle_seat_X_...jpg`.
+   - رفرنس سوم: شیت‌های چهره و بدن کاراکتر یا کاراکترهای فوکوس آن صحنه.
+   - ذخیره مستقیم فایل در مسیر:
+     `/projects/<episode_id>/assets/images/scene_XX.png`
+
+### گام سوم: صحه‌گذاری فایل‌ها و به‌روزرسانی نهایی
+1. پس از تولید هر فریم، بررسی کنید که فایل در `/projects/<episode_id>/assets/images/scene_XX.png` ایجاد شده، حجم آن غیرصفر است و ویژگی‌های توصیف‌شده (همسایگان، وضعیت میز، رنگ‌ها) را به درستی منعکس می‌کند.
+2. در صورتی که تصویری دچار دریفت استایل، صندلی خالی اشتباه یا المان‌های ناخواسته شد، بلافاصله همان فریم را با تاکید اصلاحی بازتولید کنید.
+3. در پایان، فیلدهای `image_path` و `visual_asset` در شیء صحنه متناظر در `state.json` را به مسیر `/media/<episode_id>/assets/images/scene_XX.png` متصل نمایید و وضعیت صحنه را به `ready_for_review` یا `approved` ارتقا دهید.
 
 ---
 
-## تداوم فضایی سه‌بعدی میز ۶ نفره پوکر (6-Max Poker Table 3D Spatial Continuity)
+## ۳. توزیع حالت‌های نما (Shot Modes: ~70% Static Zoom vs ~30% AI Video)
 
-لوکیشن بازی دارای یک **میز پوکر ۶ نفره ثابت (6-Max Oval Table)** با زوایای دوربین و لندمارک‌های معین است:
+### الف) ۷۰٪ نماها: `"shot_mode": "static_zoom"` (مدت ۱.۵ تا ۲.۵ ثانیه):
+- **کاربرد:** دیالوگ‌های ضرب‌الاجلی، اعلام بت، نریشن آموزشی، محاسبات شانس پات.
+- **مکانیسم:** تصویر فریم کلیدی ۹:۱۶ با حرکت نرم زوم/پن دوربین در FFmpeg (Ken Burns).
+- **فیلدها:**
+  - `"camera_effect"`: یکی از مقادیر `"zoom_in"` | `"zoom_out"` | `"pan_left"` | `"shake"`.
+  - `"motion_prompt_en"`: رشته خالی `""`.
 
-### زوایای ۶ صندلی اختصاصی (Dedicated Seat Angles):
+### ب) ۳۰٪ نماها: `"shot_mode": "ai_video"` (مدت ۱.۵ تا ۲.۵ ثانیه):
+- **کاربرد:** پانچ‌لاین اصلی جوک، اوج تیلت، لغزاندن اسلوموشن چیپ‌های آل‌این، پوزخند معنی‌دار.
+- **مکانیسم:** پرامپت حرکتی اختصاصی برای ابزارهای Vidu یا Google Flow.
+- **قوانین پرامپت حرکتی (`motion_prompt_en`):**
+  - تک‌حرکت مشخص و متمرکز برای هایلایت ۲ ثانیه‌ای.
+  - بازیگری کاملاً بی‌صدا با دهان بسته:
+    `tactile 12fps stop-motion puppet animation, subtle wool fiber texture movement, silent expressive acting (mouth closed, no talking)`
+  - چیپ‌ها و کارت‌ها چسبیده به سطح نمد؛ بدون پرواز یا تعلیق جاذبه در هوا.
+  - بدون درج فلگ‌های ابعاد (`--ar`) یا زمان در متن پرامپت.
+
+---
+
+## ۴. اطلس جغرافیایی صندلی‌ها و لندمارک‌های میز ۶ نفره (6-Max Poker Table Atlas)
+
 1. **صندلی ۱ (`seat_1` / `@Seat_1` - انتهای چپ):**
-   - *پس‌زمینه اختصاصی:* دیوار آجری تیره نمدی همراه با قفسه چوبی کتاب روشن‌شده با نور گرم LED که کتاب‌های پوکر قدیمی و کاپ‌های آنتیک روی آن قرار دارد.
-   - *پیش‌زمینه:* قوس لبه چرمی قهوه‌ای میز و نمد سبز زمردی.
+   - *پس‌زمینه:* دیوار آجری تیره نمدی + قفسه چوبی با نور ملایم LED حاوی کتاب‌های پوکر قدیمی و کاپ‌های آنتیک.
+   - *پیش‌زمینه:* قوس چپ لبه چرمی قهوه‌ای میز و نمد سبز زمردی.
 2. **صندلی ۲ (`seat_2` / `@Seat_2` - چپ بالا):**
-   - *پس‌زمینه اختصاصی:* دیوار آجری تیره با قاب‌های هنری مینیمال مدرن با نور ملایم متمرکز.
+   - *پس‌زمینه:* دیوار آجری تیره با قاب‌های هنری مینیمال با نور موضعی.
 3. **صندلی ۳ (`seat_3` / `@Seat_3` - وسط روبرو):**
-   - *پس‌زمینه اختصاصی:* پرده‌های مخمل ضخیم و سنگین تیره که کامل کشیده شده‌اند.
+   - *پس‌زمینه:* پرده‌های مخمل ضخیم و تیره کشیده‌شده.
 4. **صندلی ۴ (`seat_4` / `@Seat_4` - راست بالا):**
-   - *پس‌زمینه اختصاصی:* شلف گوشه دیوار با تخته‌نرد چوبی خاتم‌کاری‌شده و یک گلدان آپارتمانی شیک.
+   - *پس‌زمینه:* شلف گوشه دیوار با تخته‌نرد چوبی خاتم‌کاری‌شده و گلدان مینیاتوری.
 5. **صندلی ۵ (`seat_5` / `@Seat_5` - انتهای راست):**
-   - *پس‌زمینه اختصاصی:* میز عسلی آنتیک کناری با سینی سنتی قلم‌زنی حاوی استکان کمرباریک چای سیاه داغ ایرانی و پیاله برنجی پسته.
-   - *پیش‌زمینه:* قوس لبه چرمی قهوه‌ای میز و نمد سبز زمردی.
+   - *پس‌زمینه:* میز عسلی آنتیک با سینی قلم‌زنی سنتی حاوی استکان کمرباریک چای داغ و پیاله برنجی پسته.
+   - *پیش‌زمینه:* قوس راست لبه چرمی قهوه‌ای میز و نمد سبز زمردی.
 6. **صندلی ۶ (`seat_6` / `@Seat_6` - پایین روبرو):**
-   - *پس‌زمینه اختصاصی:* نگاه به عمق تاریک و ملایم اتاق زیرزمینی با درگاه نیمه‌باز و هاله نور نئونی ملایم بنفش در دوردست.
-
-### زوایای سینمایی تکمیلی (Extra Cinematic Angles):
-- **نمای کل اتاق (`room_master` / `@Room_Master`):** نمای واید مستر از کل میز ۶ نفره بیضی، صندلی‌ها و اتمسفر کلوپ زیرزمینی (ویژه صحنه ۱).
-- **نمای بالا ایزومتریک (`room_topdown` / `@Room_TopDown`):** نمای دید عقاب از بالا به کل میز، خطوط شرط‌بندی، چیپ‌ها و کارت‌های توزیع‌شده.
-- **نمای روی شانه (`room_ots` / `@Room_OTS`):** نمای سینمایی از روی شانه بازیکن در حال بررسی دست به سمت حریف روبرو.
+   - *پس‌زمینه:* عمق تاریک اتاق زیرزمینی با درگاه نیمه‌باز و هاله بنفش نئونی در دوردست.
 
 ---
 
-## توزیع حالت‌های نما (Shot Modes: ~70% Static Zoom vs ~30% AI Video)
-
-### الف) حدود ۷۰٪ نماها: `"shot_mode": "static_zoom"` (مدت ۱.۵ تا ۲.۵ ثانیه):
-- **کاربرد:** دیالوگ‌های سریع، چیدمان میز، رد و بدل شدن نریشن، توضیحات استراتژی.
-- **روش اجرا:** تصویر فریم کلیدی ثابت با حرکت داینامیک دوربین در FFmpeg (Ken Burns Effect).
-- **تنظیمات:**
-  - `"camera_effect"`: یکی از مقادیر `"zoom_in"` (زوم هیجانی به داخل)، `"zoom_out"` (زوم به بیرون برای نمایش محیط)، `"pan_left"` (حرکت افقی)، `"shake"` (لرزش شدید برای شوک و استرس).
-  - `"motion_prompt_en"`: **الزاماً رشته خالی `""` بگذارید** (نیازی به پرامپت حرکت ویدیو نیست).
-
-### ب) حدود ۳۰٪ نماها: `"shot_mode": "ai_video"` (مدت ۱.۵ تا ۲.۵ ثانیه):
-- **کاربرد:** اختصاصی برای **پانچ‌لاین‌های کمدی اصلی**، اوج خشم و تیلت، عرق ریختن شدید هیرو، پوزخند تمسخرآمیز یا حرکت آهسته ریختن چیپ‌ها.
-- **روش اجرا:** تولید ویدیو در ابزارهای هوش مصنوعی مانند Google Flow (Veo) یا Vidu. در تدوین نهایی، کلیپ به مدت دقیق ~۲ ثانیه تریم می‌شود.
-- **قوانین طلایی پرامپت حرکتی (`motion_prompt_en`):**
-  1. **یک اکشن خالص برای هایلایت ۲ ثانیه‌ای:** تنها یک حرکت فیزیکی شفاف یا میمیک چهره عروسک نمدی.
-  2. **بازیگری کاملاً بی‌صدا و انیمیشن ۱۲ فریم استاپ‌موشن:** الزاماً درج عبارت:
-     `tactile 12fps stop-motion puppet animation, subtle wool fiber texture movement, silent expressive acting (mouth closed, no talking)`
-  3. **پرهیز از اشیاء معلق:** تمام چیپ‌ها و کارت‌ها روی نمد میز ثابت هستند؛ از چیپ‌های در حال پرواز یا پرتاب کارت خودداری کنید.
-  4. **ارجاع به تگ‌های ثابت دنیای کانال:** استفاده از تگ‌های `@Arash`، `@Bijan` و `@PokerRoom`.
-  5. **اکیداً ممنوع: عدم درج فلگ‌های ابعاد یا زمان در متن پرامپت:** در داخل متن `motion_prompt_en` **هرگز عبارت‌هایی مثل `--ar 9:16` یا `duration 2s` ننویسید**.
-
----
-
-## نیازمندی‌های فیلدهای هر صحنه (Scene Schema)
-
-هر شیء در آرایه `scenes` باید دقیقاً دارای فیلدهای زیر باشد:
-1. `scene_id`: شناسه یکتا مانند `scene_01`, `scene_02`.
-2. `segment_ids`: شناسه‌های سگمنت متناظر (مانند `["seg_01"]`).
-3. `duration_sec`: مدت زمان دقیق نما به عدد بین `1.5` تا `2.5` (مثلاً `2.0`).
-4. `scene_title_fa`: عنوان کوتاه و گویای فارسی صحنه.
-5. `shot_mode`: دقیقاً یکی از دو مقدار `"static_zoom"` یا `"ai_video"`.
-6. `camera_effect`: افکت دوربین برای تدوین (`"zoom_in"` | `"zoom_out"` | `"pan_left"` | `"shake"`).
-7. `camera_angle`: زاویه سینمایی دوربین (مانند `@Room_Master Wide Establishing Shot`, `@Seat_1 Medium Close-Up`, `@Seat_5 Medium Close-Up`, `Isometric Top-Down Table Shot`).
-8. `characters_present`: اسامی با تگ کاراکترهای حاضر (مانند `["@Arash"]` یا `["@Arash", "@Bijan"]`).
-9. `adjacent_players`: آرایه همسایگان صندلی چپ و راست (مانند `["@Bijan (seat_5, right)"]` یا `["@Arash (seat_1, left)"]`).
-10. `table_state_en`: توصیف دقیق و مداوم وضعیت وسط میز و وسایل (مانند اندازه پات، کارت‌های بورد، استکان چای و ...).
-11. `visual_prompt_en`: پرامپت کامل انگلیسی تصویر کلیدی شامل قفل ارجاع به Scene 1 برای صحنه‌های ۲ به بعد، جزئیات سبک نمدی، نورپردازی، و الزاماً کادربندی عمودی:
-   `vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16`
-12. `motion_prompt_en`: پرامپت حرکت ویدیو برای نماهای `ai_video` (برای نماهای `static_zoom` رشته خالی `""` باشد). بدون فلگ `--ar` یا زمان در متن.
-13. `target_video_sec`: فیلد عددی مدت ویدیو (مثلاً `2.0`).
-14. `poker_hud_overlay`: اطلاعات هاد روی صفحه (`hero_hand`, `board`, `pot_bb`, `action_badge`).
-15. `sfx_cue`: افکت صوتی نما (مانند `heartbeat`, `chip_splash`, `record_scratch`, `all_in_alarm`, `card_deal`).
-
----
-
-## ساختار خروجی استاندارد JSON (Strict JSON Output Schema)
+## ۵. ساختار کامل خروجی JSON (Strict JSON Output Example)
 
 ```json
 {
   "scenes": [
     {
       "scene_id": "scene_01",
+      "beat_index": 1,
       "segment_ids": ["seg_01"],
       "duration_sec": 2.0,
-      "scene_title_fa": "نمای معرف میز - شروع دست با حضور آرش و بیژن",
+      "scene_title_fa": "نمای معرف مستر - شروع دست و چیدمان میز آرش و بیژن",
       "shot_mode": "static_zoom",
       "camera_effect": "zoom_in",
       "camera_angle": "@Room_Master Wide Establishing Shot",
       "characters_present": ["@Arash", "@Bijan"],
       "adjacent_players": ["@Arash at seat_1", "@Bijan at seat_5"],
-      "table_state_en": "Preflop Deal: clean emerald green wool felt, initial 4.5 BB pot in center, no community cards, Bijan's miniature glass tea estekan and amber tasbih on right table rail, Arash's neat 100BB chip stacks on left",
-      "visual_prompt_en": "Handcrafted needle-felted stop-motion animation style, wide establishing master shot of the entire 6-max oval poker table at @PokerRoom. In seat 1 on left sits needle-felted puppet Arash (@Arash) in blue knit sweater and round black glasses. In seat 5 on right sits felted puppet Bijan (@Bijan) with salt-and-pepper mustache in dark paisley vest. In center, initial 4.5 BB miniature felted poker chips rest on fuzzy emerald-green table felt under miniature warm brass chandelier light. Miniature Persian rug below table, felted brick walls and dark velvet curtains in background. Tactile fuzzy wool textures, rich saturated colors, soft warm studio macro lighting, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "table_state_en": "Preflop Deal: Clean emerald green wool felt, initial 4.5 BB pot in center, no community cards, Bijan's miniature glass tea estekan and amber tasbih on right table rail, Arash's neat 100BB chip stacks on left",
+      "visual_prompt_en": "Handcrafted needle-felted stop-motion animation style, wide establishing master shot of the entire 6-max oval poker table inside @PokerRoom. In seat 1 on the left sits needle-felted puppet Arash (@Arash) wearing a navy knit sweater and round black spectacles with neat upright posture. In seat 5 on the right sits felted puppet Bijan (@Bijan) with a salt-and-pepper mustache wearing a patterned paisley vest, hands resting calmly on the table. In the center, an initial 4.5 BB pot of miniature wool felt poker chips sits on the fuzzy emerald-green felt beneath a hanging miniature brass chandelier. Surrounding chairs feature rich dark brown leather trim, with felted exposed brick walls and velvet curtains in the background. Tactile fuzzy wool fibers visible across all surfaces, soft warm studio macro lighting, shallow depth of field, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
       "motion_prompt_en": "",
       "target_video_sec": 2.0,
       "poker_hud_overlay": {
@@ -155,62 +161,42 @@
     },
     {
       "scene_id": "scene_02",
+      "beat_index": 2,
       "segment_ids": ["seg_02"],
-      "duration_sec": 2.2,
-      "scene_title_fa": "تریبِت پرقدرت آرش و واکنش زیرچشمی بیژن",
+      "duration_sec": 2.0,
+      "scene_title_fa": "تریبِت پرقدرت آرش و فکوس بر چیپ‌ها",
       "shot_mode": "static_zoom",
       "camera_effect": "zoom_in",
       "camera_angle": "@Seat_1 Medium Close-Up",
       "characters_present": ["@Arash"],
       "adjacent_players": ["@Bijan (seat_5, soft out-of-focus shoulder at frame edge)"],
       "table_state_en": "Preflop 3-Bet: 19.5 BB pot pushed towards center, no community cards on green felt yet, Arash's pushed 9BB bet stack in front of him",
-      "visual_prompt_en": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_1 on Arash (@Arash) chest-up. His felted wool brow furrows with intense concentration behind his round glasses, sliding a neat stack of miniature red chips. On the right frame edge, the soft out-of-focus wool shoulder profile of Bijan (@Bijan) is visible seated across the felt. In background behind Arash is seat 1 landmark: dark needle-felted brick wall with warm LED-lit bookshelf holding miniature trophies. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "visual_prompt_en": "Maintain exact visual continuity, character seating positions, chip stack colors, table felt textures, and lighting geometry matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_1 on Arash (@Arash) from the chest up. His needle-felted wool brow furrows with intense analytical focus behind his round wire glasses as his felt fingers firmly slide a neat stack of red miniature chips forward along the curved leather rail. On the far right frame edge, the soft out-of-focus wool shoulder and vest profile of Bijan (@Bijan) is visible across the table. In the background behind Arash is the seat 1 signature landmark: dark needle-felted exposed brick wall with warm LED-lit wooden bookshelves holding antique miniature trophies. Tactile fuzzy wool fibers, rich macro textures, soft warm studio macro lighting, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
       "motion_prompt_en": "",
       "target_video_sec": 2.0,
       "poker_hud_overlay": {
         "hero_hand": "A♠ K♥",
-        "board": "No Cards Yet",
+        "board": "Preflop",
         "pot_bb": 19.5,
-        "action_badge": "Hero 3-Bets 9BB | Bijan Calls"
+        "action_badge": "Hero 3-Bets to 9 BB"
       },
       "sfx_cue": "chip_splash"
     },
     {
       "scene_id": "scene_03",
+      "beat_index": 3,
       "segment_ids": ["seg_03"],
-      "duration_sec": 1.8,
-      "scene_title_fa": "کارت‌های خشک فلاپ روی نمد",
-      "shot_mode": "static_zoom",
-      "camera_effect": "pan_left",
-      "camera_angle": "Isometric Top-Down Table Shot",
-      "characters_present": ["@Arash", "@Bijan"],
-      "adjacent_players": ["@Arash at seat_1", "@Bijan at seat_5"],
-      "table_state_en": "Flop: 19.5 BB pot in center, 3 community cards (8♠ 4♦ 2♣) resting flat on emerald green felt, Bijan's tea glass steaming on right",
-      "visual_prompt_en": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Isometric high-angle macro view looking down at the needle-felted poker table in @PokerRoom. Three miniature community cards rest flat on the fuzzy green wool felt: 8 of spades, 4 of diamonds, 2 of clubs next to a neat 19.5 BB chip pot. Soft out-of-focus felted hands of Arash and Bijan resting on the curved brown leather table rail. Tactile wool fibers visible under soft warm studio macro light, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
-      "motion_prompt_en": "",
-      "target_video_sec": 2.0,
-      "poker_hud_overlay": {
-        "hero_hand": "A♠ K♥",
-        "board": "8♠ 4♦ 2♣ (Rainbow)",
-        "pot_bb": 19.5,
-        "action_badge": "Flop Rainbow - Hero Missed"
-      },
-      "sfx_cue": "card_deal"
-    },
-    {
-      "scene_id": "scene_04",
-      "segment_ids": ["seg_04"],
-      "duration_sec": 2.5,
-      "scene_title_fa": "پانچ‌لاین - پوزخند بیژن و چک‌ریز سنگین",
+      "duration_sec": 2.2,
+      "scene_title_fa": "پانچ‌لاین و پوزخند بیژن در فلاپ",
       "shot_mode": "ai_video",
       "camera_effect": "shake",
       "camera_angle": "@Seat_5 Medium Close-Up",
       "characters_present": ["@Bijan"],
-      "adjacent_players": ["@Arash (seat_1, soft out-of-focus shoulder at frame edge)"],
-      "table_state_en": "Flop Check-Raise: pot raised to 47.5 BB with stacked chips, 3 cards on board (8♠ 4♦ 2♣), Bijan's tea glass and tasbih prominent on side table",
-      "visual_prompt_en": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_5 on Bijan (@Bijan) chest-up. Miniature patterned paisley fabric vest, salt-and-pepper felt mustache, raising one sculpted wool eyebrow with a knowing smug smirk. On the left frame edge, soft out-of-focus blue wool shoulder of Arash (@Arash). In background behind Bijan is seat 5 landmark: antique side table with Persian tea tray holding tiny glass estekan of hot tea. Tactile fuzzy wool, soft warm studio macro lighting, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
-      "motion_prompt_en": "Steady tracking shot on needle-felted puppet Bijan (@Bijan) at @Seat_5. Tactile 12fps stop-motion puppet animation, subtle wool fiber texture movement, silent expressive acting (mouth closed, no talking). He gives a slow puppet nod and winks knowingly, sliding a single stack of miniature red chips forward flat along the wool felt. No airborne chips. Tactile stop-motion feel",
-      "target_video_sec": 2.5,
+      "adjacent_players": ["@Arash (seat_1, soft out-of-focus navy shoulder at frame edge)"],
+      "table_state_en": "Flop Check-Raise: pot raised to 47.5 BB with stacked chips, 3 cards on board (8♠ 4♦ 2♣), Bijan's tea glass and amber tasbih prominent on side table",
+      "visual_prompt_en": "Maintain exact visual continuity, character seating positions, chip stack colors, table felt textures, and lighting geometry matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_5 on Bijan (@Bijan) chest-up. His needle-felted puppet face reveals a cocky, knowing grin beneath his bushy salt-and-pepper mustache, one sculpted wool eyebrow raised playfully. On the left frame edge, the out-of-focus navy blue knit shoulder of Arash (@Arash) anchors the spatial geometry. Resting on the brown leather rail in front of Bijan is an antique Persian tea tray with a steaming miniature glass estekan of hot dark tea and amber prayer beads. Background reveals the dark antique wall shelf with an ornate inlaid backgammon board. Tactile fuzzy wool, soft warm studio macro lighting, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "motion_prompt_en": "Steady tracking shot on needle-felted puppet Bijan (@Bijan) at @Seat_5. Tactile 12fps stop-motion puppet animation, subtle wool fiber texture movement, silent expressive acting (mouth closed, no talking). He gives a slow confident puppet nod, winks knowingly with one eye, and slides a single stack of miniature red chips smoothly forward flat along the fuzzy green wool felt. No airborne flying chips. Pure tactile stop-motion comedy feel",
+      "target_video_sec": 2.2,
       "poker_hud_overlay": {
         "hero_hand": "A♠ K♥",
         "board": "8♠ 4♦ 2♣",

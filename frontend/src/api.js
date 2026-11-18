@@ -51,7 +51,6 @@ export async function uploadAsset(episodeId, targetType, file) {
     body: formData
   });
   if (!res.ok) {
-    // Fallback to legacy endpoint if needed
     const res2 = await fetch(`${API_BASE}/projects/${episodeId}/upload`, {
       method: 'POST',
       body: formData
@@ -110,7 +109,7 @@ export async function fetchAgentPrompt(episodeId, stage = 'script') {
     return {
       episode_id: episodeId,
       skill_file: '02-persian-script-writer.md',
-      stage_desc: 'نگارش سناریو کمدی با هوش مصنوعی',
+      stage_desc: 'نگارش سناریو کمدی در آنتی‌گرویتی',
       prompt: 'پرامپت در حال آماده‌سازی است...'
     };
   }
@@ -129,7 +128,7 @@ export async function fetchSkillDetail(filename) {
 }
 
 // ==========================================
-// AI STUDIO BRIDGE & OPENROUTER API
+// ANTIGRAVITY AGENT PROMPT BUILDER & STATE
 // ==========================================
 
 export async function buildAiStudioPrompt(episodeId, stage) {
@@ -139,7 +138,7 @@ export async function buildAiStudioPrompt(episodeId, stage) {
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error(err.detail || 'Failed to build AI Studio prompt');
+    throw new Error(err.detail || 'Failed to build stage prompt');
   }
   return res.json();
 }
@@ -157,74 +156,6 @@ export async function importAiStudioJson(episodeId, stage, jsonContent) {
   return res.json();
 }
 
-export async function runOpenRouterTask(episodeId, task, model = null, taskData = null) {
-  const res = await fetch(`${API_BASE}/projects/${episodeId}/run-openrouter/${task}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ model, task_data: taskData })
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.detail || 'Failed to execute OpenRouter task');
-  }
-  return res.json();
-}
-
-export async function fetchSettings() {
-  const res = await fetch(`${API_BASE}/settings`);
-  if (!res.ok) throw new Error('Failed to fetch settings');
-  return res.json();
-}
-
-export async function saveSettings(openrouterApiKey, openrouterModel, geminiApiKey = null, geminiModel = null) {
-  const payload = {};
-  if (openrouterApiKey !== undefined && openrouterApiKey !== null) payload.openrouter_api_key = openrouterApiKey;
-  if (openrouterModel !== undefined && openrouterModel !== null) payload.openrouter_model = openrouterModel;
-  if (geminiApiKey !== undefined && geminiApiKey !== null) payload.gemini_api_key = geminiApiKey;
-  if (geminiModel !== undefined && geminiModel !== null) payload.gemini_model = geminiModel;
-
-  const res = await fetch(`${API_BASE}/settings`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  });
-  if (!res.ok) throw new Error('Failed to save settings');
-  return res.json();
-}
-
-export async function fetchGeminiModels(key = null) {
-  const url = key ? `${API_BASE}/gemini/models?key=${encodeURIComponent(key)}` : `${API_BASE}/gemini/models`;
-  const res = await fetch(url);
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.detail || 'Failed to fetch Gemini models');
-  }
-  return res.json();
-}
-
-export async function fetchOpenRouterModels(key = null) {
-  const url = key ? `${API_BASE}/openrouter/models?key=${encodeURIComponent(key)}` : `${API_BASE}/openrouter/models`;
-  const res = await fetch(url);
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.detail || 'Failed to fetch OpenRouter models');
-  }
-  return res.json();
-}
-
-export async function runGeminiStage(episodeId, stage, model = null, temperature = 0.4) {
-  const res = await fetch(`${API_BASE}/projects/${episodeId}/run-gemini/${stage}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ model, temperature })
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.detail || 'Failed to run Gemini stage');
-  }
-  return res.json();
-}
-
 export async function uploadSceneVideo(episodeId, sceneId, file) {
   const formData = new FormData();
   formData.append('scene_id', sceneId);
@@ -236,19 +167,6 @@ export async function uploadSceneVideo(episodeId, sceneId, file) {
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.detail || 'Failed to upload scene video');
-  }
-  return res.json();
-}
-
-export async function rewriteScenePrompt(episodeId, sceneId, target, feedback, model = null) {
-  const res = await fetch(`${API_BASE}/projects/${episodeId}/scenes/${sceneId}/rewrite-prompt`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ target, feedback, model })
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.detail || 'Failed to rewrite prompt');
   }
   return res.json();
 }
@@ -311,19 +229,6 @@ export async function uploadUniverseAsset(assetType, file, characterId = null, a
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.detail || 'Failed to upload universe asset');
-  }
-  return res.json();
-}
-
-export async function generateCharacterPrompts(characterId, { concept_fa, name_fa, archetype, flow_tag, model } = {}) {
-  const res = await fetch(`${API_BASE}/universe/characters/${characterId}/generate-prompts`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ concept_fa, name_fa, archetype, flow_tag, model })
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.detail || 'Failed to generate character prompts');
   }
   return res.json();
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Film, Plus, Sparkles, BookOpen, Layers, Settings, ChevronDown } from 'lucide-react';
+import { Sparkles, BookOpen, Layers, ChevronDown, Plus } from 'lucide-react';
 
 export default function Header({
   projects,
@@ -7,13 +7,10 @@ export default function Header({
   onSelectEpisode,
   onOpenNewModal,
   onOpenSkillsModal,
-  onOpenSettingsModal,
   onOpenUniverseModal,
   currentTab,
   onSelectTab
 }) {
-  const currentProject = projects.find(p => p.episode_id === currentEpisodeId);
-
   return (
     <header className="sticky top-0 z-40 bg-[#0c111e]/90 backdrop-blur-md border-b border-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -27,10 +24,10 @@ export default function Header({
             <div className="flex items-center gap-2">
               <h1 className="text-lg font-bold text-white tracking-tight">استودیو کمدی و آموزش پوکر</h1>
               <span className="text-[11px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded-full">
-                معماری هیبرید AI + انسان
+                معماری بومی Antigravity
               </span>
             </div>
-            <p className="text-xs text-slate-400 font-medium">اتصال مستقیم به Google AI Studio و OpenRouter API</p>
+            <p className="text-xs text-slate-400 font-medium">پایپ‌لاین تولید مستقیم عامل هوشمند Antigravity</p>
           </div>
         </div>
 
@@ -96,15 +93,6 @@ export default function Header({
             title="ایجاد اپیزود جدید"
           >
             <Plus className="w-4 h-4" />
-          </button>
-
-          {/* Settings Button (Gear) */}
-          <button
-            onClick={onOpenSettingsModal}
-            className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 hover:text-amber-400 transition-colors"
-            title="تنظیمات OpenRouter و مدل‌ها"
-          >
-            <Settings className="w-4 h-4" />
           </button>
 
           {/* Skills Instruction Templates */}

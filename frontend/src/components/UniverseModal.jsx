@@ -15,7 +15,7 @@ import {
   Layers,
   CheckCircle2
 } from 'lucide-react';
-import { fetchUniverse, saveUniverse, uploadUniverseAsset, generateCharacterPrompts } from '../api';
+import { fetchUniverse, saveUniverse, uploadUniverseAsset } from '../api';
 
 export default function UniverseModal({ isOpen, onClose, onUniverseUpdated }) {
   const [activeTab, setActiveTab] = useState('environment'); // 'environment' or 'characters'
@@ -24,8 +24,6 @@ export default function UniverseModal({ isOpen, onClose, onUniverseUpdated }) {
   const [saving, setSaving] = useState(false);
   const [copiedId, setCopiedId] = useState(null);
   const [uploadingTarget, setUploadingTarget] = useState(null); // 'env' or `${charId}_face` or `${charId}_body` or `angle_${angleId}`
-  const [generatingCharId, setGeneratingCharId] = useState(null);
-  const [conceptInputs, setConceptInputs] = useState({});
   const [saveSuccess, setSaveSuccess] = useState(false);
 
   useEffect(() => {
@@ -118,38 +116,6 @@ export default function UniverseModal({ isOpen, onClose, onUniverseUpdated }) {
       alert('خطا در آپلود شیت کاراکتر: ' + err.message);
     } finally {
       setUploadingTarget(null);
-    }
-  };
-
-  const handleAiGeneratePrompts = async (charId) => {
-    const targetChar = universe?.characters?.find(c => c.id === charId);
-    if (!targetChar) return;
-    const concept = conceptInputs[charId] || targetChar.persona_behavior_prompt || targetChar.personality_and_catchphrases_fa || '';
-    setGeneratingCharId(charId);
-    try {
-      const res = await generateCharacterPrompts(charId, {
-        concept_fa: concept,
-        name_fa: targetChar.name_fa,
-        archetype: targetChar.archetype,
-        flow_tag: targetChar.flow_tag
-      });
-      setUniverse(prev => ({
-        ...prev,
-        characters: prev.characters.map(c => 
-          c.id === charId ? {
-            ...c,
-            face_expressions_prompt_en: res.face_expressions_prompt_en,
-            full_body_prompt_en: res.full_body_prompt_en,
-            persona_behavior_prompt: res.persona_behavior_prompt,
-            visual_prompt_en: res.full_body_prompt_en,
-            personality_and_catchphrases_fa: res.persona_behavior_prompt
-          } : c
-        )
-      }));
-    } catch (err) {
-      alert('خطا در تولید ۳ پرامپت با هوش مصنوعی: ' + err.message);
-    } finally {
-      setGeneratingCharId(null);
     }
   };
 
@@ -601,7 +567,6 @@ export default function UniverseModal({ isOpen, onClose, onUniverseUpdated }) {
                   <div className="space-y-6">
                     {(universe?.characters || []).map((char, idx) => {
                       const isAnchor = char.is_style_anchor;
-                      const isGeneratingThis = generatingCharId === char.id;
                       const isUploadingFace = uploadingTarget === `${char.id}_face`;
                       const isUploadingBody = uploadingTarget === `${char.id}_body`;
                       
@@ -694,30 +659,15 @@ export default function UniverseModal({ isOpen, onClose, onUniverseUpdated }) {
                             </div>
                           </div>
 
-                          {/* 2. AI Generator Quick-Bar (تولید خودکار ۳ پرامپت با هوش مصنوعی) */}
-                          <div className="p-3 rounded-2xl bg-gradient-to-r from-amber-500/10 via-indigo-500/10 to-slate-950 border border-amber-500/20 flex flex-col sm:flex-row items-center gap-3">
-                            <div className="flex items-center gap-2 text-amber-300 font-bold text-xs whitespace-nowrap">
-                              <Sparkles className="w-4 h-4 text-amber-400" />
-                              تولید ۳ پرامپت استاپ‌موشن با AI:
+                          {/* 2. Character Style Notice */}
+                          <div className="p-3 rounded-2xl bg-slate-950/80 border border-slate-800 flex items-center justify-between gap-3 text-xs">
+                            <div className="flex items-center gap-2 text-amber-300 font-bold">
+                              <span>🧵</span>
+                              <span>استایل ثابت کاراکتر: استاپ‌موشن عروسکی نمدی دست‌ساز (Handcrafted Needle-Felted)</span>
                             </div>
-
-                            <input
-                              type="text"
-                              value={conceptInputs[char.id] ?? ''}
-                              onChange={(e) => setConceptInputs(prev => ({ ...prev, [char.id]: e.target.value }))}
-                              placeholder="ایده یا خلاصه تیپ کاراکتر را اینجا بنویسید (مثلاً: جوان ۲۵ ساله تریدر عصبی و متکبر)..."
-                              className="flex-1 w-full bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-amber-500"
-                            />
-
-                            <button
-                              type="button"
-                              onClick={() => handleAiGeneratePrompts(char.id)}
-                              disabled={isGeneratingThis}
-                              className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-black text-xs shadow-md transition-all disabled:opacity-50 whitespace-nowrap flex items-center gap-1.5"
-                            >
-                              <Sparkles className={`w-3.5 h-3.5 ${isGeneratingThis ? 'animate-spin' : ''}`} />
-                              {isGeneratingThis ? 'در حال تولید...' : 'تولید خودکار ۳ پرامپت'}
-                            </button>
+                            <span className="text-[11px] text-slate-400 font-mono">
+                              پایپ‌لاین بومی Antigravity
+                            </span>
                           </div>
 
                           {/* 3. Two-Column Visual Prompts & Upload Slots */}

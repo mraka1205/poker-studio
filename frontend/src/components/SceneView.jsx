@@ -5,35 +5,25 @@ import {
   Check, 
   Upload, 
   CheckCircle2, 
-  AlertCircle, 
   Clock, 
   Volume2, 
   Camera, 
-  Layers, 
-  Sparkles,
-  Bot,
-  ChevronDown,
-  ChevronUp,
   ExternalLink,
   Video,
-  Play,
   Save,
-  Wand2,
   Image as ImageIcon,
   MoveHorizontal,
   ZoomIn,
   ZoomOut,
   Zap,
-  RefreshCw
+  RefreshCw,
+  Sparkles,
+  Bot,
+  Play
 } from 'lucide-react';
-import AiStudioBridge from './AiStudioBridge';
 import { 
   uploadAsset, 
   uploadSceneVideo, 
-  runOpenRouterTask, 
-  saveProjectState, 
-  fetchProjectState, 
-  rewriteScenePrompt,
   updateSceneDetails
 } from '../api';
 
@@ -46,21 +36,20 @@ export default function SceneView({
   onSceneAssetUpdated,
   onRefresh
 }) {
+  const [copiedExecutionCmd, setCopiedExecutionCmd] = useState(false);
+  const [copiedSingleCmdId, setCopiedSingleCmdId] = useState(null);
   const [copiedPromptId, setCopiedPromptId] = useState(null);
   const [copiedMotionId, setCopiedMotionId] = useState(null);
   const [uploadingImageId, setUploadingImageId] = useState(null);
   const [uploadingVideoId, setUploadingVideoId] = useState(null);
-  const [isGeneratingScenes, setIsGeneratingScenes] = useState(false);
-  const [showAiStudioBridge, setShowAiStudioBridge] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   
+  // Track images that failed to load to fall back to alternative paths or placeholders
+  const [imgErrorMap, setImgErrorMap] = useState({});
+
   // Local editable motion prompts map: { [sceneId]: text }
   const [editedMotionPrompts, setEditedMotionPrompts] = useState({});
   const [savingPromptId, setSavingPromptId] = useState(null);
-
-  // Scene-Level Human-in-the-Loop Feedback state
-  const [imageFeedback, setImageFeedback] = useState({});
-  const [motionFeedback, setMotionFeedback] = useState({});
-  const [isRewriting, setIsRewriting] = useState(null); // `${sceneId}_${target}`
 
   const copyText = (id, text, type = 'image') => {
     if (!text) return;
@@ -71,6 +60,53 @@ export default function SceneView({
     } else {
       setCopiedMotionId(id);
       setTimeout(() => setCopiedMotionId(null), 2000);
+    }
+  };
+
+  const handleCopyFullExecutionCommand = async () => {
+    const cmd = `لطفاً مرحله ۶ (کارگردانی استوری‌بورد و تولید کامل تصاویر) را برای اپیزود "${episodeId}" طبق سند .agent/skills/04-scene-director.md به طور کامل و انتها به انتها اجرا کن:
+۱. سناریو و چیدمان صندلی‌های اپیزود "${episodeId}" را بخوان و استوری‌بورد کامل و دقیق با کادربندی ۹:۱۶ عمودی، جزئیات بالا (حداقل ۸۰ تا ۱۲۰ کلمه برای هر پرامپت)، همسایگان صندلی (adjacent_players) و وضعیت زنده میز (table_state_en) بنویس و در projects/${episodeId}/state.json ذخیره کن.
+۲. سپس با استفاده از ابزار image-generator، تک تک فریم‌های کلیدی (scene_01.png تا scene_N.png) را به صورت متوالی و با اعمال رفرنس‌های تصویری روی دیسک (برای صحنه ۱: رفرنس @Room_Master و شیت‌های کاراکترها؛ برای صحنه‌های ۲ به بعد: تصویر scene_01.png به عنوان Episode Master Reference + رفرنس زاویه صندلی @Seat_X) تولید کن و مستقیماً در فولدر projects/${episodeId}/assets/images/ ذخیره نما.
+۳. پس از تولید، از وجود و کیفیت فایل‌ها مطمئن شو و state.json را با مسیرهای نهایی بروزرسانی کن.`;
+
+    await navigator.clipboard.writeText(cmd);
+    setCopiedExecutionCmd(true);
+    setTimeout(() => setCopiedExecutionCmd(false), 3500);
+  };
+
+  const handleCopySingleFrameCommand = async (scene, idx) => {
+    const sId = scene.id || scene.scene_id || `scene_${String(idx + 1).padStart(2, '0')}`;
+    const visualPrompt = scene.visual_prompt_en || scene.visual_prompt || '';
+    const cameraAngle = scene.camera || scene.camera_angle || '@Seat_X';
+    const chars = (scene.characters_present || []).join(', ');
+    const adjacent = Array.isArray(scene.adjacent_players) ? scene.adjacent_players.join(', ') : (scene.adjacent_players || 'مطابق چیدمان صندلی');
+    const tableState = scene.table_state_en || '';
+
+    const cmd = `لطفاً فریم کلیدی صحنه "${sId}" اپیزود "${episodeId}" را طبق دستورالعمل .agent/skills/04-scene-director.md با استفاده از ابزار image-generator بازسازی کن:
+- فایل خروجی مقصد: projects/${episodeId}/assets/images/${sId}.png
+- زاویه دوربین: ${cameraAngle}
+- کاراکترهای حاضر: ${chars}
+- همسایگان صندلی: ${adjacent}
+- وضعیت میز: ${tableState}
+- رفرنس پیوستگی: ${idx === 0 ? 'رفرنس @Room_Master و شیت‌های کاراکترها' : `تصویر projects/${episodeId}/assets/images/scene_01.png (Episode Master Reference) + رفرنس زاویه صندلی`}
+- پرامپت دقیق تصویر:
+${visualPrompt}
+پس از تولید، فایل را در projects/${episodeId}/assets/images/${sId}.png ذخیره و state.json را بروزرسانی کن.`;
+
+    await navigator.clipboard.writeText(cmd);
+    setCopiedSingleCmdId(sId);
+    setTimeout(() => setCopiedSingleCmdId(null), 2500);
+  };
+
+  const handleManualRefresh = async () => {
+    setIsRefreshing(true);
+    setImgErrorMap({});
+    try {
+      if (onRefresh) {
+        await onRefresh();
+      }
+    } finally {
+      setTimeout(() => setIsRefreshing(false), 500);
     }
   };
 
@@ -104,20 +140,6 @@ export default function SceneView({
       alert('خطا در آپلود ویدیوی متحرک: ' + err.message);
     } finally {
       setUploadingVideoId(null);
-    }
-  };
-
-  const handleGenerateScenes = async () => {
-    setIsGeneratingScenes(true);
-    try {
-      await runOpenRouterTask(episodeId, 'generate_scenes');
-      if (onRefresh) {
-        await onRefresh();
-      }
-    } catch (err) {
-      alert('خطا در تولید خودکار استوری‌بورد: ' + err.message);
-    } finally {
-      setIsGeneratingScenes(false);
     }
   };
 
@@ -158,70 +180,62 @@ export default function SceneView({
     }
   };
 
-  const handleRewritePrompt = async (sceneId, target, customFeedback = null) => {
-    const feedback = customFeedback || (target === 'image' ? imageFeedback[sceneId] : motionFeedback[sceneId]);
-    if (!feedback || !feedback.trim()) return;
-
-    const rewriteKey = `${sceneId}_${target}`;
-    setIsRewriting(rewriteKey);
-    try {
-      const res = await rewriteScenePrompt(episodeId, sceneId, target, feedback.trim());
-      if (target === 'image') {
-        setImageFeedback((prev) => ({ ...prev, [sceneId]: '' }));
-      } else {
-        setMotionFeedback((prev) => ({ ...prev, [sceneId]: '' }));
-        setEditedMotionPrompts((prev) => ({ ...prev, [sceneId]: res.rewritten_prompt }));
-      }
-      if (onRefresh) {
-        await onRefresh();
-      }
-    } catch (err) {
-      alert('خطا در بازنویسی پرامپت با هوش مصنوعی: ' + err.message);
-    } finally {
-      setIsRewriting(null);
-    }
-  };
-
-  const handleGenerateSingleMotion = (sceneId) => {
-    handleRewritePrompt(
-      sceneId, 
-      'motion', 
-      'تولید یک پرامپت حرکت کوتاه و پرانرژی برای هایلایت ۲ ثانیه‌ای بر اساس کاراکترهای صحنه، بازیگری بی‌صدا، و بدون اشیاء معلق'
-    );
-  };
-
   return (
     <div className="space-y-6">
       
-      {/* Top Banner with Unified 1-Click Action */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-5 rounded-2xl bg-slate-900 border border-slate-800 shadow-xl">
-        <div>
+      {/* Top Banner with Antigravity Native Pipeline Execution Button */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-5 rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 border border-amber-500/30 shadow-2xl">
+        <div className="space-y-1.5">
           <div className="flex items-center gap-2 mb-1 flex-wrap">
-            <span className="text-xs font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2.5 py-0.5 rounded-full">
-              مرحله ۶: کارگردانی یکپارچه استوری‌بورد و حرکت (Unified Storyboard & Motion)
+            <span className="text-xs font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2.5 py-0.5 rounded-full flex items-center gap-1.5">
+              <Bot className="w-3.5 h-3.5" />
+              مرحله ۶: کارگردانی یکپارچه استوری‌بورد و تصاویر (Antigravity Native)
             </span>
             <span className="text-xs text-slate-400 font-mono">
               تعداد نماها: {scenes.length} کات سریع (~۲s)
             </span>
           </div>
           <h2 className="text-xl font-black text-white">
-            کارگردانی نماهای سریع عمودی (کات‌های ~۲ ثانیه‌ای Shorts / Reels)
+            کارگردانی نماهای سریع عمودی و تولید مستقیم تصاویر در آنتی‌گرویتی
           </h2>
-          <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">
-            تقطیع سناریو به کات‌های ضرب‌الاجلی: ~۷۰٪ تصاویر ثابت با زوم و موشن FFmpeg و ~۳۰٪ هایلایت‌های متحرک Vidu / Google Flow برای پانچ‌لاین‌ها و اوج خنده‌ها.
+          <p className="text-xs text-slate-400 max-w-2xl leading-relaxed">
+            تقطیع سناریو طبق استاندارد <span className="text-amber-300 font-mono font-semibold">04-scene-director.md</span>: کادربندی عمودی ۹:۱۶، همسایگان صندلی، وضعیت زنده میز و تولید مستقیم تک‌تک فریم‌ها در <span className="text-emerald-300 font-mono">/projects/{episodeId}/assets/images/</span> با حفظ کامل پیوستگی صحنه ۱.
           </p>
         </div>
 
         <div className="flex items-center gap-2.5 flex-wrap flex-shrink-0">
           
-          {/* Unified Action: Generate Complete Storyboard in 1 Click */}
+          {/* Prominent Action Button: Full Storyboard & Image Generation in Antigravity */}
           <button
-            onClick={handleGenerateScenes}
-            disabled={isGeneratingScenes}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-black text-xs shadow-lg shadow-amber-500/20 transition-all hover:scale-105 disabled:opacity-50"
+            onClick={handleCopyFullExecutionCommand}
+            className={`flex items-center gap-2 px-5 py-3 rounded-xl font-black text-xs shadow-xl transition-all hover:scale-105 active:scale-95 ${
+              copiedExecutionCmd
+                ? 'bg-emerald-400 text-slate-950 shadow-emerald-500/30 ring-2 ring-emerald-300'
+                : 'bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-slate-950 shadow-amber-500/25'
+            }`}
           >
-            <Wand2 className={`w-4 h-4 text-slate-950 ${isGeneratingScenes ? 'animate-spin' : ''}`} />
-            {isGeneratingScenes ? 'در حال تولید خودکار استوری‌بورد (صحنه + حرکت)...' : 'تولید خودکار استوری‌بورد (صحنه + حرکت)'}
+            {copiedExecutionCmd ? (
+              <>
+                <Check className="w-4 h-4 text-slate-950" />
+                <span>دستور کپی شد! در چت آنتی‌گرویتی ارسال کنید ✓</span>
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-4 h-4 text-slate-950" />
+                <span>🎬 دستور اجرای کامل صحنه‌سازی و تولید تصاویر در آنتی‌گرویتی</span>
+              </>
+            )}
+          </button>
+
+          {/* Refresh / Sync Images Button */}
+          <button
+            onClick={handleManualRefresh}
+            disabled={isRefreshing}
+            className="flex items-center gap-1.5 px-3.5 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs border border-slate-700 transition-all hover:scale-102"
+            title="همگام‌سازی و بارگذاری مجدد فایل‌های تصویر از روی دیسک"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 text-amber-400 ${isRefreshing ? 'animate-spin' : ''}`} />
+            <span>{isRefreshing ? 'در حال همگام‌سازی...' : 'همگام‌سازی تصاویر ↻'}</span>
           </button>
 
           {/* External Link to Google Flow */}
@@ -229,32 +243,23 @@ export default function SceneView({
             href="https://labs.google/fx/tools/flow"
             target="_blank"
             rel="noreferrer"
-            className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs border border-slate-700 transition-all hover:scale-102"
+            className="flex items-center gap-1.5 px-3.5 py-3 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 font-bold text-xs border border-slate-700 transition-all hover:scale-102"
+            title="محیط Google Flow برای متحرک‌سازی کلیپ‌های ویدیویی"
           >
             <span>Google Flow</span>
-            <ExternalLink className="w-3.5 h-3.5 text-amber-400" />
+            <ExternalLink className="w-3.5 h-3.5 text-indigo-400" />
           </a>
-
-          {/* Toggle Manual AI Studio Bridge */}
-          <button
-            onClick={() => setShowAiStudioBridge(!showAiStudioBridge)}
-            className="flex items-center gap-1 px-3 py-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 transition-colors"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-            AI Studio دستی
-            {showAiStudioBridge ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-          </button>
 
           {/* Stage Approval Badge */}
           {stageStatus === 'approved' ? (
-            <div className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-bold">
+            <div className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-bold">
               <CheckCircle2 className="w-4 h-4 text-emerald-400" />
               تایید شد ✓
             </div>
           ) : (
             <button
               onClick={onApproveStage}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-black shadow-lg shadow-emerald-500/20 transition-all hover:scale-105"
+              className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-black shadow-lg shadow-emerald-500/20 transition-all hover:scale-105"
             >
               <Check className="w-4 h-4" />
               تایید کلی صحنه‌ها
@@ -263,30 +268,37 @@ export default function SceneView({
         </div>
       </div>
 
-      {/* Collapsible AI Studio Bridge */}
-      {showAiStudioBridge && (
-        <AiStudioBridge
-          episodeId={episodeId}
-          stage="scenes"
-          stageTitle="استوری‌بورد و پرامپت صحنه‌ها"
-          description="اگر ترجیح می‌دهید سناریو را مستقیماً در Google AI Studio به بیت‌های بصری تبدیل کنید، از این پل ارتباطی استفاده نمایید."
-          onSuccess={() => {
-            if (onRefresh) onRefresh();
-          }}
-        />
+      {/* Empty State Banner if no scenes yet */}
+      {scenes.length === 0 && (
+        <div className="p-12 text-center rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
+          <Film className="w-12 h-12 text-slate-600 mx-auto" />
+          <div className="space-y-1">
+            <h3 className="text-base font-bold text-slate-200">هنوز استوری‌بورد این اپیزود تولید نشده است</h3>
+            <p className="text-xs text-slate-400 max-w-lg mx-auto">
+              روی دکمه طلایی بالا کلیک کنید تا دستور اجرای کامل مهارت ۰۴ در کلیپ‌بورد کپی شود و آن را در چت آنتی‌گرویتی ارسال نمایید تا همه صحنه‌ها و تصاویر به صورت محلی و دقیق ساخته شوند.
+            </p>
+          </div>
+          <button
+            onClick={handleCopyFullExecutionCommand}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs shadow-lg transition-all"
+          >
+            <Sparkles className="w-4 h-4" />
+            <span>کپی دستور اجرای کامل در آنتی‌گرویتی</span>
+          </button>
+        </div>
       )}
 
       {/* Scenes Grid: Responsive 9:16 Vertical Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {scenes.map((scene, idx) => {
+          const sceneId = scene.id || scene.scene_id || `scene_${String(idx + 1).padStart(2, '0')}`;
           const isApproved = scene.status === 'approved';
           const isReady = scene.status === 'ready_for_review';
           const tableState = scene.poker_table_state || {};
           const visualPrompt = scene.visual_prompt_en || scene.visual_prompt || '';
           
-          // Determine shot mode: default to static_zoom if empty and no motion prompt
-          const motionPrompt = editedMotionPrompts[scene.id] !== undefined
-            ? editedMotionPrompts[scene.id]
+          const motionPrompt = editedMotionPrompts[sceneId] !== undefined
+            ? editedMotionPrompts[sceneId]
             : (scene.motion_prompt_en || '');
           const shotMode = scene.shot_mode || (motionPrompt.trim() || scene.video_path ? 'ai_video' : 'static_zoom');
           const isAiVideo = shotMode === 'ai_video';
@@ -295,11 +307,27 @@ export default function SceneView({
           const duration = scene.duration_sec ? Number(scene.duration_sec).toFixed(1) : '2.0';
 
           const videoUrl = scene.video_path || scene.video_asset;
-          const imageUrl = scene.visual_asset || scene.image_path;
+          
+          // Image resolution order:
+          // 1. Explicit scene.image_path if valid and not errored
+          // 2. Default native assets path: /media/${episodeId}/assets/images/${sceneId}.png
+          // 3. Fallback to /media/${episodeId}/scenes/${sceneId}.png
+          // 4. scene.visual_asset
+          const errorCount = imgErrorMap[sceneId] || 0;
+          let imageUrl = null;
+          if (errorCount === 0) {
+            imageUrl = scene.image_path || `/media/${episodeId}/assets/images/${sceneId}.png`;
+          } else if (errorCount === 1) {
+            imageUrl = scene.visual_asset || `/media/${episodeId}/scenes/${sceneId}.png`;
+          } else {
+            imageUrl = null; // show placeholder
+          }
+
+          const isSingleCommandCopied = copiedSingleCmdId === sceneId;
 
           return (
             <div
-              key={scene.id || scene.scene_id || idx}
+              key={sceneId}
               className={`rounded-2xl border transition-all flex flex-col justify-between overflow-hidden shadow-lg group ${
                 isAiVideo 
                   ? 'bg-slate-900 border-indigo-500/30 ring-1 ring-indigo-500/10'
@@ -336,7 +364,7 @@ export default function SceneView({
 
                   {/* Status Toggle Badge */}
                   <button
-                    onClick={() => onUpdateSceneStatus(scene.id, isApproved ? 'ready_for_review' : 'approved')}
+                    onClick={() => onUpdateSceneStatus(sceneId, isApproved ? 'ready_for_review' : 'approved')}
                     className={`flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-lg transition-all ${
                       isApproved
                         ? 'bg-emerald-500/10 text-emerald-300 border border-emerald-500/30'
@@ -358,7 +386,7 @@ export default function SceneView({
                 <div className="flex items-center p-1 rounded-xl bg-slate-950 border border-slate-800/90 text-xs">
                   <button
                     type="button"
-                    onClick={() => handleToggleShotMode(scene.id, 'static_zoom')}
+                    onClick={() => handleToggleShotMode(sceneId, 'static_zoom')}
                     className={`flex-1 py-1.5 px-2 rounded-lg font-bold transition-all flex items-center justify-center gap-1.5 ${
                       !isAiVideo
                         ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm'
@@ -371,7 +399,7 @@ export default function SceneView({
 
                   <button
                     type="button"
-                    onClick={() => handleToggleShotMode(scene.id, 'ai_video')}
+                    onClick={() => handleToggleShotMode(sceneId, 'ai_video')}
                     className={`flex-1 py-1.5 px-2 rounded-lg font-bold transition-all flex items-center justify-center gap-1.5 ${
                       isAiVideo
                         ? 'bg-indigo-600/30 text-indigo-300 border border-indigo-500/50 shadow-sm'
@@ -388,10 +416,10 @@ export default function SceneView({
               <div className="p-4 space-y-4 flex-1">
 
                 {/* ======================================================== */}
-                {/* STEP 1: KEYFRAME IMAGE (برای هر دو حالت نمایش داده می‌شود) */}
+                {/* STEP 1: KEYFRAME IMAGE */}
                 {/* ======================================================== */}
                 <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-3">
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
                     <div className="flex items-center gap-2">
                       <span className="w-5 h-5 rounded-md bg-amber-500 text-slate-950 text-[11px] font-black flex items-center justify-center">
                         ۱
@@ -402,38 +430,60 @@ export default function SceneView({
                     </div>
 
                     <div className="flex items-center gap-2 flex-wrap justify-end">
-                      {/* Continuity badge for Scene 2+ */}
-                      {(scene.beat_index > 1 || idx > 0) && (
-                        <span 
-                          title="تصویر فریم کلیدی صحنه ۱ را به عنوان مرجع پیوستگی به همراه زاویه صندلی در Google Flow قرار دهید"
-                          className="text-[10px] font-bold text-amber-300/95 bg-amber-950/70 border border-amber-700/80 px-2 py-0.5 rounded-md flex items-center gap-1 shadow-sm"
-                        >
-                          🔗 مرجع پیوستگی: تصویر صحنه ۱ (Master) + زاویه صندلی
-                        </span>
-                      )}
+                      {/* 1-Click Rebuild Frame in Antigravity */}
+                      <button
+                        onClick={() => handleCopySingleFrameCommand(scene, idx)}
+                        className={`flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-md transition-all shadow-sm ${
+                          isSingleCommandCopied
+                            ? 'bg-emerald-500 text-slate-950 font-black'
+                            : 'bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300'
+                        }`}
+                        title="کپی دستور بازسازی این فریم کلیدی در آنتی‌گرویتی"
+                      >
+                        {isSingleCommandCopied ? (
+                          <>
+                            <Check className="w-3 h-3 text-slate-950" />
+                            <span>دستور کپی شد!</span>
+                          </>
+                        ) : (
+                          <>
+                            <Bot className="w-3 h-3 text-amber-400" />
+                            <span>بازسازی این فریم در آنتی‌گرویتی</span>
+                          </>
+                        )}
+                      </button>
 
                       {/* Image Prompt Copy */}
                       <button
-                        onClick={() => copyText(scene.id, visualPrompt, 'image')}
-                        className="flex items-center gap-1 text-[11px] font-bold text-amber-400 hover:text-amber-300 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-md transition-colors"
+                        onClick={() => copyText(sceneId, visualPrompt, 'image')}
+                        className="flex items-center gap-1 text-[11px] font-bold text-slate-300 hover:text-white bg-slate-800 border border-slate-700 px-2 py-0.5 rounded-md transition-colors"
+                        title="کپی پرامپت متنی انگلیسی"
                       >
-                        {copiedPromptId === scene.id ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
-                        {copiedPromptId === scene.id ? 'کپی شد!' : 'کپی پرامپت'}
+                        {copiedPromptId === sceneId ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                        <span>{copiedPromptId === sceneId ? 'کپی شد!' : 'پرامپت'}</span>
                       </button>
 
                       {/* Image Upload Button */}
                       <label className="flex items-center gap-1 text-[11px] font-bold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 px-2 py-0.5 rounded-md cursor-pointer transition-colors">
                         <Upload className="w-3 h-3 text-amber-400" />
-                        <span>آپلود تصویر</span>
+                        <span>آپلود دستی</span>
                         <input
                           type="file"
                           accept="image/*"
                           className="hidden"
-                          onChange={(e) => handleKeyframeImageUpload(scene.id, e.target.files?.[0])}
+                          onChange={(e) => handleKeyframeImageUpload(sceneId, e.target.files?.[0])}
                         />
                       </label>
                     </div>
                   </div>
+
+                  {/* Continuity lock badge for Scene 2+ */}
+                  {(scene.beat_index > 1 || idx > 0) && (
+                    <div className="text-[10px] font-bold text-amber-300/90 bg-amber-950/60 border border-amber-800/60 px-2.5 py-1 rounded-lg flex items-center gap-1.5 shadow-sm">
+                      <span>🔗</span>
+                      <span>قفل پیوستگی: رفرنس به تصویر صحنه ۱ (Master) + زاویه صندلی</span>
+                    </div>
+                  )}
 
                   {/* Image Display & Preview (Vertical 9:16) */}
                   <div className="relative aspect-[9/16] w-full max-h-[380px] mx-auto bg-[#070b13] rounded-xl border border-slate-800 overflow-hidden flex items-center justify-center shadow-inner">
@@ -441,14 +491,20 @@ export default function SceneView({
                       <img
                         src={imageUrl}
                         alt={scene.title || 'Keyframe Preview'}
+                        onError={() => {
+                          setImgErrorMap(prev => ({
+                            ...prev,
+                            [sceneId]: (prev[sceneId] || 0) + 1
+                          }));
+                        }}
                         className="w-full h-full object-contain transition-transform group-hover:scale-101"
                       />
                     ) : (
-                      <div className="p-4 text-center space-y-1.5">
-                        <Camera className="w-7 h-7 text-slate-600 mx-auto" />
-                        <span className="text-xs font-bold text-slate-400 block">فریم کلیدی ۹:۱۶ آپلود نشده</span>
-                        <p className="text-[10px] text-slate-500">
-                          پرامپت عمودی را در ابزار تصویرسازی اجرا کرده و تصویر را اینجا آپلود کنید.
+                      <div className="p-4 text-center space-y-2">
+                        <Camera className="w-8 h-8 text-slate-600 mx-auto" />
+                        <span className="text-xs font-bold text-slate-300 block">فریم کلیدی ۹:۱۶ موجود نیست</span>
+                        <p className="text-[10px] text-slate-500 max-w-[200px] mx-auto leading-relaxed">
+                          با کلیک روی «بازسازی این فریم در آنتی‌گرویتی»، دستور آن را برای ایجنت ارسال کنید یا تصویر را دستی آپلود نمایید.
                         </p>
                       </div>
                     )}
@@ -481,7 +537,7 @@ export default function SceneView({
                       </div>
                     )}
 
-                    {uploadingImageId === scene.id && (
+                    {uploadingImageId === sceneId && (
                       <div className="absolute inset-0 bg-slate-950/80 flex items-center justify-center text-xs font-bold text-amber-400">
                         در حال بارگذاری تصویر...
                       </div>
@@ -490,7 +546,7 @@ export default function SceneView({
 
                   {/* Persistent Table State & Adjacent Seated Players HUD */}
                   {(scene.table_state_en || (scene.adjacent_players && scene.adjacent_players.length > 0)) && (
-                    <div className="p-2 rounded-lg bg-slate-900/90 border border-slate-800 space-y-1 text-[11px]">
+                    <div className="p-2.5 rounded-lg bg-slate-900/90 border border-slate-800 space-y-1.5 text-[11px]">
                       {scene.table_state_en && (
                         <div className="text-emerald-300/90 font-mono text-[10px] ltr-content flex items-start gap-1.5 leading-snug">
                           <span className="text-amber-400 font-bold flex-shrink-0">🎲 Table:</span>
@@ -509,33 +565,8 @@ export default function SceneView({
                   )}
 
                   {/* Image Prompt Textbox */}
-                  <div className="p-2 rounded-lg bg-slate-900 border border-slate-800/80 text-[11px] font-mono text-slate-300 ltr-content leading-relaxed max-h-20 overflow-y-auto">
+                  <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800/80 text-[11px] font-mono text-slate-300 ltr-content leading-relaxed max-h-24 overflow-y-auto">
                     {visualPrompt || 'هنوز پرامپت تصویری برای این صحنه تولید نشده است.'}
-                  </div>
-
-                  {/* Human-in-the-Loop Image Prompt Rewrite */}
-                  <div className="pt-2 border-t border-slate-800/80 space-y-1">
-                    <div className="flex gap-1.5">
-                      <input
-                        type="text"
-                        value={imageFeedback[scene.id] || ''}
-                        onChange={(e) => setImageFeedback({ ...imageFeedback, [scene.id]: e.target.value })}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') handleRewritePrompt(scene.id, 'image');
-                        }}
-                        placeholder="فیدبک برای اصلاح پرامپت تصویر... مثلاً: کلوزآپتر باشه"
-                        className="flex-1 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs text-slate-200 placeholder:text-slate-500 focus:border-amber-500 focus:outline-none"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => handleRewritePrompt(scene.id, 'image')}
-                        disabled={isRewriting === `${scene.id}_image` || !imageFeedback[scene.id]?.trim()}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 disabled:opacity-40 text-slate-950 font-bold text-[11px] shadow-sm transition-all flex-shrink-0"
-                      >
-                        <Wand2 className={`w-3.5 h-3.5 ${isRewriting === `${scene.id}_image` ? 'animate-spin' : ''}`} />
-                        {isRewriting === `${scene.id}_image` ? 'در حال بازنویسی...' : 'بازنویسی پرامپت'}
-                      </button>
-                    </div>
                   </div>
                 </div>
 
@@ -551,7 +582,7 @@ export default function SceneView({
                         <span>حرکت دوربین FFmpeg (Ken Burns)</span>
                       </div>
                       <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-                        بدون نیاز به هوش مصنوعی ویدیویی
+                        تصویر ثابت + حرکت دوربین
                       </span>
                     </div>
 
@@ -566,7 +597,7 @@ export default function SceneView({
                         <button
                           key={eff.id}
                           type="button"
-                          onClick={() => handleCameraEffectChange(scene.id, eff.id)}
+                          onClick={() => handleCameraEffectChange(sceneId, eff.id)}
                           className={`p-2 rounded-lg text-start transition-all border ${
                             cameraEffect === eff.id
                               ? 'bg-amber-500/15 border-amber-500/50 text-amber-300 font-bold'
@@ -604,85 +635,40 @@ export default function SceneView({
 
                         {motionPrompt && (
                           <button
-                            onClick={() => copyText(scene.id, motionPrompt, 'motion')}
+                            onClick={() => copyText(sceneId, motionPrompt, 'motion')}
                             className="flex items-center gap-1 text-[11px] font-bold text-indigo-300 hover:text-white bg-indigo-600 hover:bg-indigo-500 px-2.5 py-1 rounded-md transition-all shadow-sm shadow-indigo-600/30"
                           >
-                            {copiedMotionId === scene.id ? <Check className="w-3 h-3 text-emerald-300" /> : <Copy className="w-3 h-3" />}
-                            {copiedMotionId === scene.id ? 'کپی شد!' : 'کپی پرامپت'}
+                            {copiedMotionId === sceneId ? <Check className="w-3 h-3 text-emerald-300" /> : <Copy className="w-3 h-3" />}
+                            <span>{copiedMotionId === sceneId ? 'کپی شد!' : 'کپی پرامپت حرکت'}</span>
                           </button>
                         )}
 
                         {motionPrompt && (
                           <button
-                            onClick={() => handleSaveMotionPrompt(scene.id, motionPrompt)}
-                            disabled={savingPromptId === scene.id}
+                            onClick={() => handleSaveMotionPrompt(sceneId, motionPrompt)}
+                            disabled={savingPromptId === sceneId}
                             title="ذخیره ویرایش پرامپت حرکت"
                             className="p-1 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs"
                           >
-                            <Save className={`w-3.5 h-3.5 ${savingPromptId === scene.id ? 'animate-spin' : ''}`} />
+                            <Save className={`w-3.5 h-3.5 ${savingPromptId === sceneId ? 'animate-spin' : ''}`} />
                           </button>
                         )}
                       </div>
                     </div>
 
-                    {/* Empty Motion Prompt Generator Callout */}
-                    {!motionPrompt ? (
-                      <div className="p-3 rounded-lg bg-slate-950 border border-indigo-900/60 text-center space-y-2">
-                        <p className="text-xs text-slate-300">
-                          هنوز پرامپت حرکتی برای این هایلایت ثبت نشده است.
-                        </p>
-                        <button
-                          type="button"
-                          onClick={() => handleGenerateSingleMotion(scene.id)}
-                          disabled={isRewriting === `${scene.id}_motion`}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md transition-all disabled:opacity-50"
-                        >
-                          <Wand2 className={`w-3.5 h-3.5 ${isRewriting === `${scene.id}_motion` ? 'animate-spin' : ''}`} />
-                          {isRewriting === `${scene.id}_motion` ? 'در حال تولید پرامپت...' : 'تولید خودکار پرامپت حرکت ۲s'}
-                        </button>
-                      </div>
-                    ) : (
-                      <>
-                        {/* Motion Prompt Textarea */}
-                        <div className="space-y-1">
-                          <label className="text-[10px] text-slate-400 font-medium block">
-                            پرامپت حرکت (بازیگری بی‌صدا، بدون فلگ زمانی در متن):
-                          </label>
-                          <textarea
-                            rows={2}
-                            value={motionPrompt}
-                            onChange={(e) => setEditedMotionPrompts({ ...editedMotionPrompts, [scene.id]: e.target.value })}
-                            placeholder="پرامپت حرکت ۲ ثانیه‌ای برای Google Flow / Vidu..."
-                            className="w-full p-2.5 rounded-lg bg-slate-950 border border-indigo-900/60 text-[11px] font-mono text-indigo-100 focus:border-indigo-400 focus:outline-none ltr-content leading-relaxed resize-y"
-                          />
-                        </div>
-
-                        {/* Rewrite Box */}
-                        <div className="pt-2 border-t border-indigo-900/40 space-y-1">
-                          <div className="flex gap-1.5">
-                            <input
-                              type="text"
-                              value={motionFeedback[scene.id] || ''}
-                              onChange={(e) => setMotionFeedback({ ...motionFeedback, [scene.id]: e.target.value })}
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter') handleRewritePrompt(scene.id, 'motion');
-                              }}
-                              placeholder="فیدبک برای اصلاح حرکت... مثلاً: پوزخند مغرورانه‌تر"
-                              className="flex-1 px-3 py-1.5 rounded-lg bg-slate-950 border border-indigo-900/60 text-xs text-slate-200 placeholder:text-slate-500 focus:border-indigo-400 focus:outline-none"
-                            />
-                            <button
-                              type="button"
-                              onClick={() => handleRewritePrompt(scene.id, 'motion')}
-                              disabled={isRewriting === `${scene.id}_motion` || !motionFeedback[scene.id]?.trim()}
-                              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white font-bold text-[11px] shadow-sm transition-all flex-shrink-0"
-                            >
-                              <Sparkles className={`w-3.5 h-3.5 ${isRewriting === `${scene.id}_motion` ? 'animate-spin' : ''}`} />
-                              {isRewriting === `${scene.id}_motion` ? 'در حال بازنویسی...' : 'بازنویسی'}
-                            </button>
-                          </div>
-                        </div>
-                      </>
-                    )}
+                    {/* Motion Prompt Textarea */}
+                    <div className="space-y-1">
+                      <label className="text-[10px] text-slate-400 font-medium block">
+                        پرامپت حرکت (بازیگری بی‌صدا، بدون فلگ زمانی در متن):
+                      </label>
+                      <textarea
+                        rows={2}
+                        value={motionPrompt}
+                        onChange={(e) => setEditedMotionPrompts({ ...editedMotionPrompts, [sceneId]: e.target.value })}
+                        placeholder="پرامپت حرکت ۲ ثانیه‌ای برای Google Flow / Vidu..."
+                        className="w-full p-2.5 rounded-lg bg-slate-950 border border-indigo-900/60 text-[11px] font-mono text-indigo-100 focus:border-indigo-400 focus:outline-none ltr-content leading-relaxed resize-y"
+                      />
+                    </div>
 
                     {/* Inline Video Player OR Upload Dropzone */}
                     <div className="space-y-2">
@@ -711,7 +697,7 @@ export default function SceneView({
                                 type="file"
                                 accept="video/mp4,video/*"
                                 className="hidden"
-                                onChange={(e) => handleVideoUpload(scene.id, e.target.files?.[0])}
+                                onChange={(e) => handleVideoUpload(sceneId, e.target.files?.[0])}
                               />
                             </label>
                           </div>
@@ -724,7 +710,7 @@ export default function SceneView({
                               آپلود کلیپ متحرک ۹:۱۶ (.mp4)
                             </span>
                             <p className="text-[10px] text-slate-400">
-                              کلیپ ۴s یا ۵s دانلودی در تدوین نهایی خودکار به ۲ ثانیه اول تریم می‌شود.
+                              کلیپ دانلودی از Google Flow / Vidu را اینجا قرار دهید.
                             </p>
                           </div>
 
@@ -735,11 +721,11 @@ export default function SceneView({
                               type="file"
                               accept="video/mp4,video/*"
                               className="hidden"
-                              onChange={(e) => handleVideoUpload(scene.id, e.target.files?.[0])}
+                              onChange={(e) => handleVideoUpload(sceneId, e.target.files?.[0])}
                             />
                           </label>
 
-                          {uploadingVideoId === scene.id && (
+                          {uploadingVideoId === sceneId && (
                             <div className="text-xs font-bold text-amber-400 pt-1">
                               در حال آپلود و پردازش ویدیو...
                             </div>
