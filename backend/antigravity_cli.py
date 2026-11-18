@@ -334,7 +334,16 @@ CRITICAL CONSTRAINTS:
 1. Read `universe.json` and `/projects/{episode_id}/state.json`.
 2. Do NOT generate any image files in this step. Generate ONLY the storyboard JSON data.
 3. For every scene in the episode (scene_01, scene_02, ...):
-   - Write an exhaustive, cinema-grade `visual_prompt_en` (minimum 80–120 words) with the 6-part anatomy: camera angle/framing (@Room_Master, @Seat_X), focal character micro-expression and posture, adjacent seated players at frame edges, persistent table state and props, Scene 1 master continuity lock, and handcrafted needle-felted stop-motion style lock.
+   - Include a structured `table_blueprint` object:
+     {{
+       "community_cards": {{ "stage": "preflop|flop|turn|river", "cards": ["..."], "layout": "..." }},
+       "pot": {{ "total_bb": 4.5, "visual": "...", "position": "center of table" }},
+       "player_zones": {{ "seat_1": {{ "character": "@Arash", "chip_stack": "...", "cards": "...", "props": "..." }}, ... }},
+       "persistent_props": ["emerald green wool felt", "dark brown leather rail", ...],
+       "lighting": "soft warm overhead studio macro lighting"
+     }}
+   - Write an exhaustive, cinema-grade `visual_prompt_en` (minimum 80–120 words) using the 8-part prompt anatomy formula:
+     [1. CONTINUITY_LOCK (from scene_02+)] + [2. STYLE_LOCK] + [3. CAMERA_ANGLE_&_FRAMING] + [4. FOCAL_CHARACTER_DNA_&_ACTING] + [5. ADJACENT_CHARACTERS_AT_EDGES] + [6. TABLE_BLUEPRINT_STATE] + [7. PERSISTENT_PROPS_&_LANDMARKS] + [8. LIGHTING_&_COMPOSITION_LOCK]
    - For every scene where `media_type` is "static_image": determine the dramatic camera movement and output structured `camera_direction`:
      {{
        "motion_type": "slow_zoom_in | fast_punch_in | slow_zoom_out | pan_left_to_right | pan_right_to_left | tilt_up | tilt_down | subtle_tilt_shake | static_hold",
@@ -380,18 +389,34 @@ async def start_images_generation(episode_id: str) -> EpisodeTask:
     task.current_step = "راه‌اندازی ایجنت تولید تصویر بومی آنتی‌گرویتی..."
     task.add_log(f"درخواست شروع تولید متوالی تصاویر برای اپیزود {episode_id}")
 
-    prompt = f"""You are the Visual Production Agent for Poker Studio.
-Execute PHASE 2 (Sequential Image Generation) strictly following `/.agent/skills/04-scene-director.md`.
+    prompt = f"""You are the Visual Production & Continuity Director for Poker Studio.
+Execute PHASE 2 (Sequential Image Generation) strictly following `/.agent/skills/04-scene-director.md` and the 5-Layer Visual Continuity Strategy.
 
-CRITICAL EXECUTION PROTOCOL:
-1. Read `/projects/{episode_id}/state.json` to load the approved storyboard scenes.
-2. Read `universe.json` to locate the reference image paths for Room Master, Seats, and active character face/body sheets.
-3. Sequentially generate keyframe images for each scene directly into `/projects/{episode_id}/assets/images/`:
-   - For `scene_01.png`: use `@Room_Master` and the active characters' face/body sheets as visual references.
-   - For `scene_02.png` through `scene_N.png`: pass `/projects/{episode_id}/assets/images/scene_01.png` (as the Episode Master Reference) + the focal `@Seat_X` reference + active character sheets to enforce 100% visual and spatial continuity.
-4. Verify each generated image file exists and is non-empty before proceeding to the next frame.
-5. Update `image_path` in `/projects/{episode_id}/state.json` for each scene.
-6. Once all frames are generated, provide a summary confirmation of all generated scene images.
+═══════════════════════════════════════════════════════════════
+CRITICAL CONTINUITY PROTOCOL:
+═══════════════════════════════════════════════════════════════
+
+1. PRE-FLIGHT CHECK:
+   - Read `/projects/{episode_id}/state.json` to load approved scenes with `table_blueprint`.
+   - Read `universe.json` to load image paths: `@Room_Master`, `@Seat_1`..`@Seat_6`, and character face/body sheets.
+
+2. MASTER FRAME (scene_01.png):
+   - Generate `scene_01.png` first using `@Room_Master` reference and active character face/body sheets.
+   - Verify `scene_01.png` is generated, non-empty, and establishes canonical table felt, chip colors (red=5BB, green=25BB, black=100BB), lighting, and props.
+   - This file is the EPISODE MASTER REFERENCE for all subsequent frames.
+
+3. SEQUENTIAL GENERATION (scene_02.png through scene_N.png):
+   For EVERY subsequent frame, strictly in order:
+   - MANDATORY REFERENCES: ALWAYS pass `/projects/{episode_id}/assets/images/scene_01.png` as Master Reference, PLUS the camera angle reference (e.g. `@Seat_X`), PLUS active character sheets.
+   - CONTINUITY HEADER: Prepend to the prompt:
+     "Maintain exact visual continuity with the provided reference image: identical emerald green wool table felt, identical chip colors (red/green/black miniature felt chips), identical warm amber studio macro lighting direction, identical dark brown leather rail, identical brass chandelier, identical background landmarks per seat position. All character clothing, accessories, hair color, and puppet proportions must match their character reference sheets exactly."
+   - INJECT TABLE BLUEPRINT: Include exact community cards, pot size in BB, and player chip stacks.
+   - INJECT CHARACTER DNA: Use each character's exact physical DNA block from universe.json.
+
+4. POST-GENERATION VERIFICATION:
+   - Verify generated image exists and is non-empty.
+   - Update `image_path` and `visual_asset` in `/projects/{episode_id}/state.json`.
+   - Ensure visual continuity of felt, chips, and characters across consecutive scenes.
 """
 
     try:
@@ -426,16 +451,39 @@ async def start_scene_regeneration(episode_id: str, scene_id: str) -> EpisodeTas
     task.current_step = f"راه‌اندازی ایجنت برای بازسازی فریم {scene_id}..."
     task.add_log(f"درخواست بازسازی فریم {scene_id} در اپیزود {episode_id}")
 
-    prompt = f"""You are the Visual Production Agent for Poker Studio.
-Regenerate keyframe image for scene `{scene_id}` in episode `{episode_id}` following `/.agent/skills/04-scene-director.md`.
+    prompt = f"""You are the Visual Production & Continuity Director for Poker Studio.
+Regenerate keyframe image for scene `{scene_id}` in episode `{episode_id}` following `/.agent/skills/04-scene-director.md` and the 5-Layer Visual Continuity Strategy.
 
-CRITICAL INSTRUCTIONS:
-1. Read `/projects/{episode_id}/state.json` and find the specific scene `{scene_id}`.
-2. Read `visual_prompt_en` for `{scene_id}`.
-3. Use `/projects/{episode_id}/assets/images/scene_01.png` as Episode Master Reference (if scene is not scene_01), plus the focal `@Seat_X` reference and character sheets from `universe.json`.
-4. Generate the new image and write it directly to `/projects/{episode_id}/assets/images/{scene_id}.png`.
-5. Verify the file is written and non-empty.
-6. Update `state.json` if needed and confirm completion.
+═══════════════════════════════════════════════════════════════
+CRITICAL CONTINUITY PROTOCOL FOR SCENE REGENERATION:
+═══════════════════════════════════════════════════════════════
+
+1. PRE-FLIGHT & BLUEPRINT CHECK:
+   - Read `/projects/{episode_id}/state.json` and find specific scene `{scene_id}`.
+   - Extract `table_blueprint`, `visual_prompt_en`, `characters_present`, and `camera_angle` for `{scene_id}`.
+   - Read `universe.json` to load character physical DNA blocks (`dna_block_en`), face/body sheets, and the angle reference image (`@Seat_X` or `@Room_Master`).
+
+2. MASTER FRAME REFERENCE:
+   - If `{scene_id}` != "scene_01": ALWAYS pass `/projects/{episode_id}/assets/images/scene_01.png` as Episode Master Reference, PLUS the specific `@Seat_X` angle reference from universe.json, PLUS active character face/body sheets.
+   - If `{scene_id}` == "scene_01": Use `@Room_Master` reference and active character face/body sheets from `universe.json` to re-establish the master baseline.
+
+3. CONTINUITY ENFORCEMENT & 8-PART PROMPT FORMULA:
+   - MANDATORY CONTINUITY HEADER (Prepend to the image generation prompt):
+     "Maintain exact visual continuity with Episode Master Reference (scene_01.png): identical emerald green wool table felt texture, identical chip colors (red=5BB, green=25BB, black=100BB miniature felt discs), identical warm amber studio macro lighting direction, identical dark brown leather rail, identical brass chandelier, identical background landmarks per seat position. Character clothing, hair, spectacles, mustache, and felt puppet proportions must strictly match character DNA blocks."
+   - TABLE BLUEPRINT ENFORCEMENT:
+     * Community cards on felt must match `{scene_id}`'s `table_blueprint.community_cards`.
+     * Pot chips in center of felt must visually reflect `table_blueprint.pot.total_bb`.
+     * Focal player's chip stack must match `table_blueprint.player_zones`.
+   - CHARACTER DNA ENFORCEMENT:
+     * Use each present character's exact physical `dna_block_en` from `universe.json`.
+   - Follow the 8-Part Prompt Anatomy strictly:
+     [1. CONTINUITY_LOCK] + [2. STYLE_LOCK] + [3. CAMERA_ANGLE_&_FRAMING] + [4. FOCAL_CHARACTER_DNA_&_ACTING] + [5. ADJACENT_CHARACTERS_AT_EDGES] + [6. TABLE_BLUEPRINT_STATE] + [7. PERSISTENT_PROPS_&_LANDMARKS] + [8. LIGHTING_&_COMPOSITION_LOCK]
+
+4. POST-GENERATION VERIFICATION & REPLACEMENT:
+   - Generate the new image and write it directly to `/projects/{episode_id}/assets/images/{scene_id}.png`.
+   - Verify the file is written and non-empty (>50KB).
+   - Verify that felt color, chip design, character facial features, and lighting are strictly consistent with scene_01.png.
+   - Update `/projects/{episode_id}/state.json` (`image_path` and `visual_asset` for `{scene_id}`) and confirm completion.
 """
 
     try:

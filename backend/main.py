@@ -220,10 +220,22 @@ async def upload_universe_asset(
         universe["environment"]["reference_image_path"] = relative_url
         save_universe(universe)
     elif asset_type == "angle" and angle_id:
-        if "camera_angles" not in universe:
-            universe["camera_angles"] = {}
-        if angle_id in universe["camera_angles"]:
+        updated = False
+        env_angles = universe.get("environment", {}).get("camera_angles", [])
+        if isinstance(env_angles, list):
+            for ang in env_angles:
+                if ang.get("id") == angle_id:
+                    ang["reference_image_path"] = relative_url
+                    updated = True
+                    break
+        elif isinstance(env_angles, dict) and angle_id in env_angles:
+            env_angles[angle_id]["reference_image_path"] = relative_url
+            updated = True
+        
+        if "camera_angles" in universe and isinstance(universe["camera_angles"], dict) and angle_id in universe["camera_angles"]:
             universe["camera_angles"][angle_id]["reference_image_path"] = relative_url
+            updated = True
+        if updated:
             save_universe(universe)
     elif asset_type == "character" and character_id:
         for c in universe.get("characters", []):
@@ -781,9 +793,31 @@ Return ONLY a valid JSON object with key `"characters"` containing character def
         
         script_segments = state.get("script", {}).get("segments", [])
         ep_characters = state.get("characters", [])
-        camera_angles_map = universe.get("camera_angles", {})
+        chars_for_seating = ep_characters if ep_characters else universe.get("characters", [])
         
-        neighbors_map, seating_summary = compute_seated_neighbors_context(ep_characters, camera_angles_map)
+        _raw_angles = universe.get("environment", {}).get("camera_angles", [])
+        if not _raw_angles and "camera_angles" in universe:
+            _raw_angles = universe["camera_angles"]
+        if isinstance(_raw_angles, list):
+            camera_angles_map = {item["id"]: item for item in _raw_angles if isinstance(item, dict) and "id" in item}
+        elif isinstance(_raw_angles, dict):
+            camera_angles_map = _raw_angles
+        else:
+            camera_angles_map = {}
+        
+        neighbors_map, seating_summary = compute_seated_neighbors_context(chars_for_seating, camera_angles_map)
+
+        # Build Character DNA blocks summary
+        dna_summary_lines = []
+        for c in (ep_characters if ep_characters else universe.get("characters", [])):
+            c_tag = c.get("flow_tag") or c.get("name_en") or c.get("id")
+            dna = c.get("dna_block_en", "")
+            if not dna:
+                u_char = next((x for x in universe.get("characters", []) if x.get("id") == c.get("id") or x.get("flow_tag") == c.get("flow_tag")), {})
+                dna = u_char.get("dna_block_en", "")
+            if dna:
+                dna_summary_lines.append(f"- {c_tag}: \"{dna}\"")
+        character_dna_summary = "\n".join(dna_summary_lines)
         
         prompt = f"""You are the Lead Storyboard, Motion & Continuity Director for an Iranian animated poker comedy series.
 Follow {skill_filename} to generate the complete, exhaustive storyboard array (`scenes`) in STRICT JSON format.
@@ -796,6 +830,10 @@ Follow {skill_filename} to generate the complete, exhaustive storyboard array (`
 {seating_summary}
 
 ---
+### CHARACTER VISUAL DNA BLOCKS (MANDATORY INJECTION):
+{character_dna_summary}
+
+---
 ### EPISODE SCRIPT SEGMENTS (Total {len(script_segments)} segments):
 {json.dumps(script_segments, ensure_ascii=False, indent=2)}
 
@@ -805,7 +843,11 @@ Follow {skill_filename} to generate the complete, exhaustive storyboard array (`
 
 ---
 ### OUTPUT REQUIREMENT:
-Return ONLY a valid JSON object with key `"scenes"` containing cinema-grade, richly detailed visual prompts (80-120 words minimum), motion prompts for ai_video shots, automated camera_direction objects for static_image shots, persistent table states, seated neighbors, and Scene 1 master continuity locks.
+Return ONLY a valid JSON object with key `"scenes"` containing:
+1. Every scene must have `table_blueprint` (exact community cards, pot size/composition in BB, per-seat player zones, persistent props).
+2. Every scene must follow the 8-part visual_prompt_en formula (Continuity lock, Style lock, Camera angle, Focal character DNA block & acting, Adjacent characters at edges, Table blueprint state, Persistent props/landmarks, Lighting & 9:16 composition lock - minimum 80-120 words).
+3. Automated `camera_direction` for static_image shots, and `motion_prompt_en` for ai_video shots.
+4. Scene 1 master continuity lock for all scenes from scene_02 onward.
 """
         return {
             "episode_id": episode_id,
@@ -980,6 +1022,7 @@ def import_ai_studio_json(episode_id: str, stage: str, req: ImportJsonRequest):
                 "characters_present": sc.get("characters_present", []),
                 "adjacent_players": adjacent,
                 "table_state_en": table_state_text,
+                "table_blueprint": sc.get("table_blueprint") or old_sc.get("table_blueprint", {}),
                 "camera": sc.get("camera_angle", "Medium Shot"),
                 "media_type": media_type,
                 "shot_mode": mode,
