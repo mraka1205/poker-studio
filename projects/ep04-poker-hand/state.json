@@ -1,0 +1,1627 @@
+{
+  "episode_id": "ep04-poker-hand",
+  "title": "«وقتی آقا رحیم بعد از دو ساعت ریز میده!»",
+  "english_title": "",
+  "version": "1.1.0",
+  "current_stage": 5,
+  "stages": [
+    {
+      "id": "stage_1",
+      "stage_number": 1,
+      "name_fa": "ایده",
+      "name_en": "Idea",
+      "status": "approved",
+      "approved_at": "2026-11-17T23:53:13.343687Z",
+      "notes": "ایده و دست با موفقیت از هوش مصنوعی ثبت شد"
+    },
+    {
+      "id": "stage_2",
+      "stage_number": 2,
+      "name_fa": "Bible",
+      "name_en": "Bible",
+      "status": "approved",
+      "approved_at": "2026-11-17T23:53:13.328736Z",
+      "notes": "کتابچه استراتژی و جوک‌ها ذخیره شد"
+    },
+    {
+      "id": "stage_3",
+      "stage_number": 3,
+      "name_fa": "سناریو",
+      "name_en": "Script",
+      "status": "approved",
+      "approved_at": "2026-11-17T23:54:57.070382Z",
+      "notes": "سناریوی دو متنی با اعراب TTS تایید و ذخیره شد"
+    },
+    {
+      "id": "stage_4",
+      "stage_number": 4,
+      "name_fa": "کاراکترها",
+      "name_en": "Characters",
+      "status": "approved",
+      "approved_at": "2026-11-17T23:55:41.964559Z",
+      "notes": ""
+    },
+    {
+      "id": "stage_5",
+      "stage_number": 5,
+      "name_fa": "صدا و میکس",
+      "name_en": "Audio & Mix",
+      "status": "in_progress",
+      "approved_at": null,
+      "notes": ""
+    },
+    {
+      "id": "stage_6",
+      "stage_number": 6,
+      "name_fa": "صحنه‌ها",
+      "name_en": "Scenes",
+      "status": "pending",
+      "approved_at": null,
+      "notes": ""
+    },
+    {
+      "id": "stage_7",
+      "stage_number": 7,
+      "name_fa": "تدوین",
+      "name_en": "Edit",
+      "status": "pending",
+      "approved_at": null,
+      "notes": ""
+    },
+    {
+      "id": "stage_8",
+      "stage_number": 8,
+      "name_fa": "انتشار",
+      "name_en": "Publish",
+      "status": "pending",
+      "approved_at": null,
+      "notes": ""
+    },
+    {
+      "id": "stage_9",
+      "stage_number": 9,
+      "name_fa": "عددها",
+      "name_en": "Analytics",
+      "status": "pending",
+      "approved_at": null,
+      "notes": ""
+    }
+  ],
+  "idea": {
+    "theme": "وقتی نیتِ میز بعد از دو ساعت با پاکت آس ریز می‌دهد و یک مانی‌اک و یک کالی‌استیشنِ لجباز به جان هم می‌افتند!",
+    "raw_hand_or_concept": "حاضرین سر میز:صندلی ۱ (@Seat_1): آرش (@Arash) — دست: $K\\spadesuit Q\\spadesuit$صندلی ۲ (@Seat_2): کیوان (@Keyvan) — دست: $8\\heartsuit 7\\heartsuit$صندلی ۳ (@Seat_3): آقا رحیم (@Rahim) — دست: $A\\spadesuit A\\diamondsuit$ (بعد از ۲ ساعت فولد!)صندلی ۴ (@Seat_4): فرزاد (@Farzad) — دست: $7\\clubsuit 2\\diamondsuit$صندلی ۵ (@Seat_5): بیژن (@Bijan) — دست: $9\\diamondsuit 4\\clubsuit$ساختار داستان و ضرباهنگ صحنه‌ها (Story Beat Sheet)هوک (ثانیه ۰ تا ۴) — @Room_Master & @Seat_3:راوی: «دو ساعته آقا رحیم حتی یه دست هم بازی نکرده... ولی بالاخره دست‌های لرزونش میره سمت چیپ‌ها!»آقا رحیم با اخم غلیظ و عینک پایین‌آمده، خیلی آرام و با وسواس یک مینی-ریز (Min-Raise) می‌دهد.واکنش‌های زنجیره‌ای میز (ثانیه ۴ تا ۱۴) — کات‌های سریع ۲ ثانیه‌ای:کات ۱ (@Seat_1 — آرش): با وحشت عینکش را بالا می‌دهد و با انگشت می‌شمارد: «آقا رحیم ریز داد؟! از نظر ریاضی رنجش فقط پاکت آس یا شاهه، شانسم صفره... فولد!»کات ۲ (@Seat_2 — کیوان): در سکوت مطلق و با صورت سنگی (Poker Face) فقط یک نگاه سرد می‌اندازد و کارت‌هایش را آرام می‌گذارد زمین (فولد بی‌صدا).کات ۳ (@Seat_4 — فرزاد): با پوزخند لاتی سینه‌اش را جلو می‌دهد، گردنبند طلایش را تکان می‌دهد و بدون نگاه به کارت‌هایش ($7\\text{-}2$) کل چیپ‌هایش را می‌کوبد وسط: «آل-این! حاجی ترسوندی همرو، بیا ببینم جراتشو داری یا باز میخوای بترسی!»گره اصلی و ورود بیژن (ثانیه ۱۴ تا ۲۴) — @Seat_5 & @Seat_3:کات ۴ (@Seat_5 — بیژن): یک قلپ چای می‌خورد، تسبیح را می‌چرخاند و با لبخند بی‌خیال ($9\\text{-}4$ دستش است): «من تا ریور رو نبینم شب خوابم نمیبره داداش... کال!»کات ۵ (@Seat_3 — آقا رحیم): آقا رحیم با دستان لرزان و لبخند زیرپوستیِ پیروزی، پاکت آس‌هایش را کال می‌کند و با غرور می‌گوید: «بفرما جوون، پولِ زحمت‌کشیده اینجوری خرج میشه!»فلاپ، ترن و ریور (ثانیه ۲۴ تا ۳۴) — @Room_TopDown:دیلر کارت‌ها را باز می‌کند: فلاپ ۹-۴-۲! (بیژن دوپر شده!)ترن: خشت الکی — ریور: آس! (آقا رحیم ست آس شده و فکر می‌کند برده، ولی روی میز ۹-۴-۲-۳-آس نشسته — یعنی فرزاد با $7\\text{-}2$ و بیژن با $9\\text{-}4$ هر دو درگیر ماجرا هستند، اما پات عظیم به بیژن با دوپرِ نُه و چهار می‌رسد چون استریت روی میز کامل نشده و آسِ ریور هم دست بیژن را خراب نکرده!).(اصلاح سریع برای اینکه کمدی‌اش ۱۰۰٪ ضربه‌گیر باشد: فلاپ ۹-۴-۱۰، ترن ۲، ریور ۴ — بیژن با $9\\text{-}4$ فول‌هاوس (Full House) می‌شود!)انفجار پایانی / Punchline (ثانیه ۳۴ تا ۴۲) — کات‌های ۲ ثانیه‌ای (ai_video):آقا رحیم (@Seat_3): با دهان باز و چشم‌های گردشده از پشت عینک به پاکت آس‌هایش و فول‌هاوسِ بیژن زل می‌زند و غر می‌زند: «آخه با نُه و چهار کی آل-این کال میکنه؟!»فرزاد (@Seat_4 — تیلت مطلق): با مشت می‌کوبد روی میز، رگ گردنش بیرون می‌زند و داد می‌زند: «ای کیـ... [بوق] تو این شانس و دِیلر! با آشغال اومدی تو پات بی‌پدر؟!»بیژن (@Seat_5): با آرامش یک قلپ دیگر چای می‌خورد، شانه‌هایش را بالا می‌اندازد و با پوزخند چشمک می‌زند: «دیدم بلوف میزنی گفتم خجالت نکشی اومدم باهات!»کیوان (@Seat_2 — کات پایانی ۱.۵ ثانیه): در سکوت، فقط یک لبخند محو و خونسرد می‌زند.",
+    "target_platform": "YouTube Shorts / Instagram Reels (9:16)",
+    "core_lesson": "در میزهای لایو و هوم‌گیم، وقتی بازیکنی مثل آقا رحیم بعد از دو ساعت فولد پیاپی ناگهان مینی-ریز می‌دهد، رنج او به‌شدت به پاکت آس و شاه محدود است. فولد کردن دست‌های خوش‌نقش مثل K♠Q♠ و 8♥7♥ توسط آرش و کیوان کاملاً حرفه‌ای و درست است، در حالی که آل-این کورکورانه‌ی فرزاد با ۷-۲ عملاً سوزاندن چیپ در برابر رنجی است که هیچ‌وقت فولد نمی‌دهد. برد تصادفی بیژن با ۹-۴ صرفاً چهره‌ی بی‌رحم واریانس کوتاه‌مدت در پوکر است.",
+    "punchline": ""
+  },
+  "bible": {
+    "visual_style": "Modern stylized 2D cartoon, Rick & Morty meets Archer aesthetic",
+    "frame_aspect_ratio": "9:16",
+    "concept_summary": {
+      "theme": "وقتی نیتِ میز بعد از دو ساعت با پاکت آس ریز می‌دهد و یک مانی‌اک و یک کالی‌استیشنِ لجباز به جان هم می‌افتند!",
+      "poker_lesson": "در میزهای لایو و هوم‌گیم، وقتی بازیکنی مثل آقا رحیم بعد از دو ساعت فولد پیاپی ناگهان مینی-ریز می‌دهد، رنج او به‌شدت به پاکت آس و شاه محدود است. فولد کردن دست‌های خوش‌نقش مثل K♠Q♠ و 8♥7♥ توسط آرش و کیوان کاملاً حرفه‌ای و درست است، در حالی که آل-این کورکورانه‌ی فرزاد با ۷-۲ عملاً سوزاندن چیپ در برابر رنجی است که هیچ‌وقت فولد نمی‌دهد. برد تصادفی بیژن با ۹-۴ صرفاً چهره‌ی بی‌رحم واریانس کوتاه‌مدت در پوکر است.",
+      "gto_vs_exploit": "در تئوری استاندارد (GTO) دفاع با KQs یا 87s در برابر یک اوپن کوچک عادی کاملاً منطقی است؛ اما در بازی اکسپلویت (Exploitative) مقابل یک سوپر-نیتِ واقعی، حتی فولد کردن دست‌های قوی پیش‌فلاپ بالاترین سود (+EV) را دارد. همچنین بلوف زدن مانی‌اک‌وار جلوی ترکیبی از یک نیتِ با پاکت آس و یک کالی‌استیشنِ که اصلاً دکمه‌ی فولد ندارد، بدترین اشتباه استراتژیک ممکن است."
+    },
+    "hand_details": {
+      "game_type": "No-Limit Hold'em (NLH) - 5-Handed at 6-Max Home Game",
+      "effective_stack_bb": 100,
+      "hero_position": "UTG / Seat 3 (آقا رحیم @Rahim - پوزیشن اصلی روایت)",
+      "villain_position": "MP / Seat 4 (فرزاد @Farzad) & CO / Seat 5 (بیژن @Bijan) — به همراه SB / Seat 1 (آرش @Arash) و BB / Seat 2 (کیوان @Keyvan)",
+      "hero_cards": "A♠ A♦ (آقا رحیم)",
+      "preflop_action": "آقا رحیم (@Seat_3) پس از ۲ ساعت فولد مداوم با A♠ A♦ مینی-ریز ۲ BB می‌دهد. آرش (@Seat_1) با K♠ Q♠ با وحشت و حساب‌کتاب سریع فولد می‌دهد و کیوان (@Seat_2) با 8♥ 7♥ در سکوت کامل کارت‌هایش را می‌اندازد. فرزاد (@Seat_4) بدون نگاه به 7♣ 2♦ کل ۱۰۰ BB خود را آل-این می‌کوبد وسط. بیژن (@Seat_5) با یک قلپ چای و 9♦ 4♣ آل-این را کال می‌کند. آقا رحیم با دستان لرزان و لبخند پیروزی ۱۰۰ BB را اسنپ-کال می‌کند. پات: ۳۰۰ BB",
+      "flop_board": "9♣ 4♠ T♦ (Rainbow)",
+      "flop_action": "بازیکنان آل-این هستند؛ بیژن با 9♦ 4♣ روی فلاپ دوپرِ ۹ و ۴ می‌شود و شوک بزرگی به آقا رحیم وارد می‌کند.",
+      "turn_board": "2♥",
+      "turn_action": "بی‌تغییر در برتری (فرزاد با ۷-۲ یک جفت ۲ می‌گیرد اما همچنان امیدی ندارد و آقا رحیم هنوز دنبال آس یا ۱۰ است).",
+      "river_board": "4♥",
+      "river_action": "چهارِ دل روی ریور می‌نشیند و بیژن با 9♦ 4♣ فول‌هاوسِ چهار و نُه (Full House, 4s full of 9s) می‌سازد و دست آقا رحیم و فرزاد را کامل نابود می‌کند.",
+      "villain_cards": "بیژن (@Bijan): 9♦ 4♣ | فرزاد (@Farzad): 7♣ 2♦ | آرش (@Arash - Folded): K♠ Q♠ | کیوان (@Keyvan - Folded): 8♥ 7♥",
+      "final_pot_bb": 300,
+      "winning_hand": "بیژن (@Bijan) با 9♦ 4♣ و فول‌هاوس چهار و نُه پات ۳۰۰ بیگ‌بلایندی را در برابر دوپرِ آس و چهار آقا رحیم (A♠ A♦) و ۷-۲ فرزاد (7♣ 2♦) برنده می‌شود."
+    },
+    "comedy_beats": [
+      "مینی-ریزِ تاریخی آقا رحیم بعد از دو ساعت فولد؛ طوری که انگار بعد از دو سال خشکسالی توی کویر لوت بارون اومده و کل میز آژیر قرمز می‌زنن!",
+      "واکنش عصبی آرش با شمارش انگشتیِ درصدها: با عینک بالا رفته داد می‌زنه آقا رحیم ریز داده؟ از نظر ریاضی حتی اگه جفت شاه داشته باشه شانسم تقریباً صفره، فولد!",
+      "قلدری بی‌منطق فرزاد با ۷-۲ آل-این کور: بدون اینکه حتی گوشه‌ی کارتش رو ببینه کل استکش رو می‌کوبه وسط تا سند شش‌دانگ کازینو رو به زور از آقا رحیم بگیره!",
+      "کال کردنِ ۱۰۰ بیگ‌بلایندی برای خشنودی اموات توسط بیژن: یه قلپ چای زعفرانی هورت می‌کشه، تسبیح رو می‌چرخونه و با ۹-۴ خال‌متفاوت میگه من تا ریور رو نبینم شب خوابم نمیبره!",
+      "فول‌هاوسِ ۹-۴ روی ریور و سکته‌ی همزمان نیت و مانی‌اک: آقا رحیم از پشت عینک ته‌استکانی مثل مجسمه خشکش می‌زنه و فرزاد رگ گردنش میزنه بیرون که با آشغال اومدی تو پات بی‌پدر؟!",
+      "پانچ‌لاینِ خونسردانه‌ی بیژن و لبخند کیوان: بیژن با شونه بالا انداختن و چشمک میگه «دیدم بلوف میزنی گفتم خجالت نکشی اومدم باهات!» و کیوان در سکوت فقط یک لبخند مرموزِ شارک‌طور می‌زند."
+    ],
+    "archetypes": [
+      {
+        "name": "آقا رحیم",
+        "flow_tag": "@Rahim",
+        "role": "HERO / VICTIM (The Ultra-Nit Grandpa)",
+        "mindset": "پس از دو ساعت فولد کردن و نگه داشتن دژِ چیپ‌ها، مطمئن است با پاکت آس بالاخره پول زحمت‌کشیده و بی‌دردسر به جیب می‌زند و هیچ تصوری از باختن به ۹-۴ ندارد."
+      },
+      {
+        "name": "بیژن",
+        "flow_tag": "@Bijan",
+        "role": "VILLAIN / WINNER (The Calling Station Fish)",
+        "mindset": "با استکان چای و تسبیح کهربا معتقد است فرزاد بلوف می‌زند و بدون دیدن ریور خوابش نمی‌برد؛ ۹-۴ را برای خشنودی دلش کال ۱۰۰ بیگ‌بلایندی می‌کند."
+      },
+      {
+        "name": "فرزاد",
+        "flow_tag": "@Farzad",
+        "role": "VILLAIN / MANIAC (The Aggressive Street-Tough Maniac)",
+        "mindset": "تلاش می‌کند با قلدری روانی و آل-این کور با ۷-۲، آقا رحیمِ ترسو را از روی دستش فراری دهد و در ریور دچار تیلت انفجاری می‌شود."
+      },
+      {
+        "name": "آرش",
+        "flow_tag": "@Arash",
+        "role": "SUPPORTING / DISCIPLINED FOLD (The Overthinking Math Nerd)",
+        "mindset": "با دیدن مینی-ریز آقا رحیم با انگشت درصد و اوت می‌شمارد، مطمئن می‌شود رنج پیرمرد فقط پاکت آس یا شاه است و با استرس اما منطقی KQs را فولد می‌دهد."
+      },
+      {
+        "name": "کیوان",
+        "flow_tag": "@Keyvan",
+        "role": "OBSERVER / PRO SHARK (The Ice-Cold Silent Reg)",
+        "mindset": "در سکوت مطلق و با چهره‌ی سنگی رنج آقا رحیم را می‌خواند، 87s را بی‌صدا فولد می‌دهد و در پایان با یک لبخند محو از تماشای کشتار ماهی‌ها لذت می‌برد."
+      },
+      {
+        "name": "راوی",
+        "flow_tag": "NARRATOR",
+        "role": "NARRATOR",
+        "mindset": "راوی تند و تیز و طناز که مثل گزارشگر فوتبال، فاجعه‌ی تاریخیِ پاکت آس آقا رحیم را با شوخی‌های بومی روایت می‌کند."
+      }
+    ]
+  },
+  "characters": [],
+  "script": {
+    "title": "وقتی آقا رحیم بعد از دو ساعت ریز میده!",
+    "segments": [
+      {
+        "id": "seg_01",
+        "act": "Hook (0-5s)",
+        "speaker": "NARRATOR",
+        "emotion": "hype",
+        "subtitle_fa": "دو ساعته آقا رحیم حتی یه دست هم بازی نکرده... ولی بالاخره دست‌های لرزونش میره سمت چیپ‌ها!",
+        "tts_fa": "دو ساعَتِه آقا رَحیم حَتّی یِه دَسْت هَم بازی نَکَردِه... وَلی بِلاخَرِه دَسْت‌هایِ لَرزونِش میرِه سَمْتِ چیپ‌ها!",
+        "estimated_duration_sec": 5.0,
+        "poker_context": "Rahim in UTG (@Seat_3) wakes up with A♠ A♦ after 2 hours of folding"
+      },
+      {
+        "id": "seg_02",
+        "act": "Hook (5-9.5s)",
+        "speaker": "@Rahim",
+        "emotion": "condescending",
+        "subtitle_fa": "با این پاکت آس، دیگه وقتشه یه مینی-ریز کوچیک بدم... حالا کی جرات داره بیاد؟",
+        "tts_fa": "با این پاکِت آس، دیگِه وَقْتِشِه یِه مینی‌رِیزِ کوچیک بِدَم... حالا کی جُرأَت دارِه بیاد؟",
+        "estimated_duration_sec": 4.5,
+        "poker_context": "Rahim min-raises to 2 BB with A♠ A♦"
+      },
+      {
+        "id": "seg_03",
+        "act": "Chain Reaction",
+        "speaker": "@Arash",
+        "emotion": "panicked",
+        "subtitle_fa": "یا خدا! آقا رحیم ریز داد؟! صبر کن... از نظر ریاضی رنجش فقط پاکت آس یا شاهه، با شاه-بی‌بی سوتد شانسم صفره... فولد!",
+        "tts_fa": "یا خُدا! آقا رَحیم رِیز داد؟! صَبْر کُن... اَز نَظَرِ رِیاضی رِینْجِش فَقَط پاکِت آس یا شاهِه، با شاه‌بی‌بی سوتِد شانْسَم صِفْرِه... فولد!",
+        "estimated_duration_sec": 5.5,
+        "poker_context": "Arash (@Seat_1) folds K♠ Q♠ calculating Rahim's ultra-tight range"
+      },
+      {
+        "id": "seg_04",
+        "act": "Chain Reaction",
+        "speaker": "NARRATOR",
+        "emotion": "deadpan",
+        "subtitle_fa": "کیوان هم با ۸-۷ سوتد، تو سکوت مطلق یه نگاه سرد میندازه و کارت‌هاش رو آروم میذاره زمین.",
+        "tts_fa": "کِیْوان هَم با هَشْت‌هَفْتِ سوتِد، تو سُکوتِ مُطْلَق یِه نِگاهِ سَرد مینْدازِه و کارتْهاش رو آروم میذارِه زَمین.",
+        "estimated_duration_sec": 4.5,
+        "poker_context": "Keyvan (@Seat_2) silently folds 8♥ 7♥ with a stone-cold poker face"
+      },
+      {
+        "id": "seg_05",
+        "act": "Chain Reaction",
+        "speaker": "@Farzad",
+        "emotion": "hype",
+        "subtitle_fa": "آل-این! حاجی ترسوندی همه‌رو؟ من بدون نگاه به کارت‌هام میام وسط! بیا ببینم جراتشو داری یا باز میخوای بترسی؟",
+        "tts_fa": "آل‌آین! حاجی تَرسونْدی هَمَه‌رو؟ مَن بِدونِ نِگاه بِه کارت‌هام میام وَسَط! بیا بِبینَم جُرأَتِشو داری یا باز میخوای بِتَرْسی؟",
+        "estimated_duration_sec": 5.5,
+        "poker_context": "Farzad (@Seat_4) blindly shoves 100 BB All-In with 7♣ 2♦"
+      },
+      {
+        "id": "seg_06",
+        "act": "Hand Setup",
+        "speaker": "@Bijan",
+        "emotion": "smug",
+        "subtitle_fa": "یه قلپ چای بزنیم... من تا ریور رو نبینم شب خوابم نمیبره داداش! با ۹ و ۴، کال!",
+        "tts_fa": "یِه قُلُپ چای بِزَنیم... مَن تا ریوِر رو نَبینَم شَب خوابَم نِمیبَرِه داداش! با نُه و چَهار، کال!",
+        "estimated_duration_sec": 5.5,
+        "poker_context": "Bijan (@Seat_5) sips tea and calls 100 BB All-In with 9♦ 4♣"
+      },
+      {
+        "id": "seg_07",
+        "act": "Hand Setup",
+        "speaker": "@Rahim",
+        "emotion": "smug",
+        "subtitle_fa": "بفرما جوون! پولِ زحمت‌کشیده اینجوری خرج میشه... با دو تا جوجه اومدین جلوی پاکت آس؟ کال!",
+        "tts_fa": "بِفَرما جَوون! پولِ زَحْمَت‌کِشیدِه اینْجوری خَرْج میشِه... با دو تا جوجِه اومَدین جِلویِ پاکِت آس؟ کال!",
+        "estimated_duration_sec": 5.0,
+        "poker_context": "Rahim snap-calls 100 BB All-In with A♠ A♦. 3-way pot: 300 BB"
+      },
+      {
+        "id": "seg_08",
+        "act": "Comedy Breakdown",
+        "speaker": "NARRATOR",
+        "emotion": "hype",
+        "subtitle_fa": "پات میشه سیصد بیگ بلایند! دیلر فلاپ رو باز می‌کنه: ۹، ۴، ۱۰! بیژن همین الان دوپر ۹ و ۴ شده!",
+        "tts_fa": "پات میشِه سیصَد بیگ بْلایْند! دِیلِر فِلاپ رو باز می‌کُنِه: نُه، چَهار، دَه! بیژَن هَمین اَلان دوپِرِ نُه و چَهار شُدِه!",
+        "estimated_duration_sec": 5.5,
+        "poker_context": "Flop: 9♣ 4♠ T♦ (Rainbow). Bijan takes the lead with Two Pair"
+      },
+      {
+        "id": "seg_09",
+        "act": "Comedy Breakdown",
+        "speaker": "NARRATOR",
+        "emotion": "hype",
+        "subtitle_fa": "ترن میاد ۲... و روی ریور یه ۴ِ دیگه میاد! بیژن با ۹ و ۴ فول‌هاوس شد!",
+        "tts_fa": "تِرن میاد دو... و رویِ ریوِر، یِه چَهارِ دیگِه میاد! بیژَن با نُه و چَهار، فول‌هاوْس شُد!",
+        "estimated_duration_sec": 5.0,
+        "poker_context": "Turn: 2♥, River: 4♥. Bijan makes Full House (4s full of 9s), scooping 300 BB"
+      },
+      {
+        "id": "seg_10",
+        "act": "Punchline",
+        "speaker": "@Rahim",
+        "emotion": "confused",
+        "subtitle_fa": "چی شد؟! آخه با ۹ و ۴ کی صد بیگ بلایند آل-این کال می‌کنه؟! سکته کردم!",
+        "tts_fa": "چی شُد؟! آخِه با نُه و چَهار کی صَد بیگ بْلایْند آل‌آین کال می‌کُنِه؟! سَکْتِه کَردَم!",
+        "estimated_duration_sec": 4.5,
+        "poker_context": "Rahim is stunned as his Pocket Aces get cracked by 9-4o"
+      },
+      {
+        "id": "seg_11",
+        "act": "Punchline",
+        "speaker": "@Farzad",
+        "emotion": "panicked",
+        "subtitle_fa": "ای [بوق] تو این شانس و دیلر! با آشغال اومدی تو پات کل استکم رو بردی؟!",
+        "tts_fa": "اِی، بیپ، تو این شانْس و دِیلِر! با آشْغال اومَدی تو پات کُلِّ اِسْتَکَم رو بُردی؟!",
+        "estimated_duration_sec": 4.5,
+        "poker_context": "Farzad goes on mega-tilt seeing Bijan's 9-4o beat everyone"
+      },
+      {
+        "id": "seg_12",
+        "act": "Punchline",
+        "speaker": "@Bijan",
+        "emotion": "smug",
+        "subtitle_fa": "دیدم بلوف می‌زنی گفتم خجالت نکشی اومدم باهات! آرش جان چاییت سرد شد، بازی رو بچسب!",
+        "tts_fa": "دیدَم بْلَف میزَنی گُفْتَم خِجالَت نَکِشی اومَدَم باهات! آرَش جان چاییت سَرد شُد، بازی رو بِچَسْب!",
+        "estimated_duration_sec": 5.0,
+        "poker_context": "Bijan shrugs calmly, sips tea, and scoops the 300 BB pot"
+      },
+      {
+        "id": "seg_13",
+        "act": "Golden Takeaway",
+        "speaker": "NARRATOR",
+        "emotion": "sarcastic",
+        "subtitle_fa": "کیوان تو سکوت فقط یه لبخند خونسرد میزنه؛ جلوی نیت بلوف زدن خودکشیه، ولی جادوی چایی بیژن حساب‌کتاب نداره!",
+        "tts_fa": "کِیْوان تو سُکوت فَقَط یِه لَبْخَنْدِ خونسَرد میزَنِه؛ جِلویِ نیت بْلَف زَدَن خُدْکُشیِه، وَلی جادویِ چاییِ بیژَن حِساب‌کِتاب نَدارِه!",
+        "estimated_duration_sec": 6.0,
+        "poker_context": "Keyvan smirks silently at the chaos; takeaway lesson on nits vs calling stations"
+      }
+    ]
+  },
+  "scenes": [
+    {
+      "id": "scene_01",
+      "beat_index": 1,
+      "time_range": "00:00 - 00:02",
+      "title": "نمای معرف میز - شروع دست با حضور هر پنج بازیکن",
+      "duration_sec": 2.0,
+      "segment_ids": [
+        "seg_01"
+      ],
+      "characters_present": [
+        "@Arash",
+        "@Keyvan",
+        "@Rahim",
+        "@Farzad",
+        "@Bijan"
+      ],
+      "adjacent_players": [
+        "@Arash (seat_1, left: empty seat_6, right: @Keyvan seat_2)",
+        "@Keyvan (seat_2, left: @Arash seat_1, right: @Rahim seat_3)",
+        "@Rahim (seat_3, left: @Keyvan seat_2, right: @Farzad seat_4)",
+        "@Farzad (seat_4, left: @Rahim seat_3, right: @Bijan seat_5)",
+        "@Bijan (seat_5, left: @Farzad seat_4, right: empty seat_6)"
+      ],
+      "table_state_en": "Preflop start: 1.5 BB pot in center, no community cards on emerald green wool felt, Bijan's miniature glass estekan of amber tea and amber tasbih on seat_5 side table, Arash's tablet and neat 100BB chip stacks at seat_1, Keyvan's ultra-neat tall chip towers at seat_2, Rahim's protected chip stack with felted hand guards at seat_3, Farzad's messy chip pile at seat_4, seat_6 empty",
+      "camera": "@Room_Master Wide Establishing Shot",
+      "shot_mode": "static_zoom",
+      "camera_effect": "zoom_in",
+      "visual_prompt": "Handcrafted needle-felted stop-motion animation style, wide establishing master shot of the entire 6-max oval poker table at @PokerRoom. Seated clockwise: @Arash at seat_1 in blue knit sweater and round black glasses with his tablet and neat 100BB chip stacks; @Keyvan at seat_2 in charcoal waistcoat with ultra-neat tall chip towers; @Rahim at seat_3 in cream cardigan with a protected chip stack and felted hand guards; @Farzad at seat_4 in red plaid shirt with a messy chip pile; @Bijan at seat_5 in dark paisley vest with salt-and-pepper mustache, miniature glass estekan of amber tea and amber tasbih on the side table. Seat_6 is empty. In center, a small 1.5 BB pot of miniature felted chips rests on fuzzy emerald-green table felt under warm brass chandelier light. Miniature Persian rug below table, felted brick walls, velvet curtains, bookshelf, backgammon shelf and tea tray landmarks visible. Tactile fuzzy wool textures, rich saturated colors, soft warm studio macro lighting, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "visual_prompt_en": "Handcrafted needle-felted stop-motion animation style, wide establishing master shot of the entire 6-max oval poker table at @PokerRoom. Seated clockwise: @Arash at seat_1 in blue knit sweater and round black glasses with his tablet and neat 100BB chip stacks; @Keyvan at seat_2 in charcoal waistcoat with ultra-neat tall chip towers; @Rahim at seat_3 in cream cardigan with a protected chip stack and felted hand guards; @Farzad at seat_4 in red plaid shirt with a messy chip pile; @Bijan at seat_5 in dark paisley vest with salt-and-pepper mustache, miniature glass estekan of amber tea and amber tasbih on the side table. Seat_6 is empty. In center, a small 1.5 BB pot of miniature felted chips rests on fuzzy emerald-green table felt under warm brass chandelier light. Miniature Persian rug below table, felted brick walls, velvet curtains, bookshelf, backgammon shelf and tea tray landmarks visible. Tactile fuzzy wool textures, rich saturated colors, soft warm studio macro lighting, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "motion_prompt_en": "",
+      "target_video_sec": 2.0,
+      "poker_table_state": {
+        "hero_hand": "A♠ A♦ (Rahim)",
+        "board": "Preflop",
+        "pot_bb": 1.5,
+        "action_badge": "Rahim UTG After 2 Hours"
+      },
+      "sfx_cue": "card_deal",
+      "visual_asset": "/media/ep04-poker-hand/scenes/scene_01.svg",
+      "video_path": null,
+      "video_asset": null,
+      "status": "ready_for_review"
+    },
+    {
+      "id": "scene_02",
+      "beat_index": 2,
+      "time_range": "00:02 - 00:04",
+      "title": "چهره خسته رحیم بعد از دو ساعت فولد",
+      "duration_sec": 1.8,
+      "segment_ids": [
+        "seg_01"
+      ],
+      "characters_present": [
+        "@Rahim"
+      ],
+      "adjacent_players": [
+        "@Keyvan (seat_2, left, soft out-of-focus shoulder)",
+        "@Farzad (seat_4, right, soft out-of-focus shoulder)"
+      ],
+      "table_state_en": "Preflop: 1.5 BB pot, no community cards, Rahim's protected chip stack in front of him, his felted hands trembling above the felt",
+      "camera": "@Seat_3 Medium Close-Up",
+      "shot_mode": "static_zoom",
+      "camera_effect": "zoom_in",
+      "visual_prompt": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_3 on Rahim (@Rahim) chest-up. His felted wool face looks exhausted after two hours of folding, eyes darting down at his cards, trembling hands hovering above his protected chip stack. On the left frame edge, the soft out-of-focus wool shoulder of Keyvan (@Keyvan) at seat_2; on the right frame edge, the soft out-of-focus shoulder of Farzad (@Farzad) at seat_4. In background behind Rahim is seat_3 landmark: tiny pleated dark velvet curtains with warm golden-amber light leaking through. 1.5 BB pot and no community cards on the emerald felt in the foreground. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "visual_prompt_en": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_3 on Rahim (@Rahim) chest-up. His felted wool face looks exhausted after two hours of folding, eyes darting down at his cards, trembling hands hovering above his protected chip stack. On the left frame edge, the soft out-of-focus wool shoulder of Keyvan (@Keyvan) at seat_2; on the right frame edge, the soft out-of-focus shoulder of Farzad (@Farzad) at seat_4. In background behind Rahim is seat_3 landmark: tiny pleated dark velvet curtains with warm golden-amber light leaking through. 1.5 BB pot and no community cards on the emerald felt in the foreground. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "motion_prompt_en": "",
+      "target_video_sec": 1.8,
+      "poker_table_state": {
+        "hero_hand": "A♠ A♦",
+        "board": "Preflop",
+        "pot_bb": 1.5,
+        "action_badge": "Rahim Staring at Aces"
+      },
+      "sfx_cue": "heartbeat",
+      "visual_asset": "/media/ep04-poker-hand/scenes/scene_02.svg",
+      "video_path": null,
+      "video_asset": null,
+      "status": "ready_for_review"
+    },
+    {
+      "id": "scene_03",
+      "beat_index": 3,
+      "time_range": "00:04 - 00:06",
+      "title": "دست‌های لرزون رحیم به سمت چیپ‌ها",
+      "duration_sec": 1.5,
+      "segment_ids": [
+        "seg_01"
+      ],
+      "characters_present": [
+        "@Rahim"
+      ],
+      "adjacent_players": [
+        "@Keyvan (seat_2, left, soft out-of-focus shoulder)",
+        "@Farzad (seat_4, right, soft out-of-focus shoulder)"
+      ],
+      "table_state_en": "Preflop: 1.5 BB pot, no community cards, Rahim's felted fingers hovering over his protected chip stack",
+      "camera": "@Seat_3 Extreme Close-Up on Hands",
+      "shot_mode": "ai_video",
+      "camera_effect": "zoom_in",
+      "visual_prompt": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, extreme close-up on Rahim's (@Rahim) trembling felted hands at @Seat_3. His wool fingers hover above a protected stack of miniature chips on the fuzzy emerald felt. In soft out-of-focus background, the edge of his cream cardigan and the seat_3 velvet curtain landmark. Tactile fuzzy wool textures, soft warm studio macro lighting, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "visual_prompt_en": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, extreme close-up on Rahim's (@Rahim) trembling felted hands at @Seat_3. His wool fingers hover above a protected stack of miniature chips on the fuzzy emerald felt. In soft out-of-focus background, the edge of his cream cardigan and the seat_3 velvet curtain landmark. Tactile fuzzy wool textures, soft warm studio macro lighting, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "motion_prompt_en": "Steady extreme close-up on needle-felted puppet Rahim's (@Rahim) trembling felted hands at @Seat_3. Tactile 12fps stop-motion puppet animation, subtle wool fiber texture movement, silent expressive acting (mouth closed, no talking). His fingers hover and tremble above a protected stack of miniature chips, then slowly reach toward the chips. No airborne chips. Tactile stop-motion feel",
+      "target_video_sec": 1.5,
+      "poker_table_state": {
+        "hero_hand": "A♠ A♦",
+        "board": "Preflop",
+        "pot_bb": 1.5,
+        "action_badge": "Trembling Hands Reach for Chips"
+      },
+      "sfx_cue": "heartbeat",
+      "visual_asset": "/media/ep04-poker-hand/scenes/scene_03.svg",
+      "video_path": null,
+      "video_asset": null,
+      "status": "ready_for_review"
+    },
+    {
+      "id": "scene_04",
+      "beat_index": 4,
+      "time_range": "00:06 - 00:08",
+      "title": "رحیم با غرور از مینی‌ریز می‌گوید",
+      "duration_sec": 2.2,
+      "segment_ids": [
+        "seg_02"
+      ],
+      "characters_present": [
+        "@Rahim"
+      ],
+      "adjacent_players": [
+        "@Keyvan (seat_2, left, soft out-of-focus shoulder)",
+        "@Farzad (seat_4, right, soft out-of-focus shoulder)"
+      ],
+      "table_state_en": "Preflop: 1.5 BB pot, no community cards, Rahim's protected chip stack, his hand hovering above the felt",
+      "camera": "@Seat_3 Medium Close-Up",
+      "shot_mode": "static_zoom",
+      "camera_effect": "zoom_in",
+      "visual_prompt": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_3 on Rahim (@Rahim) chest-up. His felted wool face wears a condescending smirk, one eyebrow raised, looking down at his A♠ A♦. On the left frame edge, soft out-of-focus shoulder of Keyvan (@Keyvan) at seat_2; on the right frame edge, soft out-of-focus shoulder of Farzad (@Farzad) at seat_4. Background seat_3 landmark: tiny pleated dark velvet curtains with warm golden-amber light. 1.5 BB pot and no community cards on emerald felt in foreground. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "visual_prompt_en": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_3 on Rahim (@Rahim) chest-up. His felted wool face wears a condescending smirk, one eyebrow raised, looking down at his A♠ A♦. On the left frame edge, soft out-of-focus shoulder of Keyvan (@Keyvan) at seat_2; on the right frame edge, soft out-of-focus shoulder of Farzad (@Farzad) at seat_4. Background seat_3 landmark: tiny pleated dark velvet curtains with warm golden-amber light. 1.5 BB pot and no community cards on emerald felt in foreground. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "motion_prompt_en": "",
+      "target_video_sec": 2.2,
+      "poker_table_state": {
+        "hero_hand": "A♠ A♦",
+        "board": "Preflop",
+        "pot_bb": 1.5,
+        "action_badge": "Rahim: 'Mini-Raise Time'"
+      },
+      "sfx_cue": "chip_slide",
+      "visual_asset": "/media/ep04-poker-hand/scenes/scene_03.svg",
+      "video_path": null,
+      "video_asset": null,
+      "status": "ready_for_review"
+    },
+    {
+      "id": "scene_05",
+      "beat_index": 5,
+      "time_range": "00:08 - 00:10",
+      "title": "مینی‌ریز ۲ بیگ بلایند رحیم",
+      "duration_sec": 2.0,
+      "segment_ids": [
+        "seg_02"
+      ],
+      "characters_present": [
+        "@Rahim"
+      ],
+      "adjacent_players": [
+        "@Keyvan (seat_2, left, soft out-of-focus shoulder)",
+        "@Farzad (seat_4, right, soft out-of-focus shoulder)"
+      ],
+      "table_state_en": "Preflop: pot grows to 3.5 BB, Rahim pushes a small 2 BB stack of miniature red chips forward on the emerald felt, no community cards",
+      "camera": "@Seat_3 Medium Close-Up",
+      "shot_mode": "ai_video",
+      "camera_effect": "zoom_in",
+      "visual_prompt": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_3 on Rahim (@Rahim) chest-up. His felted wool fingers push a neat 2 BB stack of miniature red chips forward across the fuzzy emerald felt. On the left frame edge, soft out-of-focus shoulder of Keyvan (@Keyvan) at seat_2; on the right frame edge, soft out-of-focus shoulder of Farzad (@Farzad) at seat_4. Background seat_3 landmark: tiny pleated dark velvet curtains with warm golden-amber light. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "visual_prompt_en": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_3 on Rahim (@Rahim) chest-up. His felted wool fingers push a neat 2 BB stack of miniature red chips forward across the fuzzy emerald felt. On the left frame edge, soft out-of-focus shoulder of Keyvan (@Keyvan) at seat_2; on the right frame edge, soft out-of-focus shoulder of Farzad (@Farzad) at seat_4. Background seat_3 landmark: tiny pleated dark velvet curtains with warm golden-amber light. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "motion_prompt_en": "Steady medium close-up on needle-felted puppet Rahim (@Rahim) at @Seat_3. Tactile 12fps stop-motion puppet animation, subtle wool fiber texture movement, silent expressive acting (mouth closed, no talking). He slowly pushes a neat stack of miniature red chips forward flat along the fuzzy green felt, then withdraws his trembling hand. No airborne chips. Tactile stop-motion feel",
+      "target_video_sec": 2.0,
+      "poker_table_state": {
+        "hero_hand": "A♠ A♦",
+        "board": "Preflop",
+        "pot_bb": 3.5,
+        "action_badge": "Rahim Min-Raises to 2 BB"
+      },
+      "sfx_cue": "chip_slide",
+      "visual_asset": "/media/ep04-poker-hand/scenes/scene_03.svg",
+      "video_path": null,
+      "video_asset": null,
+      "status": "ready_for_review"
+    },
+    {
+      "id": "scene_06",
+      "beat_index": 6,
+      "time_range": "00:10 - 00:12",
+      "title": "نگاه نگران آرش و کیوان به هم",
+      "duration_sec": 2.0,
+      "segment_ids": [
+        "seg_03"
+      ],
+      "characters_present": [
+        "@Arash",
+        "@Keyvan"
+      ],
+      "adjacent_players": [
+        "@Arash (seat_1, left of Keyvan)",
+        "@Keyvan (seat_2, right of Arash)",
+        "@Rahim (seat_3, soft out-of-focus shoulder at frame edge)"
+      ],
+      "table_state_en": "Preflop: 3.5 BB pot, no community cards, Rahim's 2 BB bet stack in center, Arash's tablet and Keyvan's neat stacks visible",
+      "camera": "@Seat_1 to @Seat_2 Two-Shot",
+      "shot_mode": "static_zoom",
+      "camera_effect": "pan_left",
+      "visual_prompt": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, two-shot framed across @Seat_1 and @Seat_2. Arash (@Arash) in blue knit sweater and round glasses exchanges a panicked glance with Keyvan (@Keyvan) in charcoal waistcoat, whose stone-cold face barely moves. On the right frame edge, soft out-of-focus shoulder of Rahim (@Rahim) at seat_3. Background landmarks: seat_1 warm LED-lit bookshelf and seat_2 framed miniature pop-art canvas. 3.5 BB pot and no community cards on emerald felt in foreground. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "visual_prompt_en": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, two-shot framed across @Seat_1 and @Seat_2. Arash (@Arash) in blue knit sweater and round glasses exchanges a panicked glance with Keyvan (@Keyvan) in charcoal waistcoat, whose stone-cold face barely moves. On the right frame edge, soft out-of-focus shoulder of Rahim (@Rahim) at seat_3. Background landmarks: seat_1 warm LED-lit bookshelf and seat_2 framed miniature pop-art canvas. 3.5 BB pot and no community cards on emerald felt in foreground. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "motion_prompt_en": "",
+      "target_video_sec": 2.0,
+      "poker_table_state": {
+        "hero_hand": "K♠ Q♠ (Arash)",
+        "board": "Preflop",
+        "pot_bb": 3.5,
+        "action_badge": "Arash & Keyvan Exchange Glances"
+      },
+      "sfx_cue": "record_scratch",
+      "visual_asset": "/media/ep04-poker-hand/scenes/scene_03.svg",
+      "video_path": null,
+      "video_asset": null,
+      "status": "ready_for_review"
+    },
+    {
+      "id": "scene_07",
+      "beat_index": 7,
+      "time_range": "00:12 - 00:14",
+      "title": "آرش وحشت‌زده رنج رحیم را حساب می‌کند",
+      "duration_sec": 2.0,
+      "segment_ids": [
+        "seg_03"
+      ],
+      "characters_present": [
+        "@Arash"
+      ],
+      "adjacent_players": [
+        "@Keyvan (seat_2, right, soft out-of-focus shoulder)",
+        "@Rahim (seat_3, far right, soft out-of-focus profile)"
+      ],
+      "table_state_en": "Preflop: 3.5 BB pot, no community cards, Arash's K♠ Q♠ face down in front of him, tablet with math notes",
+      "camera": "@Seat_1 Medium Close-Up",
+      "shot_mode": "static_zoom",
+      "camera_effect": "zoom_in",
+      "visual_prompt": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_1 on Arash (@Arash) chest-up. His felted wool brow is furrowed in panic, round glasses slightly askew, one hand hovering over his tablet with scribbled math notes. On the right frame edge, soft out-of-focus shoulder of Keyvan (@Keyvan) at seat_2; far right, soft out-of-focus profile of Rahim (@Rahim). Background seat_1 landmark: dark felted brick wall with warm LED-lit bookshelf holding miniature trophies. 3.5 BB pot and no community cards on emerald felt in foreground. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "visual_prompt_en": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_1 on Arash (@Arash) chest-up. His felted wool brow is furrowed in panic, round glasses slightly askew, one hand hovering over his tablet with scribbled math notes. On the right frame edge, soft out-of-focus shoulder of Keyvan (@Keyvan) at seat_2; far right, soft out-of-focus profile of Rahim (@Rahim). Background seat_1 landmark: dark felted brick wall with warm LED-lit bookshelf holding miniature trophies. 3.5 BB pot and no community cards on emerald felt in foreground. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "motion_prompt_en": "",
+      "target_video_sec": 2.0,
+      "poker_table_state": {
+        "hero_hand": "K♠ Q♠",
+        "board": "Preflop",
+        "pot_bb": 3.5,
+        "action_badge": "Arash Calculating Rahim's Range"
+      },
+      "sfx_cue": "heartbeat",
+      "visual_asset": "/media/ep04-poker-hand/scenes/scene_03.svg",
+      "video_path": null,
+      "video_asset": null,
+      "status": "ready_for_review"
+    },
+    {
+      "id": "scene_08",
+      "beat_index": 8,
+      "time_range": "00:14 - 00:16",
+      "title": "فولد آرش با شاه-بی‌بی سوتد",
+      "duration_sec": 1.8,
+      "segment_ids": [
+        "seg_03"
+      ],
+      "characters_present": [
+        "@Arash"
+      ],
+      "adjacent_players": [
+        "@Keyvan (seat_2, right, soft out-of-focus shoulder)"
+      ],
+      "table_state_en": "Preflop: 3.5 BB pot, no community cards, Arash slides K♠ Q♠ face down toward the muck",
+      "camera": "@Seat_1 Medium Close-Up",
+      "shot_mode": "static_zoom",
+      "camera_effect": "pan_left",
+      "visual_prompt": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_1 on Arash (@Arash) chest-up. His felted wool hand slides K♠ Q♠ face down across the fuzzy emerald felt toward the muck, his face resigned. On the right frame edge, soft out-of-focus shoulder of Keyvan (@Keyvan) at seat_2. Background seat_1 landmark: dark felted brick wall with warm LED-lit bookshelf and miniature trophies. 3.5 BB pot and no community cards on emerald felt in foreground. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "visual_prompt_en": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_1 on Arash (@Arash) chest-up. His felted wool hand slides K♠ Q♠ face down across the fuzzy emerald felt toward the muck, his face resigned. On the right frame edge, soft out-of-focus shoulder of Keyvan (@Keyvan) at seat_2. Background seat_1 landmark: dark felted brick wall with warm LED-lit bookshelf and miniature trophies. 3.5 BB pot and no community cards on emerald felt in foreground. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "motion_prompt_en": "Steady close tracking shot on needle-felted puppet Arash (@Arash) at @Seat_1. Tactile 12fps stop-motion puppet animation, subtle wool fiber texture movement, silent expressive acting (mouth closed, no talking). A tiny felt sweat drop rolls down his temple as he slowly slides his two cards flat across the wool felt toward the center. No airborne cards. Handcrafted stop-motion look",
+      "target_video_sec": 1.8,
+      "poker_table_state": {
+        "hero_hand": "K♠ Q♠",
+        "board": "Preflop",
+        "pot_bb": 3.5,
+        "action_badge": "Arash Folds"
+      },
+      "sfx_cue": "card_fold",
+      "visual_asset": "/media/ep04-poker-hand/scenes/scene_03.svg",
+      "video_path": null,
+      "video_asset": null,
+      "status": "ready_for_review"
+    },
+    {
+      "id": "scene_09",
+      "beat_index": 9,
+      "time_range": "00:16 - 00:18",
+      "title": "چهره سنگی کیوان در سکوت مطلق",
+      "duration_sec": 2.2,
+      "segment_ids": [
+        "seg_04"
+      ],
+      "characters_present": [
+        "@Keyvan"
+      ],
+      "adjacent_players": [
+        "@Arash (seat_1, left, soft out-of-focus shoulder)",
+        "@Rahim (seat_3, right, soft out-of-focus shoulder)"
+      ],
+      "table_state_en": "Preflop: 3.5 BB pot, no community cards, Keyvan's 8♥ 7♥ face down, his ultra-neat tall chip stacks",
+      "camera": "@Seat_2 Medium Close-Up",
+      "shot_mode": "static_zoom",
+      "camera_effect": "zoom_in",
+      "visual_prompt": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_2 on Keyvan (@Keyvan) chest-up. His felted wool face is completely stone-cold, eyes fixed forward, one hand resting beside his ultra-neat tall chip towers. On the left frame edge, soft out-of-focus shoulder of Arash (@Arash) at seat_1; on the right frame edge, soft out-of-focus shoulder of Rahim (@Rahim) at seat_3. Background seat_2 landmark: dark felted brick wall with tiny framed miniature pop-art canvas. 3.5 BB pot and no community cards on emerald felt in foreground. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "visual_prompt_en": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_2 on Keyvan (@Keyvan) chest-up. His felted wool face is completely stone-cold, eyes fixed forward, one hand resting beside his ultra-neat tall chip towers. On the left frame edge, soft out-of-focus shoulder of Arash (@Arash) at seat_1; on the right frame edge, soft out-of-focus shoulder of Rahim (@Rahim) at seat_3. Background seat_2 landmark: dark felted brick wall with tiny framed miniature pop-art canvas. 3.5 BB pot and no community cards on emerald felt in foreground. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "motion_prompt_en": "",
+      "target_video_sec": 2.2,
+      "poker_table_state": {
+        "hero_hand": "8♥ 7♥ (Keyvan)",
+        "board": "Preflop",
+        "pot_bb": 3.5,
+        "action_badge": "Keyvan Stone-Cold"
+      },
+      "sfx_cue": "silence_sting",
+      "visual_asset": "/media/ep04-poker-hand/scenes/scene_03.svg",
+      "video_path": null,
+      "video_asset": null,
+      "status": "ready_for_review"
+    },
+    {
+      "id": "scene_10",
+      "beat_index": 10,
+      "time_range": "00:18 - 00:20",
+      "title": "کیوان کارت‌ها را آرام زمین می‌گذارد",
+      "duration_sec": 2.0,
+      "segment_ids": [
+        "seg_04"
+      ],
+      "characters_present": [
+        "@Keyvan"
+      ],
+      "adjacent_players": [
+        "@Arash (seat_1, left, soft out-of-focus shoulder)",
+        "@Rahim (seat_3, right, soft out-of-focus shoulder)"
+      ],
+      "table_state_en": "Preflop: 3.5 BB pot, no community cards, Keyvan lays 8♥ 7♥ face down on the felt",
+      "camera": "@Seat_2 Medium Close-Up",
+      "shot_mode": "static_zoom",
+      "camera_effect": "zoom_out",
+      "visual_prompt": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_2 on Keyvan (@Keyvan) chest-up. He gently places 8♥ 7♥ face down on the fuzzy emerald felt without a word, his expression unchanged. On the left frame edge, soft out-of-focus shoulder of Arash (@Arash) at seat_1; on the right frame edge, soft out-of-focus shoulder of Rahim (@Rahim) at seat_3. Background seat_2 landmark: tiny framed miniature pop-art canvas on dark felted brick. 3.5 BB pot and no community cards on emerald felt in foreground. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "visual_prompt_en": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_2 on Keyvan (@Keyvan) chest-up. He gently places 8♥ 7♥ face down on the fuzzy emerald felt without a word, his expression unchanged. On the left frame edge, soft out-of-focus shoulder of Arash (@Arash) at seat_1; on the right frame edge, soft out-of-focus shoulder of Rahim (@Rahim) at seat_3. Background seat_2 landmark: tiny framed miniature pop-art canvas on dark felted brick. 3.5 BB pot and no community cards on emerald felt in foreground. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "motion_prompt_en": "",
+      "target_video_sec": 2.0,
+      "poker_table_state": {
+        "hero_hand": "8♥ 7♥",
+        "board": "Preflop",
+        "pot_bb": 3.5,
+        "action_badge": "Keyvan Folds Silently"
+      },
+      "sfx_cue": "card_fold",
+      "visual_asset": "/media/ep04-poker-hand/scenes/scene_03.svg",
+      "video_path": null,
+      "video_asset": null,
+      "status": "ready_for_review"
+    },
+    {
+      "id": "scene_11",
+      "beat_index": 11,
+      "time_range": "00:20 - 00:22",
+      "title": "فرزاد هیجان‌زده آل-این می‌گوید",
+      "duration_sec": 2.0,
+      "segment_ids": [
+        "seg_05"
+      ],
+      "characters_present": [
+        "@Farzad"
+      ],
+      "adjacent_players": [
+        "@Rahim (seat_3, left, soft out-of-focus shoulder)",
+        "@Bijan (seat_5, right, soft out-of-focus shoulder)"
+      ],
+      "table_state_en": "Preflop: 3.5 BB pot, no community cards, Farzad's messy chip pile, his cards face down untouched",
+      "camera": "@Seat_4 Medium Close-Up",
+      "shot_mode": "static_zoom",
+      "camera_effect": "zoom_in",
+      "visual_prompt": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_4 on Farzad (@Farzad) chest-up. His felted wool face is wild with hype, red plaid shirt slightly rumpled, one hand raised dramatically while his cards sit face down untouched. On the left frame edge, soft out-of-focus shoulder of Rahim (@Rahim) at seat_3; on the right frame edge, soft out-of-focus shoulder of Bijan (@Bijan) at seat_5. Background seat_4 landmark: tiny carved wooden corner shelf with miniature backgammon board and felted potted plant. 3.5 BB pot and no community cards on emerald felt in foreground. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "visual_prompt_en": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_4 on Farzad (@Farzad) chest-up. His felted wool face is wild with hype, red plaid shirt slightly rumpled, one hand raised dramatically while his cards sit face down untouched. On the left frame edge, soft out-of-focus shoulder of Rahim (@Rahim) at seat_3; on the right frame edge, soft out-of-focus shoulder of Bijan (@Bijan) at seat_5. Background seat_4 landmark: tiny carved wooden corner shelf with miniature backgammon board and felted potted plant. 3.5 BB pot and no community cards on emerald felt in foreground. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "motion_prompt_en": "",
+      "target_video_sec": 2.0,
+      "poker_table_state": {
+        "hero_hand": "7♣ 2♦ (Farzad)",
+        "board": "Preflop",
+        "pot_bb": 3.5,
+        "action_badge": "Farzad: 'All-In!'"
+      },
+      "sfx_cue": "record_scratch",
+      "visual_asset": "/media/ep04-poker-hand/scenes/scene_03.svg",
+      "video_path": null,
+      "video_asset": null,
+      "status": "ready_for_review"
+    },
+    {
+      "id": "scene_12",
+      "beat_index": 12,
+      "time_range": "00:22 - 00:24",
+      "title": "شوو کورکورانه صد بیگ بلایند فرزاد",
+      "duration_sec": 2.2,
+      "segment_ids": [
+        "seg_05"
+      ],
+      "characters_present": [
+        "@Farzad"
+      ],
+      "adjacent_players": [
+        "@Rahim (seat_3, left, soft out-of-focus shoulder)",
+        "@Bijan (seat_5, right, soft out-of-focus shoulder)"
+      ],
+      "table_state_en": "Preflop: pot jumps to ~103.5 BB, Farzad pushes his entire messy 100 BB stack forward in a chaotic pile, no community cards",
+      "camera": "@Seat_4 Medium Close-Up",
+      "shot_mode": "ai_video",
+      "camera_effect": "shake",
+      "visual_prompt": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_4 on Farzad (@Farzad) chest-up. He sweeps both felted arms forward, shoving a messy pile of miniature chips across the fuzzy emerald felt, his face manic. On the left frame edge, soft out-of-focus shoulder of Rahim (@Rahim) at seat_3; on the right frame edge, soft out-of-focus shoulder of Bijan (@Bijan) at seat_5. Background seat_4 landmark: tiny carved wooden corner shelf with miniature backgammon board and felted plant. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "visual_prompt_en": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_4 on Farzad (@Farzad) chest-up. He sweeps both felted arms forward, shoving a messy pile of miniature chips across the fuzzy emerald felt, his face manic. On the left frame edge, soft out-of-focus shoulder of Rahim (@Rahim) at seat_3; on the right frame edge, soft out-of-focus shoulder of Bijan (@Bijan) at seat_5. Background seat_4 landmark: tiny carved wooden corner shelf with miniature backgammon board and felted plant. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "motion_prompt_en": "Steady medium close-up on needle-felted puppet Farzad (@Farzad) at @Seat_4. Tactile 12fps stop-motion puppet animation, subtle wool fiber texture movement, silent expressive acting (mouth closed, no talking). He sweeps both felted arms forward, shoving a messy pile of miniature chips across the fuzzy green felt, then throws his hands up. No airborne chips. Tactile stop-motion feel",
+      "target_video_sec": 2.2,
+      "poker_table_state": {
+        "hero_hand": "7♣ 2♦",
+        "board": "Preflop",
+        "pot_bb": 103.5,
+        "action_badge": "Farzad Shoves 100 BB Blind"
+      },
+      "sfx_cue": "all_in_alarm",
+      "visual_asset": "/media/ep04-poker-hand/scenes/scene_03.svg",
+      "video_path": null,
+      "video_asset": null,
+      "status": "ready_for_review"
+    },
+    {
+      "id": "scene_13",
+      "beat_index": 13,
+      "time_range": "00:24 - 00:26",
+      "title": "واکنش شوکه میز به آل-این فرزاد",
+      "duration_sec": 2.0,
+      "segment_ids": [
+        "seg_05"
+      ],
+      "characters_present": [
+        "@Arash",
+        "@Keyvan",
+        "@Rahim",
+        "@Farzad",
+        "@Bijan"
+      ],
+      "adjacent_players": [
+        "@Arash (seat_1, left: empty seat_6, right: @Keyvan seat_2)",
+        "@Keyvan (seat_2, left: @Arash seat_1, right: @Rahim seat_3)",
+        "@Rahim (seat_3, left: @Keyvan seat_2, right: @Farzad seat_4)",
+        "@Farzad (seat_4, left: @Rahim seat_3, right: @Bijan seat_5)",
+        "@Bijan (seat_5, left: @Farzad seat_4, right: empty seat_6)"
+      ],
+      "table_state_en": "Preflop: ~103.5 BB pot in center, no community cards, Farzad's chaotic all-in stack, others frozen",
+      "camera": "@Room_Master Wide Reaction Shot",
+      "shot_mode": "static_zoom",
+      "camera_effect": "zoom_out",
+      "visual_prompt": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, wide reaction shot of the entire 6-max table at @PokerRoom. Farzad (@Farzad) at seat_4 has both arms raised over a chaotic pile of chips; Arash (@Arash) at seat_1 freezes with tablet in hand; Keyvan (@Keyvan) at seat_2 remains stone-cold; Rahim (@Rahim) at seat_3 stares at the pile; Bijan (@Bijan) at seat_5 calmly rests a hand near his tea glass. Seat_6 empty. ~103.5 BB pot in center, no community cards on emerald felt. Warm chandelier light, felted brick walls, velvet curtains, bookshelf, backgammon shelf and tea tray landmarks. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "visual_prompt_en": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, wide reaction shot of the entire 6-max table at @PokerRoom. Farzad (@Farzad) at seat_4 has both arms raised over a chaotic pile of chips; Arash (@Arash) at seat_1 freezes with tablet in hand; Keyvan (@Keyvan) at seat_2 remains stone-cold; Rahim (@Rahim) at seat_3 stares at the pile; Bijan (@Bijan) at seat_5 calmly rests a hand near his tea glass. Seat_6 empty. ~103.5 BB pot in center, no community cards on emerald felt. Warm chandelier light, felted brick walls, velvet curtains, bookshelf, backgammon shelf and tea tray landmarks. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "motion_prompt_en": "Quick handheld push toward needle-felted puppet Farzad (@Farzad) at @Seat_4. Tactile 12fps stop-motion puppet animation, subtle wool fiber texture movement, silent expressive acting (mouth closed, no talking). He leans forward with a cocky challenging grin and waggles his sculpted wool eyebrows twice. Handcrafted stop-motion look",
+      "target_video_sec": 2.0,
+      "poker_table_state": {
+        "hero_hand": "7♣ 2♦",
+        "board": "Preflop",
+        "pot_bb": 103.5,
+        "action_badge": "Table Stunned"
+      },
+      "sfx_cue": "all_in_alarm",
+      "visual_asset": "/media/ep04-poker-hand/scenes/scene_03.svg",
+      "video_path": null,
+      "video_asset": null,
+      "status": "ready_for_review"
+    },
+    {
+      "id": "scene_14",
+      "beat_index": 14,
+      "time_range": "00:26 - 00:28",
+      "title": "بیژن یک قلپ چای می‌زند",
+      "duration_sec": 2.2,
+      "segment_ids": [
+        "seg_06"
+      ],
+      "characters_present": [
+        "@Bijan"
+      ],
+      "adjacent_players": [
+        "@Farzad (seat_4, left, soft out-of-focus shoulder)",
+        "Empty seat_6 (right)"
+      ],
+      "table_state_en": "Preflop: ~103.5 BB pot, no community cards, Bijan's tea estekan steaming, amber tasbih on side table, his 9♦ 4♣ face down",
+      "camera": "@Seat_5 Medium Close-Up",
+      "shot_mode": "static_zoom",
+      "camera_effect": "zoom_in",
+      "visual_prompt": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_5 on Bijan (@Bijan) chest-up. His felted wool face is smug behind a salt-and-pepper mustache, one hand lifting a tiny glass estekan of steaming amber tea, the other resting beside his amber tasbih. On the left frame edge, soft out-of-focus shoulder of Farzad (@Farzad) at seat_4; right edge shows the empty seat_6 chair. Background seat_5 landmark: tiny vintage carved wooden side table with Persian silver tea tray and brass pistachio bowl. ~103.5 BB pot and no community cards on emerald felt in foreground. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "visual_prompt_en": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_5 on Bijan (@Bijan) chest-up. His felted wool face is smug behind a salt-and-pepper mustache, one hand lifting a tiny glass estekan of steaming amber tea, the other resting beside his amber tasbih. On the left frame edge, soft out-of-focus shoulder of Farzad (@Farzad) at seat_4; right edge shows the empty seat_6 chair. Background seat_5 landmark: tiny vintage carved wooden side table with Persian silver tea tray and brass pistachio bowl. ~103.5 BB pot and no community cards on emerald felt in foreground. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "motion_prompt_en": "Steady slow push-in on needle-felted puppet Bijan (@Bijan) at @Seat_5. Tactile 12fps stop-motion puppet animation, subtle wool fiber texture movement, silent expressive acting (mouth closed, no talking). He lifts a tiny tea glass to his felt mustache in a calm, smug sip, then lowers it onto the table with a knowing nod. Handcrafted stop-motion look",
+      "target_video_sec": 2.2,
+      "poker_table_state": {
+        "hero_hand": "9♦ 4♣ (Bijan)",
+        "board": "Preflop",
+        "pot_bb": 103.5,
+        "action_badge": "Bijan Sips Tea"
+      },
+      "sfx_cue": "tea_sip",
+      "visual_asset": "/media/ep04-poker-hand/scenes/scene_03.svg",
+      "video_path": null,
+      "video_asset": null,
+      "status": "ready_for_review"
+    },
+    {
+      "id": "scene_15",
+      "beat_index": 15,
+      "time_range": "00:28 - 00:30",
+      "title": "کال صد بیگ بلایند بیژن با ۹ و ۴",
+      "duration_sec": 2.0,
+      "segment_ids": [
+        "seg_06"
+      ],
+      "characters_present": [
+        "@Bijan"
+      ],
+      "adjacent_players": [
+        "@Farzad (seat_4, left, soft out-of-focus shoulder)",
+        "Empty seat_6 (right)"
+      ],
+      "table_state_en": "Preflop: pot grows to ~203.5 BB, Bijan pushes a neat 100 BB stack forward, no community cards",
+      "camera": "@Seat_5 Medium Close-Up",
+      "shot_mode": "ai_video",
+      "camera_effect": "zoom_in",
+      "visual_prompt": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_5 on Bijan (@Bijan) chest-up. He calmly slides a tall stack of miniature chips forward across the fuzzy emerald felt, his smug expression unchanged. On the left frame edge, soft out-of-focus shoulder of Farzad (@Farzad) at seat_4; right edge shows empty seat_6. Background seat_5 landmark: tiny vintage carved wooden side table with Persian tea tray, glass estekan and brass pistachio bowl. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "visual_prompt_en": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_5 on Bijan (@Bijan) chest-up. He calmly slides a tall stack of miniature chips forward across the fuzzy emerald felt, his smug expression unchanged. On the left frame edge, soft out-of-focus shoulder of Farzad (@Farzad) at seat_4; right edge shows empty seat_6. Background seat_5 landmark: tiny vintage carved wooden side table with Persian tea tray, glass estekan and brass pistachio bowl. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "motion_prompt_en": "Steady medium close-up on needle-felted puppet Bijan (@Bijan) at @Seat_5. Tactile 12fps stop-motion puppet animation, subtle wool fiber texture movement, silent expressive acting (mouth closed, no talking). He calmly slides a tall stack of miniature chips forward flat along the fuzzy green felt, then picks up his tiny tea glass. No airborne chips. Tactile stop-motion feel",
+      "target_video_sec": 2.0,
+      "poker_table_state": {
+        "hero_hand": "9♦ 4♣",
+        "board": "Preflop",
+        "pot_bb": 203.5,
+        "action_badge": "Bijan Calls 100 BB"
+      },
+      "sfx_cue": "chip_splash",
+      "visual_asset": "/media/ep04-poker-hand/scenes/scene_03.svg",
+      "video_path": null,
+      "video_asset": null,
+      "status": "ready_for_review"
+    },
+    {
+      "id": "scene_16",
+      "beat_index": 16,
+      "time_range": "00:30 - 00:32",
+      "title": "رحیم با غرور پاکت آس را می‌بیند",
+      "duration_sec": 2.2,
+      "segment_ids": [
+        "seg_07"
+      ],
+      "characters_present": [
+        "@Rahim"
+      ],
+      "adjacent_players": [
+        "@Keyvan (seat_2, left, soft out-of-focus shoulder)",
+        "@Farzad (seat_4, right, soft out-of-focus shoulder)"
+      ],
+      "table_state_en": "Preflop: ~203.5 BB pot, no community cards, Rahim's A♠ A♦ face down, his protected stack",
+      "camera": "@Seat_3 Medium Close-Up",
+      "shot_mode": "static_zoom",
+      "camera_effect": "zoom_in",
+      "visual_prompt": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_3 on Rahim (@Rahim) chest-up. His felted wool face is smug and condescending, one hand protectively covering A♠ A♦, the other resting on his protected chip stack. On the left frame edge, soft out-of-focus shoulder of Keyvan (@Keyvan) at seat_2; on the right frame edge, soft out-of-focus shoulder of Farzad (@Farzad) at seat_4. Background seat_3 landmark: tiny pleated dark velvet curtains with warm golden-amber light. ~203.5 BB pot and no community cards on emerald felt in foreground. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "visual_prompt_en": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_3 on Rahim (@Rahim) chest-up. His felted wool face is smug and condescending, one hand protectively covering A♠ A♦, the other resting on his protected chip stack. On the left frame edge, soft out-of-focus shoulder of Keyvan (@Keyvan) at seat_2; on the right frame edge, soft out-of-focus shoulder of Farzad (@Farzad) at seat_4. Background seat_3 landmark: tiny pleated dark velvet curtains with warm golden-amber light. ~203.5 BB pot and no community cards on emerald felt in foreground. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "motion_prompt_en": "",
+      "target_video_sec": 2.2,
+      "poker_table_state": {
+        "hero_hand": "A♠ A♦",
+        "board": "Preflop",
+        "pot_bb": 203.5,
+        "action_badge": "Rahim: 'Pocket Aces!'"
+      },
+      "sfx_cue": "chip_slide",
+      "visual_asset": "/media/ep04-poker-hand/scenes/scene_03.svg",
+      "video_path": null,
+      "video_asset": null,
+      "status": "ready_for_review"
+    },
+    {
+      "id": "scene_17",
+      "beat_index": 17,
+      "time_range": "00:32 - 00:34",
+      "title": "اسنپ-کال رحیم و رو کردن آس‌ها",
+      "duration_sec": 2.2,
+      "segment_ids": [
+        "seg_07"
+      ],
+      "characters_present": [
+        "@Rahim"
+      ],
+      "adjacent_players": [
+        "@Keyvan (seat_2, left, soft out-of-focus shoulder)",
+        "@Farzad (seat_4, right, soft out-of-focus shoulder)"
+      ],
+      "table_state_en": "Preflop: pot reaches ~303.5 BB (300 BB), Rahim pushes his 100 BB stack forward and flips A♠ A♦ face up on the felt",
+      "camera": "@Seat_3 Medium Close-Up",
+      "shot_mode": "ai_video",
+      "camera_effect": "shake",
+      "visual_prompt": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_3 on Rahim (@Rahim) chest-up. He pushes a stack of miniature chips forward and flips A♠ A♦ face up flat on the fuzzy emerald felt, crossing his arms with a triumphant smirk. On the left frame edge, soft out-of-focus shoulder of Keyvan (@Keyvan) at seat_2; on the right frame edge, soft out-of-focus shoulder of Farzad (@Farzad) at seat_4. Background seat_3 landmark: tiny pleated dark velvet curtains with warm golden-amber light. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "visual_prompt_en": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_3 on Rahim (@Rahim) chest-up. He pushes a stack of miniature chips forward and flips A♠ A♦ face up flat on the fuzzy emerald felt, crossing his arms with a triumphant smirk. On the left frame edge, soft out-of-focus shoulder of Keyvan (@Keyvan) at seat_2; on the right frame edge, soft out-of-focus shoulder of Farzad (@Farzad) at seat_4. Background seat_3 landmark: tiny pleated dark velvet curtains with warm golden-amber light. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "motion_prompt_en": "Steady medium close-up on needle-felted puppet Rahim (@Rahim) at @Seat_3. Tactile 12fps stop-motion puppet animation, subtle wool fiber texture movement, silent expressive acting (mouth closed, no talking). He pushes a stack of miniature chips forward and flips two tiny cards face up flat on the fuzzy green felt, then crosses his arms. No airborne chips. Tactile stop-motion feel",
+      "target_video_sec": 2.2,
+      "poker_table_state": {
+        "hero_hand": "A♠ A♦",
+        "board": "Preflop",
+        "pot_bb": 303.5,
+        "action_badge": "Rahim Snap-Calls 100 BB"
+      },
+      "sfx_cue": "all_in_alarm",
+      "visual_asset": "/media/ep04-poker-hand/scenes/scene_03.svg",
+      "video_path": null,
+      "video_asset": null,
+      "status": "ready_for_review"
+    },
+    {
+      "id": "scene_18",
+      "beat_index": 18,
+      "time_range": "00:34 - 00:36",
+      "title": "نمای بالا از پات سیصد بیگ بلایند",
+      "duration_sec": 2.0,
+      "segment_ids": [
+        "seg_07"
+      ],
+      "characters_present": [
+        "@Rahim",
+        "@Farzad",
+        "@Bijan"
+      ],
+      "adjacent_players": [
+        "@Rahim (seat_3)",
+        "@Farzad (seat_4)",
+        "@Bijan (seat_5)"
+      ],
+      "table_state_en": "Preflop: massive 300 BB pot in center, three towering chip stacks, no community cards, A♠ A♦ face up, 7♣ 2♦ and 9♦ 4♣ face down",
+      "camera": "Isometric Top-Down Table Shot",
+      "shot_mode": "static_zoom",
+      "camera_effect": "zoom_out",
+      "visual_prompt": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, isometric top-down view of the 6-max table at @PokerRoom. In the center, a massive 300 BB pot of miniature chips forms three towering stacks on the fuzzy emerald felt. Rahim's A♠ A♦ are face up near seat_3; Farzad's 7♣ 2♦ and Bijan's 9♦ 4♣ lie face down near seats 4 and 5. No community cards. Felted hands rest on the curved brown leather rail. Warm chandelier light, tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "visual_prompt_en": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, isometric top-down view of the 6-max table at @PokerRoom. In the center, a massive 300 BB pot of miniature chips forms three towering stacks on the fuzzy emerald felt. Rahim's A♠ A♦ are face up near seat_3; Farzad's 7♣ 2♦ and Bijan's 9♦ 4♣ lie face down near seats 4 and 5. No community cards. Felted hands rest on the curved brown leather rail. Warm chandelier light, tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "motion_prompt_en": "",
+      "target_video_sec": 2.0,
+      "poker_table_state": {
+        "hero_hand": "A♠ A♦ vs 7♣ 2♦ vs 9♦ 4♣",
+        "board": "Preflop",
+        "pot_bb": 303.5,
+        "action_badge": "3-Way All-In: 300 BB"
+      },
+      "sfx_cue": "chip_splash",
+      "visual_asset": "/media/ep04-poker-hand/scenes/scene_03.svg",
+      "video_path": null,
+      "video_asset": null,
+      "status": "ready_for_review"
+    },
+    {
+      "id": "scene_19",
+      "beat_index": 19,
+      "time_range": "00:36 - 00:38",
+      "title": "دیلر فلاپ را باز می‌کند",
+      "duration_sec": 2.0,
+      "segment_ids": [
+        "seg_08"
+      ],
+      "characters_present": [
+        "@Rahim",
+        "@Farzad",
+        "@Bijan"
+      ],
+      "adjacent_players": [
+        "@Rahim (seat_3)",
+        "@Farzad (seat_4)",
+        "@Bijan (seat_5)"
+      ],
+      "table_state_en": "Flop: 300 BB pot, dealer's felted hand turning three community cards, no cards revealed yet",
+      "camera": "Isometric Top-Down Table Shot",
+      "shot_mode": "static_zoom",
+      "camera_effect": "zoom_in",
+      "visual_prompt": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, isometric top-down view of the 6-max table at @PokerRoom. A felted dealer hand turns three miniature community cards face up on the fuzzy emerald felt beside the massive 300 BB pot. Rahim's A♠ A♦ remain face up near seat_3; Farzad's and Bijan's cards lie face down. Warm chandelier light, tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "visual_prompt_en": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, isometric top-down view of the 6-max table at @PokerRoom. A felted dealer hand turns three miniature community cards face up on the fuzzy emerald felt beside the massive 300 BB pot. Rahim's A♠ A♦ remain face up near seat_3; Farzad's and Bijan's cards lie face down. Warm chandelier light, tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "motion_prompt_en": "",
+      "target_video_sec": 2.0,
+      "poker_table_state": {
+        "hero_hand": "A♠ A♦",
+        "board": "Dealing Flop",
+        "pot_bb": 303.5,
+        "action_badge": "Dealer Burns and Turns"
+      },
+      "sfx_cue": "card_deal",
+      "visual_asset": "/media/ep04-poker-hand/scenes/scene_03.svg",
+      "video_path": null,
+      "video_asset": null,
+      "status": "ready_for_review"
+    },
+    {
+      "id": "scene_20",
+      "beat_index": 20,
+      "time_range": "00:38 - 00:40",
+      "title": "فلاپ ۹، ۴، ۱۰ روی نمد",
+      "duration_sec": 2.0,
+      "segment_ids": [
+        "seg_08"
+      ],
+      "characters_present": [
+        "@Rahim",
+        "@Farzad",
+        "@Bijan"
+      ],
+      "adjacent_players": [
+        "@Rahim (seat_3)",
+        "@Farzad (seat_4)",
+        "@Bijan (seat_5)"
+      ],
+      "table_state_en": "Flop: 300 BB pot, community cards 9♣ 4♠ T♦ flat on emerald felt, Bijan's 9♦ 4♣ now two pair",
+      "camera": "Isometric Top-Down Table Shot",
+      "shot_mode": "static_zoom",
+      "camera_effect": "pan_left",
+      "visual_prompt": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, isometric top-down view of the 6-max table at @PokerRoom. Three miniature community cards lie flat on the fuzzy emerald felt: 9♣ 4♠ T♦ beside the massive 300 BB pot. Bijan's 9♦ 4♣ face-down cards sit near seat_5, now visually paired with the board. Rahim's A♠ A♦ remain face up near seat_3. Warm chandelier light, tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "visual_prompt_en": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, isometric top-down view of the 6-max table at @PokerRoom. Three miniature community cards lie flat on the fuzzy emerald felt: 9♣ 4♠ T♦ beside the massive 300 BB pot. Bijan's 9♦ 4♣ face-down cards sit near seat_5, now visually paired with the board. Rahim's A♠ A♦ remain face up near seat_3. Warm chandelier light, tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "motion_prompt_en": "",
+      "target_video_sec": 2.0,
+      "poker_table_state": {
+        "hero_hand": "A♠ A♦",
+        "board": "9♣ 4♠ T♦",
+        "pot_bb": 303.5,
+        "action_badge": "Flop: Bijan Hits Two Pair"
+      },
+      "sfx_cue": "card_deal",
+      "visual_asset": "/media/ep04-poker-hand/scenes/scene_03.svg",
+      "video_path": null,
+      "video_asset": null,
+      "status": "ready_for_review"
+    },
+    {
+      "id": "scene_21",
+      "beat_index": 21,
+      "time_range": "00:40 - 00:42",
+      "title": "پوزخند بیژن بعد از دوپر شدن",
+      "duration_sec": 2.0,
+      "segment_ids": [
+        "seg_08"
+      ],
+      "characters_present": [
+        "@Bijan"
+      ],
+      "adjacent_players": [
+        "@Farzad (seat_4, left, soft out-of-focus shoulder)",
+        "Empty seat_6 (right)"
+      ],
+      "table_state_en": "Flop: 300 BB pot, 9♣ 4♠ T♦ on felt, Bijan's tea glass steaming",
+      "camera": "@Seat_5 Medium Close-Up",
+      "shot_mode": "ai_video",
+      "camera_effect": "zoom_in",
+      "visual_prompt": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_5 on Bijan (@Bijan) chest-up. His felted eyes widen and one eyebrow rises into a slow smug smirk as he taps the table twice with two fingers. On the left frame edge, soft out-of-focus shoulder of Farzad (@Farzad) at seat_4; right edge shows empty seat_6. Background seat_5 landmark: tiny vintage carved wooden side table with Persian tea tray, glass estekan and brass pistachio bowl. 9♣ 4♠ T♦ and 300 BB pot on emerald felt in foreground. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "visual_prompt_en": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_5 on Bijan (@Bijan) chest-up. His felted eyes widen and one eyebrow rises into a slow smug smirk as he taps the table twice with two fingers. On the left frame edge, soft out-of-focus shoulder of Farzad (@Farzad) at seat_4; right edge shows empty seat_6. Background seat_5 landmark: tiny vintage carved wooden side table with Persian tea tray, glass estekan and brass pistachio bowl. 9♣ 4♠ T♦ and 300 BB pot on emerald felt in foreground. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "motion_prompt_en": "Steady medium close-up on needle-felted puppet Bijan (@Bijan) at @Seat_5. Tactile 12fps stop-motion puppet animation, subtle wool fiber texture movement, silent expressive acting (mouth closed, no talking). His felted eyes widen and one eyebrow rises into a slow smug smirk as he taps the table twice with two fingers. No airborne chips. Tactile stop-motion feel",
+      "target_video_sec": 2.0,
+      "poker_table_state": {
+        "hero_hand": "9♦ 4♣",
+        "board": "9♣ 4♠ T♦",
+        "pot_bb": 303.5,
+        "action_badge": "Bijan: Two Pair!"
+      },
+      "sfx_cue": "heartbeat",
+      "visual_asset": "/media/ep04-poker-hand/scenes/scene_03.svg",
+      "video_path": null,
+      "video_asset": null,
+      "status": "ready_for_review"
+    },
+    {
+      "id": "scene_22",
+      "beat_index": 22,
+      "time_range": "00:42 - 00:44",
+      "title": "ترن ۲ روی نمد",
+      "duration_sec": 2.0,
+      "segment_ids": [
+        "seg_09"
+      ],
+      "characters_present": [
+        "@Rahim",
+        "@Farzad",
+        "@Bijan"
+      ],
+      "adjacent_players": [
+        "@Rahim (seat_3)",
+        "@Farzad (seat_4)",
+        "@Bijan (seat_5)"
+      ],
+      "table_state_en": "Turn: 300 BB pot, board 9♣ 4♠ T♦ 2♥, four community cards on felt",
+      "camera": "Isometric Top-Down Table Shot",
+      "shot_mode": "static_zoom",
+      "camera_effect": "zoom_in",
+      "visual_prompt": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, isometric top-down view of the 6-max table at @PokerRoom. Four miniature community cards lie flat on the fuzzy emerald felt: 9♣ 4♠ T♦ 2♥ beside the massive 300 BB pot. Rahim's A♠ A♦ remain face up near seat_3; Bijan's 9♦ 4♣ face down near seat_5. Warm chandelier light, tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "visual_prompt_en": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, isometric top-down view of the 6-max table at @PokerRoom. Four miniature community cards lie flat on the fuzzy emerald felt: 9♣ 4♠ T♦ 2♥ beside the massive 300 BB pot. Rahim's A♠ A♦ remain face up near seat_3; Bijan's 9♦ 4♣ face down near seat_5. Warm chandelier light, tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "motion_prompt_en": "Slow steady push-in on needle-felted puppet Bijan (@Bijan) at @Seat_5. Tactile 12fps stop-motion puppet animation, subtle wool fiber texture movement, silent expressive acting (mouth closed, no talking). He raises one sculpted wool eyebrow and gives a slow, knowing smirk over his tiny tea glass. Handcrafted stop-motion look",
+      "target_video_sec": 2.0,
+      "poker_table_state": {
+        "hero_hand": "A♠ A♦",
+        "board": "9♣ 4♠ T♦ 2♥",
+        "pot_bb": 303.5,
+        "action_badge": "Turn: 2♥"
+      },
+      "sfx_cue": "card_deal",
+      "visual_asset": "/media/ep04-poker-hand/scenes/scene_03.svg",
+      "video_path": null,
+      "video_asset": null,
+      "status": "ready_for_review"
+    },
+    {
+      "id": "scene_23",
+      "beat_index": 23,
+      "time_range": "00:44 - 00:46",
+      "title": "ریور ۴ و فول‌هاوس بیژن",
+      "duration_sec": 2.0,
+      "segment_ids": [
+        "seg_09"
+      ],
+      "characters_present": [
+        "@Rahim",
+        "@Farzad",
+        "@Bijan"
+      ],
+      "adjacent_players": [
+        "@Rahim (seat_3)",
+        "@Farzad (seat_4)",
+        "@Bijan (seat_5)"
+      ],
+      "table_state_en": "River: 300 BB pot, board 9♣ 4♠ T♦ 2♥ 4♥, five community cards, Bijan makes full house (4s full of 9s)",
+      "camera": "Isometric Top-Down Table Shot",
+      "shot_mode": "static_zoom",
+      "camera_effect": "zoom_in",
+      "visual_prompt": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, isometric top-down view of the 6-max table at @PokerRoom. Five miniature community cards lie flat on the fuzzy emerald felt: 9♣ 4♠ T♦ 2♥ 4♥ beside the massive 300 BB pot. Bijan's 9♦ 4♣ near seat_5 now complete a full house. Rahim's A♠ A♦ remain face up near seat_3. Warm chandelier light, tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "visual_prompt_en": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, isometric top-down view of the 6-max table at @PokerRoom. Five miniature community cards lie flat on the fuzzy emerald felt: 9♣ 4♠ T♦ 2♥ 4♥ beside the massive 300 BB pot. Bijan's 9♦ 4♣ near seat_5 now complete a full house. Rahim's A♠ A♦ remain face up near seat_3. Warm chandelier light, tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "motion_prompt_en": "",
+      "target_video_sec": 2.0,
+      "poker_table_state": {
+        "hero_hand": "9♦ 4♣",
+        "board": "9♣ 4♠ T♦ 2♥ 4♥",
+        "pot_bb": 303.5,
+        "action_badge": "River: Bijan Full House!"
+      },
+      "sfx_cue": "card_deal",
+      "visual_asset": "/media/ep04-poker-hand/scenes/scene_03.svg",
+      "video_path": null,
+      "video_asset": null,
+      "status": "ready_for_review"
+    },
+    {
+      "id": "scene_24",
+      "beat_index": 24,
+      "time_range": "00:46 - 00:48",
+      "title": "واکنش بیژن به فول‌هاوس شدن",
+      "duration_sec": 2.0,
+      "segment_ids": [
+        "seg_09"
+      ],
+      "characters_present": [
+        "@Bijan"
+      ],
+      "adjacent_players": [
+        "@Farzad (seat_4, left, soft out-of-focus shoulder)",
+        "Empty seat_6 (right)"
+      ],
+      "table_state_en": "River: 300 BB pot, full board 9♣ 4♠ T♦ 2♥ 4♥, Bijan's full house",
+      "camera": "@Seat_5 Medium Close-Up",
+      "shot_mode": "ai_video",
+      "camera_effect": "shake",
+      "visual_prompt": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_5 on Bijan (@Bijan) chest-up. He leans back with a satisfied smirk, lifts his tiny tea glass in a small toast, and gives a slow nod. On the left frame edge, soft out-of-focus shoulder of Farzad (@Farzad) at seat_4; right edge shows empty seat_6. Background seat_5 landmark: tiny vintage carved wooden side table with Persian tea tray, glass estekan and brass pistachio bowl. Full board 9♣ 4♠ T♦ 2♥ 4♥ and 300 BB pot on emerald felt in foreground. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "visual_prompt_en": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_5 on Bijan (@Bijan) chest-up. He leans back with a satisfied smirk, lifts his tiny tea glass in a small toast, and gives a slow nod. On the left frame edge, soft out-of-focus shoulder of Farzad (@Farzad) at seat_4; right edge shows empty seat_6. Background seat_5 landmark: tiny vintage carved wooden side table with Persian tea tray, glass estekan and brass pistachio bowl. Full board 9♣ 4♠ T♦ 2♥ 4♥ and 300 BB pot on emerald felt in foreground. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "motion_prompt_en": "Steady medium close-up on needle-felted puppet Bijan (@Bijan) at @Seat_5. Tactile 12fps stop-motion puppet animation, subtle wool fiber texture movement, silent expressive acting (mouth closed, no talking). He leans back with a satisfied smirk, lifts his tiny tea glass in a small toast, and gives a slow nod. No airborne chips. Tactile stop-motion feel",
+      "target_video_sec": 2.0,
+      "poker_table_state": {
+        "hero_hand": "9♦ 4♣",
+        "board": "9♣ 4♠ T♦ 2♥ 4♥",
+        "pot_bb": 303.5,
+        "action_badge": "Bijan Scoops 300 BB"
+      },
+      "sfx_cue": "chip_splash",
+      "visual_asset": "/media/ep04-poker-hand/scenes/scene_03.svg",
+      "video_path": null,
+      "video_asset": null,
+      "status": "ready_for_review"
+    },
+    {
+      "id": "scene_25",
+      "beat_index": 25,
+      "time_range": "00:48 - 00:50",
+      "title": "رحیم گیج و مبهوت",
+      "duration_sec": 2.2,
+      "segment_ids": [
+        "seg_10"
+      ],
+      "characters_present": [
+        "@Rahim"
+      ],
+      "adjacent_players": [
+        "@Keyvan (seat_2, left, soft out-of-focus shoulder)",
+        "@Farzad (seat_4, right, soft out-of-focus shoulder)"
+      ],
+      "table_state_en": "Showdown: 300 BB pot being pushed to Bijan, board 9♣ 4♠ T♦ 2♥ 4♥, Rahim's A♠ A♦ exposed",
+      "camera": "@Seat_3 Medium Close-Up",
+      "shot_mode": "static_zoom",
+      "camera_effect": "zoom_in",
+      "visual_prompt": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_3 on Rahim (@Rahim) chest-up. His felted wool face is frozen in confusion, mouth slightly open, eyes darting between his A♠ A♦ and the board. On the left frame edge, soft out-of-focus shoulder of Keyvan (@Keyvan) at seat_2; on the right frame edge, soft out-of-focus shoulder of Farzad (@Farzad) at seat_4. Background seat_3 landmark: tiny pleated dark velvet curtains with warm golden-amber light. Full board 9♣ 4♠ T♦ 2♥ 4♥ and 300 BB pot on emerald felt in foreground. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "visual_prompt_en": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_3 on Rahim (@Rahim) chest-up. His felted wool face is frozen in confusion, mouth slightly open, eyes darting between his A♠ A♦ and the board. On the left frame edge, soft out-of-focus shoulder of Keyvan (@Keyvan) at seat_2; on the right frame edge, soft out-of-focus shoulder of Farzad (@Farzad) at seat_4. Background seat_3 landmark: tiny pleated dark velvet curtains with warm golden-amber light. Full board 9♣ 4♠ T♦ 2♥ 4♥ and 300 BB pot on emerald felt in foreground. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "motion_prompt_en": "Slow push-in on needle-felted puppet Bijan (@Bijan) at @Seat_5. Tactile 12fps stop-motion puppet animation, subtle wool fiber texture movement, silent expressive acting (mouth closed, no talking). His bead eyes widen in delighted shock, then he calmly raises his tiny tea glass in a silent toast. Handcrafted stop-motion look",
+      "target_video_sec": 2.2,
+      "poker_table_state": {
+        "hero_hand": "A♠ A♦",
+        "board": "9♣ 4♠ T♦ 2♥ 4♥",
+        "pot_bb": 303.5,
+        "action_badge": "Rahim: 'What Happened?!'"
+      },
+      "sfx_cue": "record_scratch",
+      "visual_asset": "/media/ep04-poker-hand/scenes/scene_03.svg",
+      "video_path": null,
+      "video_asset": null,
+      "status": "ready_for_review"
+    },
+    {
+      "id": "scene_26",
+      "beat_index": 26,
+      "time_range": "00:50 - 00:52",
+      "title": "کلوزآپ آس‌های رحیم و دست‌ها روی سر",
+      "duration_sec": 2.0,
+      "segment_ids": [
+        "seg_10"
+      ],
+      "characters_present": [
+        "@Rahim"
+      ],
+      "adjacent_players": [
+        "@Keyvan (seat_2, left, soft out-of-focus shoulder)",
+        "@Farzad (seat_4, right, soft out-of-focus shoulder)"
+      ],
+      "table_state_en": "Showdown: 300 BB pot, board 9♣ 4♠ T♦ 2♥ 4♥, Rahim's A♠ A♦ flat on felt, his felted hands on his head",
+      "camera": "@Seat_3 Extreme Close-Up on Cards",
+      "shot_mode": "static_zoom",
+      "camera_effect": "shake",
+      "visual_prompt": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, extreme close-up on Rahim's (@Rahim) A♠ A♦ lying flat on the fuzzy emerald felt at @Seat_3, with his felted hands clutching his head in the soft out-of-focus background. The full board 9♣ 4♠ T♦ 2♥ 4♥ and the 300 BB pot are visible at the frame edge. Background seat_3 landmark: tiny pleated dark velvet curtains with warm golden-amber light. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "visual_prompt_en": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, extreme close-up on Rahim's (@Rahim) A♠ A♦ lying flat on the fuzzy emerald felt at @Seat_3, with his felted hands clutching his head in the soft out-of-focus background. The full board 9♣ 4♠ T♦ 2♥ 4♥ and the 300 BB pot are visible at the frame edge. Background seat_3 landmark: tiny pleated dark velvet curtains with warm golden-amber light. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "motion_prompt_en": "Quick push-in on needle-felted puppet Rahim (@Rahim) at @Seat_3. Tactile 12fps stop-motion puppet animation, subtle wool fiber texture movement, silent expressive acting (mouth closed, no talking). His bead eyes bulge in cartoon shock, a tiny felt sweat drop slides down his temple, and both felted hands slowly clutch his chest. Handcrafted stop-motion look",
+      "target_video_sec": 2.0,
+      "poker_table_state": {
+        "hero_hand": "A♠ A♦",
+        "board": "9♣ 4♠ T♦ 2♥ 4♥",
+        "pot_bb": 303.5,
+        "action_badge": "Aces Cracked"
+      },
+      "sfx_cue": "heartbeat",
+      "visual_asset": "/media/ep04-poker-hand/scenes/scene_03.svg",
+      "video_path": null,
+      "video_asset": null,
+      "status": "ready_for_review"
+    },
+    {
+      "id": "scene_27",
+      "beat_index": 27,
+      "time_range": "00:52 - 00:54",
+      "title": "تیلت شدید فرزاد",
+      "duration_sec": 2.2,
+      "segment_ids": [
+        "seg_11"
+      ],
+      "characters_present": [
+        "@Farzad"
+      ],
+      "adjacent_players": [
+        "@Rahim (seat_3, left, soft out-of-focus shoulder)",
+        "@Bijan (seat_5, right, soft out-of-focus shoulder)"
+      ],
+      "table_state_en": "Showdown: 300 BB pot, board 9♣ 4♠ T♦ 2♥ 4♥, Farzad's 7♣ 2♦ exposed",
+      "camera": "@Seat_4 Medium Close-Up",
+      "shot_mode": "ai_video",
+      "camera_effect": "shake",
+      "visual_prompt": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_4 on Farzad (@Farzad) chest-up. His felted face contorts in exaggerated tilt, both hands slapping the table rail, his 7♣ 2♦ exposed on the felt. On the left frame edge, soft out-of-focus shoulder of Rahim (@Rahim) at seat_3; on the right frame edge, soft out-of-focus shoulder of Bijan (@Bijan) at seat_5. Background seat_4 landmark: tiny carved wooden corner shelf with miniature backgammon board and felted plant. Full board 9♣ 4♠ T♦ 2♥ 4♥ and 300 BB pot in foreground. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "visual_prompt_en": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_4 on Farzad (@Farzad) chest-up. His felted face contorts in exaggerated tilt, both hands slapping the table rail, his 7♣ 2♦ exposed on the felt. On the left frame edge, soft out-of-focus shoulder of Rahim (@Rahim) at seat_3; on the right frame edge, soft out-of-focus shoulder of Bijan (@Bijan) at seat_5. Background seat_4 landmark: tiny carved wooden corner shelf with miniature backgammon board and felted plant. Full board 9♣ 4♠ T♦ 2♥ 4♥ and 300 BB pot in foreground. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "motion_prompt_en": "Steady medium close-up on needle-felted puppet Farzad (@Farzad) at @Seat_4. Tactile 12fps stop-motion puppet animation, subtle wool fiber texture movement, silent expressive acting (mouth closed, no talking). His felted face contorts in exaggerated tilt, he slaps both hands onto the table rail and shakes his head rapidly. No airborne chips. Tactile stop-motion feel",
+      "target_video_sec": 2.2,
+      "poker_table_state": {
+        "hero_hand": "7♣ 2♦",
+        "board": "9♣ 4♠ T♦ 2♥ 4♥",
+        "pot_bb": 303.5,
+        "action_badge": "Farzad on Mega-Tilt"
+      },
+      "sfx_cue": "record_scratch",
+      "visual_asset": "/media/ep04-poker-hand/scenes/scene_03.svg",
+      "video_path": null,
+      "video_asset": null,
+      "status": "ready_for_review"
+    },
+    {
+      "id": "scene_28",
+      "beat_index": 28,
+      "time_range": "00:54 - 00:56",
+      "title": "مشت کوبیدن فرزاد روی میز",
+      "duration_sec": 2.0,
+      "segment_ids": [
+        "seg_11"
+      ],
+      "characters_present": [
+        "@Farzad"
+      ],
+      "adjacent_players": [
+        "@Rahim (seat_3, left, soft out-of-focus shoulder)",
+        "@Bijan (seat_5, right, soft out-of-focus shoulder)"
+      ],
+      "table_state_en": "Showdown: 300 BB pot, board 9♣ 4♠ T♦ 2♥ 4♥, Farzad's chips rattling on felt",
+      "camera": "@Seat_4 Medium Close-Up",
+      "shot_mode": "static_zoom",
+      "camera_effect": "shake",
+      "visual_prompt": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_4 on Farzad (@Farzad) chest-up. He slams a felted fist onto the brown leather table rail, his messy chips rattling on the emerald felt. On the left frame edge, soft out-of-focus shoulder of Rahim (@Rahim) at seat_3; on the right frame edge, soft out-of-focus shoulder of Bijan (@Bijan) at seat_5. Background seat_4 landmark: tiny carved wooden corner shelf with miniature backgammon board and felted plant. Full board 9♣ 4♠ T♦ 2♥ 4♥ and 300 BB pot in foreground. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "visual_prompt_en": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_4 on Farzad (@Farzad) chest-up. He slams a felted fist onto the brown leather table rail, his messy chips rattling on the emerald felt. On the left frame edge, soft out-of-focus shoulder of Rahim (@Rahim) at seat_3; on the right frame edge, soft out-of-focus shoulder of Bijan (@Bijan) at seat_5. Background seat_4 landmark: tiny carved wooden corner shelf with miniature backgammon board and felted plant. Full board 9♣ 4♠ T♦ 2♥ 4♥ and 300 BB pot in foreground. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "motion_prompt_en": "Aggressive handheld shake toward needle-felted puppet Farzad (@Farzad) at @Seat_4. Tactile 12fps stop-motion puppet animation, subtle wool fiber texture movement, silent expressive acting (mouth closed, no talking). His felted cheeks puff out red, his bead eyes twitch, and he pounds one felted fist down flat on the wool felt. No airborne chips. Handcrafted stop-motion look",
+      "target_video_sec": 2.0,
+      "poker_table_state": {
+        "hero_hand": "7♣ 2♦",
+        "board": "9♣ 4♠ T♦ 2♥ 4♥",
+        "pot_bb": 303.5,
+        "action_badge": "Farzad Slams Table"
+      },
+      "sfx_cue": "table_slam",
+      "visual_asset": "/media/ep04-poker-hand/scenes/scene_03.svg",
+      "video_path": null,
+      "video_asset": null,
+      "status": "ready_for_review"
+    },
+    {
+      "id": "scene_29",
+      "beat_index": 29,
+      "time_range": "00:56 - 00:58",
+      "title": "پوزخند و حرف‌های بیژن",
+      "duration_sec": 2.2,
+      "segment_ids": [
+        "seg_12"
+      ],
+      "characters_present": [
+        "@Bijan"
+      ],
+      "adjacent_players": [
+        "@Farzad (seat_4, left, soft out-of-focus shoulder)",
+        "Empty seat_6 (right)"
+      ],
+      "table_state_en": "Showdown: 300 BB pot being scooped, board 9♣ 4♠ T♦ 2♥ 4♥, Bijan's tea glass and tasbih",
+      "camera": "@Seat_5 Medium Close-Up",
+      "shot_mode": "static_zoom",
+      "camera_effect": "zoom_in",
+      "visual_prompt": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_5 on Bijan (@Bijan) chest-up. His felted wool face is calmly smug, one hand lifting his tea glass, the other resting beside his amber tasbih. On the left frame edge, soft out-of-focus shoulder of Farzad (@Farzad) at seat_4; right edge shows empty seat_6. Background seat_5 landmark: tiny vintage carved wooden side table with Persian tea tray, glass estekan and brass pistachio bowl. Full board 9♣ 4♠ T♦ 2♥ 4♥ and 300 BB pot in foreground. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "visual_prompt_en": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_5 on Bijan (@Bijan) chest-up. His felted wool face is calmly smug, one hand lifting his tea glass, the other resting beside his amber tasbih. On the left frame edge, soft out-of-focus shoulder of Farzad (@Farzad) at seat_4; right edge shows empty seat_6. Background seat_5 landmark: tiny vintage carved wooden side table with Persian tea tray, glass estekan and brass pistachio bowl. Full board 9♣ 4♠ T♦ 2♥ 4♥ and 300 BB pot in foreground. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "motion_prompt_en": "",
+      "target_video_sec": 2.2,
+      "poker_table_state": {
+        "hero_hand": "9♦ 4♣",
+        "board": "9♣ 4♠ T♦ 2♥ 4♥",
+        "pot_bb": 303.5,
+        "action_badge": "Bijan: 'I Came to Keep You Company'"
+      },
+      "sfx_cue": "tea_sip",
+      "visual_asset": "/media/ep04-poker-hand/scenes/scene_03.svg",
+      "video_path": null,
+      "video_asset": null,
+      "status": "ready_for_review"
+    },
+    {
+      "id": "scene_30",
+      "beat_index": 30,
+      "time_range": "00:58 - 00:60",
+      "title": "بیژن پات سیصد بیگ بلایند را جمع می‌کند",
+      "duration_sec": 2.2,
+      "segment_ids": [
+        "seg_12"
+      ],
+      "characters_present": [
+        "@Bijan"
+      ],
+      "adjacent_players": [
+        "@Farzad (seat_4, left, soft out-of-focus shoulder)",
+        "Empty seat_6 (right)"
+      ],
+      "table_state_en": "Showdown: Bijan pulls the massive 300 BB pot toward himself, board 9♣ 4♠ T♦ 2♥ 4♥",
+      "camera": "@Seat_5 Medium Close-Up",
+      "shot_mode": "ai_video",
+      "camera_effect": "zoom_out",
+      "visual_prompt": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_5 on Bijan (@Bijan) chest-up. He sweeps both felted arms wide, gathering the massive 300 BB pile of miniature chips toward his chest, then lifts his tea glass. On the left frame edge, soft out-of-focus shoulder of Farzad (@Farzad) at seat_4; right edge shows empty seat_6. Background seat_5 landmark: tiny vintage carved wooden side table with Persian tea tray, glass estekan and brass pistachio bowl. Full board 9♣ 4♠ T♦ 2♥ 4♥ on emerald felt in foreground. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "visual_prompt_en": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_5 on Bijan (@Bijan) chest-up. He sweeps both felted arms wide, gathering the massive 300 BB pile of miniature chips toward his chest, then lifts his tea glass. On the left frame edge, soft out-of-focus shoulder of Farzad (@Farzad) at seat_4; right edge shows empty seat_6. Background seat_5 landmark: tiny vintage carved wooden side table with Persian tea tray, glass estekan and brass pistachio bowl. Full board 9♣ 4♠ T♦ 2♥ 4♥ on emerald felt in foreground. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "motion_prompt_en": "Steady medium close-up on needle-felted puppet Bijan (@Bijan) at @Seat_5. Tactile 12fps stop-motion puppet animation, subtle wool fiber texture movement, silent expressive acting (mouth closed, no talking). He sweeps both felted arms wide, gathering a massive pile of miniature chips toward his chest, then lifts his tea glass. No airborne chips. Tactile stop-motion feel",
+      "target_video_sec": 2.2,
+      "poker_table_state": {
+        "hero_hand": "9♦ 4♣",
+        "board": "9♣ 4♠ T♦ 2♥ 4♥",
+        "pot_bb": 0,
+        "action_badge": "Bijan Wins 300 BB"
+      },
+      "sfx_cue": "chip_splash",
+      "visual_asset": "/media/ep04-poker-hand/scenes/scene_03.svg",
+      "video_path": null,
+      "video_asset": null,
+      "status": "ready_for_review"
+    },
+    {
+      "id": "scene_31",
+      "beat_index": 31,
+      "time_range": "00:60 - 00:62",
+      "title": "لبخند خونسرد کیوان در سکوت",
+      "duration_sec": 2.2,
+      "segment_ids": [
+        "seg_13"
+      ],
+      "characters_present": [
+        "@Keyvan"
+      ],
+      "adjacent_players": [
+        "@Arash (seat_1, left, soft out-of-focus shoulder)",
+        "@Rahim (seat_3, right, soft out-of-focus shoulder)"
+      ],
+      "table_state_en": "Aftermath: Bijan's 300 BB pot stacked at seat_5, board 9♣ 4♠ T♦ 2♥ 4♥, Keyvan's neat stacks untouched",
+      "camera": "@Seat_2 Medium Close-Up",
+      "shot_mode": "static_zoom",
+      "camera_effect": "zoom_in",
+      "visual_prompt": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_2 on Keyvan (@Keyvan) chest-up. His felted wool face wears a silent, knowing smirk as he watches the chaos, his ultra-neat tall chip towers untouched. On the left frame edge, soft out-of-focus shoulder of Arash (@Arash) at seat_1; on the right frame edge, soft out-of-focus shoulder of Rahim (@Rahim) at seat_3. Background seat_2 landmark: tiny framed miniature pop-art canvas on dark felted brick. Full board 9♣ 4♠ T♦ 2♥ 4♥ and Bijan's 300 BB stack visible in foreground. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "visual_prompt_en": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_2 on Keyvan (@Keyvan) chest-up. His felted wool face wears a silent, knowing smirk as he watches the chaos, his ultra-neat tall chip towers untouched. On the left frame edge, soft out-of-focus shoulder of Arash (@Arash) at seat_1; on the right frame edge, soft out-of-focus shoulder of Rahim (@Rahim) at seat_3. Background seat_2 landmark: tiny framed miniature pop-art canvas on dark felted brick. Full board 9♣ 4♠ T♦ 2♥ 4♥ and Bijan's 300 BB stack visible in foreground. Tactile fuzzy wool textures, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "motion_prompt_en": "Steady low tracking shot on needle-felted puppet Bijan (@Bijan) at @Seat_5. Tactile 12fps stop-motion puppet animation, subtle wool fiber texture movement, silent expressive acting (mouth closed, no talking). Both of his felted arms slowly drag the giant pile of miniature chips flat along the wool felt toward himself, then he gives a calm satisfied nod. No airborne chips. Tactile stop-motion feel",
+      "target_video_sec": 2.2,
+      "poker_table_state": {
+        "hero_hand": "8♥ 7♥ (folded)",
+        "board": "9♣ 4♠ T♦ 2♥ 4♥",
+        "pot_bb": 0,
+        "action_badge": "Keyvan's Silent Smirk"
+      },
+      "sfx_cue": "silence_sting",
+      "visual_asset": "/media/ep04-poker-hand/scenes/scene_03.svg",
+      "video_path": null,
+      "video_asset": null,
+      "status": "ready_for_review"
+    },
+    {
+      "id": "scene_32",
+      "beat_index": 32,
+      "time_range": "00:62 - 00:64",
+      "title": "جادوی چایی بیژن - جمع‌بندی طلایی",
+      "duration_sec": 2.0,
+      "segment_ids": [
+        "seg_13"
+      ],
+      "characters_present": [
+        "@Bijan"
+      ],
+      "adjacent_players": [
+        "@Farzad (seat_4, left, soft out-of-focus shoulder)",
+        "Empty seat_6 (right)"
+      ],
+      "table_state_en": "Aftermath: 300 BB pot stacked at seat_5, board 9♣ 4♠ T♦ 2♥ 4♥, Bijan's amber tea glass glowing under chandelier light, tasbih beside it",
+      "camera": "@Seat_5 Extreme Close-Up on Tea Glass",
+      "shot_mode": "static_zoom",
+      "camera_effect": "zoom_in",
+      "visual_prompt": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, extreme close-up on Bijan's (@Bijan) tiny glass estekan of amber tea glowing under warm chandelier light at @Seat_5, his amber tasbih resting beside it on the vintage carved side table. In soft out-of-focus background, the 300 BB chip stack and full board 9♣ 4♠ T♦ 2♥ 4♥ on the emerald felt. On the left frame edge, soft out-of-focus shoulder of Farzad (@Farzad) at seat_4. Tactile fuzzy wool textures, rich saturated colors, soft warm studio macro lighting, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "visual_prompt_en": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, extreme close-up on Bijan's (@Bijan) tiny glass estekan of amber tea glowing under warm chandelier light at @Seat_5, his amber tasbih resting beside it on the vintage carved side table. In soft out-of-focus background, the 300 BB chip stack and full board 9♣ 4♠ T♦ 2♥ 4♥ on the emerald felt. On the left frame edge, soft out-of-focus shoulder of Farzad (@Farzad) at seat_4. Tactile fuzzy wool textures, rich saturated colors, soft warm studio macro lighting, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "motion_prompt_en": "",
+      "target_video_sec": 2.0,
+      "poker_table_state": {
+        "hero_hand": "9♦ 4♣",
+        "board": "9♣ 4♠ T♦ 2♥ 4♥",
+        "pot_bb": 0,
+        "action_badge": "Golden Takeaway: Tea Magic > Nit Folds"
+      },
+      "sfx_cue": "magic_chime",
+      "visual_asset": "/media/ep04-poker-hand/scenes/scene_03.svg",
+      "video_path": null,
+      "video_asset": null,
+      "status": "ready_for_review"
+    }
+  ],
+  "audio": {
+    "tracks": [
+      {
+        "segment_id": "seg_01",
+        "speaker": "NARRATOR",
+        "tts_text": "دو ساعَتِه آقا رَحیم حَتّی یِه دَسْت هَم بازی نَکَردِه... وَلی بِلاخَرِه دَسْت‌هایِ لَرزونِش میرِه سَمْتِ چیپ‌ها!",
+        "subtitle_text": "دو ساعته آقا رحیم حتی یه دست هم بازی نکرده... ولی بالاخره دست‌های لرزونش میره سمت چیپ‌ها!",
+        "audio_file": "/media/ep04-poker-hand/audio/seg_01.wav",
+        "status": "ready",
+        "duration_sec": 5.0
+      },
+      {
+        "segment_id": "seg_02",
+        "speaker": "@Rahim",
+        "tts_text": "با این پاکِت آس، دیگِه وَقْتِشِه یِه مینی‌رِیزِ کوچیک بِدَم... حالا کی جُرأَت دارِه بیاد؟",
+        "subtitle_text": "با این پاکت آس، دیگه وقتشه یه مینی-ریز کوچیک بدم... حالا کی جرات داره بیاد؟",
+        "audio_file": "/media/ep04-poker-hand/audio/seg_02.wav",
+        "status": "ready",
+        "duration_sec": 4.5
+      },
+      {
+        "segment_id": "seg_03",
+        "speaker": "@Arash",
+        "tts_text": "یا خُدا! آقا رَحیم رِیز داد؟! صَبْر کُن... اَز نَظَرِ رِیاضی رِینْجِش فَقَط پاکِت آس یا شاهِه، با شاه‌بی‌بی سوتِد شانْسَم صِفْرِه... فولد!",
+        "subtitle_text": "یا خدا! آقا رحیم ریز داد؟! صبر کن... از نظر ریاضی رنجش فقط پاکت آس یا شاهه، با شاه-بی‌بی سوتد شانسم صفره... فولد!",
+        "audio_file": "/media/ep04-poker-hand/audio/seg_03.wav",
+        "status": "ready",
+        "duration_sec": 5.5
+      },
+      {
+        "segment_id": "seg_04",
+        "speaker": "NARRATOR",
+        "tts_text": "کِیْوان هَم با هَشْت‌هَفْتِ سوتِد، تو سُکوتِ مُطْلَق یِه نِگاهِ سَرد مینْدازِه و کارتْهاش رو آروم میذارِه زَمین.",
+        "subtitle_text": "کیوان هم با ۸-۷ سوتد، تو سکوت مطلق یه نگاه سرد میندازه و کارت‌هاش رو آروم میذاره زمین.",
+        "audio_file": "/media/ep04-poker-hand/audio/seg_04.wav",
+        "status": "ready",
+        "duration_sec": 4.5
+      },
+      {
+        "segment_id": "seg_05",
+        "speaker": "@Farzad",
+        "tts_text": "آل‌آین! حاجی تَرسونْدی هَمَه‌رو؟ مَن بِدونِ نِگاه بِه کارت‌هام میام وَسَط! بیا بِبینَم جُرأَتِشو داری یا باز میخوای بِتَرْسی؟",
+        "subtitle_text": "آل-این! حاجی ترسوندی همه‌رو؟ من بدون نگاه به کارت‌هام میام وسط! بیا ببینم جراتشو داری یا باز میخوای بترسی؟",
+        "audio_file": "/media/ep04-poker-hand/audio/seg_05.wav",
+        "status": "ready",
+        "duration_sec": 5.5
+      },
+      {
+        "segment_id": "seg_06",
+        "speaker": "@Bijan",
+        "tts_text": "یِه قُلُپ چای بِزَنیم... مَن تا ریوِر رو نَبینَم شَب خوابَم نِمیبَرِه داداش! با نُه و چَهار، کال!",
+        "subtitle_text": "یه قلپ چای بزنیم... من تا ریور رو نبینم شب خوابم نمیبره داداش! با ۹ و ۴، کال!",
+        "audio_file": "/media/ep04-poker-hand/audio/seg_06.wav",
+        "status": "ready",
+        "duration_sec": 5.5
+      },
+      {
+        "segment_id": "seg_07",
+        "speaker": "@Rahim",
+        "tts_text": "بِفَرما جَوون! پولِ زَحْمَت‌کِشیدِه اینْجوری خَرْج میشِه... با دو تا جوجِه اومَدین جِلویِ پاکِت آس؟ کال!",
+        "subtitle_text": "بفرما جوون! پولِ زحمت‌کشیده اینجوری خرج میشه... با دو تا جوجه اومدین جلوی پاکت آس؟ کال!",
+        "audio_file": "/media/ep04-poker-hand/audio/seg_07.wav",
+        "status": "ready",
+        "duration_sec": 5.0
+      },
+      {
+        "segment_id": "seg_08",
+        "speaker": "NARRATOR",
+        "tts_text": "پات میشِه سیصَد بیگ بْلایْند! دِیلِر فِلاپ رو باز می‌کُنِه: نُه، چَهار، دَه! بیژَن هَمین اَلان دوپِرِ نُه و چَهار شُدِه!",
+        "subtitle_text": "پات میشه سیصد بیگ بلایند! دیلر فلاپ رو باز می‌کنه: ۹، ۴، ۱۰! بیژن همین الان دوپر ۹ و ۴ شده!",
+        "audio_file": "/media/ep04-poker-hand/audio/seg_08.wav",
+        "status": "ready",
+        "duration_sec": 5.5
+      },
+      {
+        "segment_id": "seg_09",
+        "speaker": "NARRATOR",
+        "tts_text": "تِرن میاد دو... و رویِ ریوِر، یِه چَهارِ دیگِه میاد! بیژَن با نُه و چَهار، فول‌هاوْس شُد!",
+        "subtitle_text": "ترن میاد ۲... و روی ریور یه ۴ِ دیگه میاد! بیژن با ۹ و ۴ فول‌هاوس شد!",
+        "audio_file": "/media/ep04-poker-hand/audio/seg_09.wav",
+        "status": "ready",
+        "duration_sec": 5.0
+      },
+      {
+        "segment_id": "seg_10",
+        "speaker": "@Rahim",
+        "tts_text": "چی شُد؟! آخِه با نُه و چَهار کی صَد بیگ بْلایْند آل‌آین کال می‌کُنِه؟! سَکْتِه کَردَم!",
+        "subtitle_text": "چی شد؟! آخه با ۹ و ۴ کی صد بیگ بلایند آل-این کال می‌کنه؟! سکته کردم!",
+        "audio_file": "/media/ep04-poker-hand/audio/seg_10.wav",
+        "status": "ready",
+        "duration_sec": 4.5
+      },
+      {
+        "segment_id": "seg_11",
+        "speaker": "@Farzad",
+        "tts_text": "اِی، بیپ، تو این شانْس و دِیلِر! با آشْغال اومَدی تو پات کُلِّ اِسْتَکَم رو بُردی؟!",
+        "subtitle_text": "ای [بوق] تو این شانس و دیلر! با آشغال اومدی تو پات کل استکم رو بردی؟!",
+        "audio_file": "/media/ep04-poker-hand/audio/seg_11.wav",
+        "status": "ready",
+        "duration_sec": 4.5
+      },
+      {
+        "segment_id": "seg_12",
+        "speaker": "@Bijan",
+        "tts_text": "دیدَم بْلَف میزَنی گُفْتَم خِجالَت نَکِشی اومَدَم باهات! آرَش جان چاییت سَرد شُد، بازی رو بِچَسْب!",
+        "subtitle_text": "دیدم بلوف می‌زنی گفتم خجالت نکشی اومدم باهات! آرش جان چاییت سرد شد، بازی رو بچسب!",
+        "audio_file": "/media/ep04-poker-hand/audio/seg_12.wav",
+        "status": "ready",
+        "duration_sec": 5.0
+      },
+      {
+        "segment_id": "seg_13",
+        "speaker": "NARRATOR",
+        "tts_text": "کِیْوان تو سُکوت فَقَط یِه لَبْخَنْدِ خونسَرد میزَنِه؛ جِلویِ نیت بْلَف زَدَن خُدْکُشیِه، وَلی جادویِ چاییِ بیژَن حِساب‌کِتاب نَدارِه!",
+        "subtitle_text": "کیوان تو سکوت فقط یه لبخند خونسرد میزنه؛ جلوی نیت بلوف زدن خودکشیه، ولی جادوی چایی بیژن حساب‌کتاب نداره!",
+        "audio_file": "/media/ep04-poker-hand/audio/seg_13.wav",
+        "status": "ready",
+        "duration_sec": 6.0
+      }
+    ]
+  },
+  "edit": {
+    "subtitle_settings": {
+      "font": "Vazirmatn",
+      "font_size": 42,
+      "direction": "rtl",
+      "libass_harfbuzz": true
+    }
+  },
+  "publish": {
+    "platforms": [
+      "YouTube Shorts",
+      "Instagram Reels"
+    ],
+    "caption_fa": "",
+    "hashtags": []
+  },
+  "analytics": {}
+}

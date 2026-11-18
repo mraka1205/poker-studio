@@ -1,0 +1,535 @@
+{
+  "episode_id": "ep01-sample",
+  "title": "چرا با AK روی فلاپ خشک نباید خودکشی کنیم؟",
+  "english_title": "Why Not To Commit Suicide with AK on a Dry Flop",
+  "version": "1.0.0",
+  "current_stage": 5,
+  "stages": [
+    {
+      "id": "stage_1",
+      "stage_number": 1,
+      "name_fa": "ایده",
+      "name_en": "Idea",
+      "status": "approved",
+      "approved_at": "2026-11-17T10:51:28.574443Z",
+      "notes": "ایده و دست با موفقیت از هوش مصنوعی ثبت شد"
+    },
+    {
+      "id": "stage_2",
+      "stage_number": 2,
+      "name_fa": "Bible",
+      "name_en": "Bible",
+      "status": "approved",
+      "approved_at": "2026-11-17T10:51:28.594983Z",
+      "notes": "کتابچه استراتژی و جوک‌ها ذخیره شد"
+    },
+    {
+      "id": "stage_3",
+      "stage_number": 3,
+      "name_fa": "سناریو",
+      "name_en": "Script",
+      "status": "approved",
+      "approved_at": "2026-11-17T10:16:17.333556Z",
+      "notes": "سناریوی دو متنی با اعراب TTS تایید و ذخیره شد"
+    },
+    {
+      "id": "stage_4",
+      "stage_number": 4,
+      "name_fa": "کاراکترها",
+      "name_en": "Characters",
+      "status": "approved",
+      "approved_at": "2026-11-17T10:53:12.885576Z",
+      "notes": "مدل شیت و لنگر استایل کاراکترها تایید شد"
+    },
+    {
+      "id": "stage_5",
+      "stage_number": 5,
+      "name_fa": "صدا و میکس",
+      "name_en": "Audio & Mix",
+      "status": "in_progress",
+      "approved_at": null,
+      "notes": "تراک‌های صوتی آماده تست تلفظ و رندر موتور ElevenLabs هستند"
+    },
+    {
+      "id": "stage_6",
+      "stage_number": 6,
+      "name_fa": "صحنه‌ها",
+      "name_en": "Scenes",
+      "status": "in_progress",
+      "approved_at": null,
+      "notes": "۶ بیت بصری با پرامپت‌ها و وضعیت میز مشخص شده است"
+    },
+    {
+      "id": "stage_7",
+      "stage_number": 7,
+      "name_fa": "تدوین",
+      "name_en": "Edit",
+      "status": "pending",
+      "approved_at": null,
+      "notes": "آماده‌سازی پایپ‌لاین FFmpeg با فونت وزیرمتن و لیب‌اس"
+    },
+    {
+      "id": "stage_8",
+      "stage_number": 8,
+      "name_fa": "انتشار",
+      "name_en": "Publish",
+      "status": "pending",
+      "approved_at": null,
+      "notes": "تنظیم کپشن، هشتگ‌ها و تامبنیل یوتیوب شورتس و اینستاگرام"
+    },
+    {
+      "id": "stage_9",
+      "stage_number": 9,
+      "name_fa": "عددها",
+      "name_en": "Analytics",
+      "status": "pending",
+      "approved_at": null,
+      "notes": "پایش نرخ نگه‌داشت (Retention) و اشتراک‌گذاری"
+    }
+  ],
+  "idea": {
+    "theme": "چرا با AK روی فلاپ خشک نباید خودکشی کنیم؟",
+    "raw_hand_or_concept": "هیرو در پوزیشن باتن (BTN) با آس و شاه آف‌سوت ۳-بت می‌زنه تا ۹ بیگی. اصغر فیش از بیگ بلایند (BB) با لبخند کال می‌کنه. فلاپ میاد: ۸ پیک، ۴ خشت، ۲ گشنیز (بورد کاملاً خشک و نامربوط). هیرو برای سی‌بت ۶ بیگی می‌زنه، اصغر تسبیح رو میذاره زمین و ۲۲ بیگی چک‌ریز می‌کنه! مغز هیرو ارور میده، خیال می‌کنه دارن بلفش می‌زنن، تیلت میشه و کل ۹۱ بیگی باقی‌مونده رو آل‌آین می‌زنه! اصغر با دست ۸ و ۷ سویتد کال می‌کنه و استک هیرو پودر میشه.",
+    "target_platform": "YouTube Shorts / Instagram Reels (9:16)",
+    "core_lesson": "قانون طلایی فولد به چک‌ریز: دست AK قبل از فلاپ یک هیولا است، اما اگر فلاپ را نگیرد فقط یک آس-های بی‌دفاع است. روی بوردهای کاملاً خشک (Dry) که هیچ قرعه رنگ یا استریت معتبری وجود ندارد، چک‌ریز حریف یعنی دست قوی (ست یا دوپیر) و کله‌شقی با آل‌آین فقط تقدیم کردن استک است.",
+    "punchline": "با آس و شاه ازدواج نکن داداش، اون فقط یه دست قشنگ بود که نیومد!"
+  },
+  "bible": {
+    "visual_style": "Modern stylized 2D cartoon, bold clean outlines, saturated casino ambiance, high-contrast neon accents",
+    "frame_aspect_ratio": "9:16",
+    "color_palette": {
+      "primary": "#0F172A",
+      "felt_green": "#064E3B",
+      "accent_gold": "#F59E0B",
+      "chip_red": "#EF4444",
+      "chip_blue": "#3B82F6"
+    },
+    "voice_profiles": {
+      "Narration": "Persian energetic, sarcastic, fast-paced YouTube commentary",
+      "Kambiz": "High-pitched, anxious, slightly nasal, intellectual panic",
+      "Asghar": "Warm, deep, husky Tehran bazaar dialect, extremely relaxed",
+      "Behrouz": "Monotone, gruff, cynical, low pitch"
+    },
+    "concept_summary": {
+      "theme": "چرا با AK روی فلاپ خشک نباید خودکشی کنیم؟",
+      "poker_lesson": "قانون طلایی فولد به چک‌ریز: دست AK قبل از فلاپ یک هیولا است، اما اگر فلاپ را نگیرد فقط یک آس-های بی‌دفاع است. روی بوردهای کاملاً خشک (Dry) که هیچ قرعه رنگ یا استریت معتبری وجود ندارد، چک‌ریز حریف یعنی دست قوی (ست یا دوپیر) و کله‌شقی با آل‌آین فقط تقدیم کردن استک است.",
+      "gto_vs_exploit": "در تئوری GTO، سولور گاهی با AK به خاطر بک‌دورها و بلاکرها در برابر چک‌ریز دفاع یا کانتینیو می‌کند تا اکسپلویت نشود؛ اما در بازی واقعی و اکسپلویت مقابل بازیکنانی که روی فلاپ خشک تقریباً هیچ بلفی در رنج چک‌ریزشان ندارند، فولد فوری به چک‌ریز بیشترین ارزش مورد انتظار (+EV) را دارد و استک شما را نجات می‌دهد."
+    },
+    "hand_details": {
+      "game_type": "No-Limit Hold'em (NLH)",
+      "effective_stack_bb": 100,
+      "hero_position": "Button (BTN)",
+      "villain_position": "Cutoff (CO)",
+      "hero_cards": "A♠ K♥",
+      "preflop_action": "Villain opens to 3 BB from CO, Hero 3-bets to 9 BB on BTN, SB and BB fold, Villain calls. Pot: 19.5 BB",
+      "flop_board": "7♣ 4♦ 2♠ (Rainbow / Bone Dry)",
+      "flop_action": "Villain checks, Hero C-bets 6 BB, Villain Check-Raises to 20 BB. Hero Shoves remaining 91 BB All-In, Villain Snap-Calls.",
+      "turn_board": null,
+      "river_board": null,
+      "villain_cards": "4♥ 4♣ (Set of Fours)",
+      "final_pot_bb": 201.5,
+      "winning_hand": "Villain wins with Three of a Kind, Fours against Hero's Ace-King High"
+    },
+    "archetypes": [
+      {
+        "name": "کامبیز نرد جی‌تی‌او",
+        "role": "HERO (The Overthinking GTO Nerd)",
+        "mindset": "وسواس شدید روی فرکانس‌های سولور و رنج‌ادونتیج؛ باور ندارد که با اسطوره‌ای مثل AK روی فلاپ خشک مجبور به فولد شود."
+      },
+      {
+        "name": "اصغر فیش",
+        "role": "VILLAIN (The Calling Station Fish)",
+        "mindset": "با استکان چای و تسبیح معتقد است جفت ۴ دست خوشگلی است و حیف است به تری‌بت فولد بدهد؛ بعد از ست شدن بدون ذره‌ای پیچیدگی چک‌ریز سنگین می‌زند."
+      },
+      {
+        "name": "بهروز سنگ",
+        "role": "TABLEMATE (The Granite Nit)",
+        "mindset": "دو ساعت است پشت عینک آفتابی فولد داده و با دیدن خودکشی کامبیز جلوی چک‌ریز اصغر فقط سرش را با تأسف تکان می‌دهد."
+      },
+      {
+        "name": "راوی",
+        "role": "NARRATOR (The Sarcastic Narrator)",
+        "mindset": "تند، تیز و بی‌رحم؛ وسط توهمات ریاضی کامبیز کات می‌زند و فاجعه را با طنز یوتیوبی تشریح می‌کند."
+      }
+    ],
+    "comedy_beats": [
+      "وقتی دیلر بهت AK می‌ده، مغزت جوری باد می‌کنه که فکر می‌کنی سند شش‌دانگ کازینو رو به نامت زدن و بقیه سر میز فقط مستاجرن!",
+      "فلاپ ۷، ۴ و ۲ رینبو میاد؛ سه تا کارت خشک‌تر از کویر لوت که نه قرعه رنگ دارن نه استریت، ولی کامبیز لپ‌تاپ سولور رو تو ذهنش روشن می‌کنه و با افتخار سی‌بت می‌زنه.",
+      "اصغر فیش یه قلپ از چای دارچینش می‌خوره، تسبیحش رو می‌ذاره کنار و یه چک‌ریز می‌زنه که قشنگ ازش بوی «ست شدم داداش، برو خونه» بلند می‌شه!",
+      "کامبیز تو اوج تیلت روشنفکری میگه: «اصغر داره با بک‌دور گات‌شات بلف می‌زنه، فولد کنم سولور تو قبر می‌لرزه!» و کل استکش رو برای خشنودی اموات هل می‌ده وسط.",
+      "بهروز سنگ عینک آفتابیش رو میاره پایین و زیر لب میگه: «من دو ساعته منتظر آسم که نریزم تو چاه، تو با آس-های جلوی چک‌ریز اصغر آل‌آین زدی؟»",
+      "وقتی اصغر با جفت ۴ کارتاش رو رو می‌کنه و ۲۰۰ بیگ‌بلایند رو پارو می‌کنه، کامبیز می‌فهمه سولور تو جیب جا نمی‌شه و قانون فولد به چک‌ریز از اوجب واجباته!"
+    ]
+  },
+  "characters": [
+    {
+      "id": "char_kambiz",
+      "name_fa": "کامبیز نرد جی‌تی‌او",
+      "name_en": "Kambiz GTO Nerd",
+      "role": "HERO / The Overthinking GTO Nerd",
+      "is_style_anchor": true,
+      "status": "approved",
+      "avatar_url": "/media/ep01-sample/characters/kambiz.svg",
+      "turnaround_sheet": "/media/ep01-sample/characters/kambiz_sheet.svg",
+      "style_prompt": "Character model turnaround sheet of Kambiz, a 27-year-old skinny Iranian poker nerd with messy jet-black hair, oversized thick black-rimmed glasses reflecting faint neon solver grids, slight dark under-eye circles, light stubble, wearing a dark navy zip-up hoodie with a glowing cyan GTO range-matrix icon on the chest, dark joggers, holding Ace-King cards awkwardly. Multi-angle model turnaround sheet showing full-body front view, side profile view, and 3/4 view, plus 3 expressive facial closeups (terrified jaw-drop shock at a check-raise, smug arrogant math smirk, and tense sweating poker-face calculation). Modern stylized 2D adult cartoon animation style, Rick and Morty meets Archer comic aesthetic, bold clean dark outlines, crisp cel-shading, high-contrast neon accents, solid flat neutral light-gray studio background --ar 16:9 --v 6.1",
+      "character_sheet_prompt_en": "Character model turnaround sheet of Kambiz, a 27-year-old skinny Iranian poker nerd with messy jet-black hair, oversized thick black-rimmed glasses reflecting faint neon solver grids, slight dark under-eye circles, light stubble, wearing a dark navy zip-up hoodie with a glowing cyan GTO range-matrix icon on the chest, dark joggers, holding Ace-King cards awkwardly. Multi-angle model turnaround sheet showing full-body front view, side profile view, and 3/4 view, plus 3 expressive facial closeups (terrified jaw-drop shock at a check-raise, smug arrogant math smirk, and tense sweating poker-face calculation). Modern stylized 2D adult cartoon animation style, Rick and Morty meets Archer comic aesthetic, bold clean dark outlines, crisp cel-shading, high-contrast neon accents, solid flat neutral light-gray studio background --ar 16:9 --v 6.1",
+      "consistency_tags": "kambiz_gto_nerd, messy_black_hair, thick_black_glasses, navy_solver_hoodie, cyan_neon_accents",
+      "voice_id": "eleven_persian_narrator",
+      "tagline": ""
+    },
+    {
+      "id": "char_asghar",
+      "name_fa": "اصغر فیش",
+      "name_en": "Asghar Calling Station",
+      "role": "VILLAIN / The Calling Station Fish",
+      "is_style_anchor": false,
+      "status": "approved",
+      "avatar_url": "/media/ep01-sample/characters/kambiz.svg",
+      "turnaround_sheet": "/media/ep01-sample/characters/kambiz_sheet.svg",
+      "style_prompt": "Character model turnaround sheet of Asghar, a 55-year-old stocky, jolly Iranian recreational poker player with a thick salt-and-pepper handlebar mustache, receding hairline, unbuttoned retro 1980s patterned collared shirt over a white undershirt, gold wristwatch, holding a traditional glass cup of Persian tea (estekan) in one hand and amber prayer beads (tasbih) in the other. Multi-angle model turnaround sheet showing full-body front view, side profile view, and 3/4 view, plus 3 expressive facial closeups (warm clueless cheerful grin, sly deadpan wink while slamming heavy chips, and innocent careless shrug). In the exact same stylized 2D cartoon animation style, bold clean outlines, cel-shading, and proportion guidelines as the attached Style Anchor character sheet (use --cref [STYLE_ANCHOR_URL] or IP-Adapter / ControlNet Reference), saturated colors with subtle neon accents, solid flat neutral light-gray studio background --ar 16:9 --v 6.1",
+      "character_sheet_prompt_en": "Character model turnaround sheet of Asghar, a 55-year-old stocky, jolly Iranian recreational poker player with a thick salt-and-pepper handlebar mustache, receding hairline, unbuttoned retro 1980s patterned collared shirt over a white undershirt, gold wristwatch, holding a traditional glass cup of Persian tea (estekan) in one hand and amber prayer beads (tasbih) in the other. Multi-angle model turnaround sheet showing full-body front view, side profile view, and 3/4 view, plus 3 expressive facial closeups (warm clueless cheerful grin, sly deadpan wink while slamming heavy chips, and innocent careless shrug). In the exact same stylized 2D cartoon animation style, bold clean outlines, cel-shading, and proportion guidelines as the attached Style Anchor character sheet (use --cref [STYLE_ANCHOR_URL] or IP-Adapter / ControlNet Reference), saturated colors with subtle neon accents, solid flat neutral light-gray studio background --ar 16:9 --v 6.1",
+      "consistency_tags": "asghar_calling_station, thick_mustache, retro_collared_shirt, tea_glass, amber_tasbih",
+      "voice_id": "eleven_persian_narrator",
+      "tagline": ""
+    },
+    {
+      "id": "char_behrouz",
+      "name_fa": "بهروز سنگ",
+      "name_en": "Behrouz Granite Nit",
+      "role": "TABLEMATE / The Granite Nit",
+      "is_style_anchor": false,
+      "status": "approved",
+      "avatar_url": "/media/ep01-sample/characters/kambiz.svg",
+      "turnaround_sheet": "/media/ep01-sample/characters/kambiz_sheet.svg",
+      "style_prompt": "Character model turnaround sheet of Behrouz, a 46-year-old rigid, stone-faced Iranian nit poker player with a salt-and-pepper buzzcut, square jaw, completely opaque dark aviator sunglasses, stiff upright posture with arms tightly crossed, wearing a high-collared charcoal gray turtleneck zip-jacket like armor. Multi-angle model turnaround sheet showing full-body front view, side profile view, and 3/4 view, plus 3 expressive facial closeups (unmoving granite-stone neutral poker face, slow disappointed disapproving frown, and tight-lipped grimace of pity). In the exact same stylized 2D cartoon animation style, bold clean outlines, cel-shading, and proportion guidelines as the attached Style Anchor character sheet (use --cref [STYLE_ANCHOR_URL] or IP-Adapter / ControlNet Reference), saturated colors with subtle neon rim accents, solid flat neutral light-gray studio background --ar 16:9 --v 6.1",
+      "character_sheet_prompt_en": "Character model turnaround sheet of Behrouz, a 46-year-old rigid, stone-faced Iranian nit poker player with a salt-and-pepper buzzcut, square jaw, completely opaque dark aviator sunglasses, stiff upright posture with arms tightly crossed, wearing a high-collared charcoal gray turtleneck zip-jacket like armor. Multi-angle model turnaround sheet showing full-body front view, side profile view, and 3/4 view, plus 3 expressive facial closeups (unmoving granite-stone neutral poker face, slow disappointed disapproving frown, and tight-lipped grimace of pity). In the exact same stylized 2D cartoon animation style, bold clean outlines, cel-shading, and proportion guidelines as the attached Style Anchor character sheet (use --cref [STYLE_ANCHOR_URL] or IP-Adapter / ControlNet Reference), saturated colors with subtle neon rim accents, solid flat neutral light-gray studio background --ar 16:9 --v 6.1",
+      "consistency_tags": "behrouz_granite_nit, dark_aviator_sunglasses, charcoal_turtleneck, crossed_arms, stiff_posture",
+      "voice_id": "eleven_persian_narrator",
+      "tagline": ""
+    },
+    {
+      "id": "char_narrator",
+      "name_fa": "راوی",
+      "name_en": "Sarcastic Narrator",
+      "role": "NARRATOR / The Sarcastic YouTube Host",
+      "is_style_anchor": false,
+      "status": "approved",
+      "avatar_url": "/media/ep01-sample/characters/kambiz.svg",
+      "turnaround_sheet": "/media/ep01-sample/characters/kambiz_sheet.svg",
+      "style_prompt": "Character model turnaround sheet of the Sarcastic Narrator, a sharp-looking 35-year-old Iranian YouTube poker commentator with slicked-back dark hair, neatly trimmed goatee, expressive sharp eyebrows, wearing a sleek dark tailored blazer over a black t-shirt with a glowing magenta Ace-King neon emblem, holding a sleek handheld broadcast microphone and a wooden pointer stick. Multi-angle model turnaround sheet showing full-body front view, side profile view, and 3/4 view, plus 3 expressive facial closeups (cynical raised-eyebrow roast smirk, mocking wide-eyed disbelief, and deadpan sarcastic stare toward camera). In the exact same stylized 2D cartoon animation style, bold clean outlines, cel-shading, and proportion guidelines as the attached Style Anchor character sheet (use --cref [STYLE_ANCHOR_URL] or IP-Adapter / ControlNet Reference), high-contrast magenta and cyan neon accents, solid flat neutral light-gray studio background --ar 16:9 --v 6.1",
+      "character_sheet_prompt_en": "Character model turnaround sheet of the Sarcastic Narrator, a sharp-looking 35-year-old Iranian YouTube poker commentator with slicked-back dark hair, neatly trimmed goatee, expressive sharp eyebrows, wearing a sleek dark tailored blazer over a black t-shirt with a glowing magenta Ace-King neon emblem, holding a sleek handheld broadcast microphone and a wooden pointer stick. Multi-angle model turnaround sheet showing full-body front view, side profile view, and 3/4 view, plus 3 expressive facial closeups (cynical raised-eyebrow roast smirk, mocking wide-eyed disbelief, and deadpan sarcastic stare toward camera). In the exact same stylized 2D cartoon animation style, bold clean outlines, cel-shading, and proportion guidelines as the attached Style Anchor character sheet (use --cref [STYLE_ANCHOR_URL] or IP-Adapter / ControlNet Reference), high-contrast magenta and cyan neon accents, solid flat neutral light-gray studio background --ar 16:9 --v 6.1",
+      "consistency_tags": "sarcastic_narrator, slicked_hair_goatee, dark_blazer_neon_tee, broadcast_mic, magenta_accents",
+      "voice_id": "eleven_persian_narrator",
+      "tagline": ""
+    }
+  ],
+  "script": {
+    "title": "چرا با AK روی فلاپ خشک نباید خودکشی کنیم؟",
+    "theme": "C-bet & Pot Control on Dry Boards",
+    "target_duration_sec": 65,
+    "segments": [
+      {
+        "id": "seg_01",
+        "act": "Hook (قلاب اول)",
+        "speaker": "Narration",
+        "emotion": "energetic_sarcastic",
+        "subtitle_fa": "فکر کردی با دست آس و شاه (AK) شدی پادشاه کل کازینو؟ صبر کن تا فلاپ برسه!",
+        "tts_fa": "فِکْر کَردی با دَسْتِ آس و شاه، اِی‌کِی، شُدی پادِشاهِ کُلِّ کاّزینو؟ صَبْر کُن تا فِلاپ بِرِسِه!",
+        "estimated_duration_sec": 5,
+        "poker_context": "Hero deals AK offsuit preflop in Button position"
+      },
+      {
+        "id": "seg_02",
+        "act": "The Hand Setup (چیدمان دست)",
+        "speaker": "Narration",
+        "emotion": "analytical",
+        "subtitle_fa": "صد بیگی عمیقی، تو باتن با آس و شاه آفرین ۳-بِت زدی، اصغر فیش هم از بیگ بلایند با لبخند ژکوند کال می‌کنه.",
+        "tts_fa": "صَد بیگی عَمیقی، تو باتِن با آس و شاه آفِرین تِریبِت زَدی، اَصْغَر فیش هَم از بیگ بْلایْند با لَبْخَندِ ژوکوند کال می‌کُنِه.",
+        "estimated_duration_sec": 7.5,
+        "poker_context": "Hero on BTN 3-bets to 9 BB. Villain BB calls. Pot = 19.5 BB."
+      },
+      {
+        "id": "seg_03",
+        "act": "The Hand Setup (فلاپ فاجعه)",
+        "speaker": "Kambiz",
+        "emotion": "shocked_tilt",
+        "subtitle_fa": "فلاپ میاد: ۸ پیک، ۴ خشت، ۲ گشنیز! هیچ لعنتی به هیچی وصل نیست، ولی سولور من می‌گه سی‌بِت بزن!",
+        "tts_fa": "فِلاپ میاد: هَشْتِ پیک، چَهارِ خِشْت، دویِ گِشْنیز! هیچ لَعْنَتی به هیچی وَصْل نیست، وَلی سولوِرِ مَن می‌گِه سی‌بِت بِزَن!",
+        "estimated_duration_sec": 6.8,
+        "poker_context": "Board: 8s 4d 2c (Rainbow Dry Board). Hero has As Kh."
+      },
+      {
+        "id": "seg_04",
+        "act": "The Comedy Breakdown (ضربه چک‌ریز)",
+        "speaker": "Asghar",
+        "emotion": "teasing_confident",
+        "subtitle_fa": "کامبیز سی‌بت می‌زنه، اصغر تسبیح رو می‌ذاره زمین، یهو میگه: چِک‌رِیز، ۴۰ تا بیگی بیار وسط داداش!",
+        "tts_fa": "کامبیز سی‌بِت می‌زَنِه، اَصْغَر تَسْبیح رو می‌ذارِه زَمین، یهو میگِه: چِک‌رِیز، چِهِل تا بیگی بیار وَسَط داداش!",
+        "estimated_duration_sec": 7,
+        "poker_context": "Hero C-Bets 6 BB. Asghar Check-Raises to 22 BB."
+      },
+      {
+        "id": "seg_05",
+        "act": "The Comedy Breakdown (توهم هیرو)",
+        "speaker": "Kambiz",
+        "emotion": "panicked_denial",
+        "subtitle_fa": "مغز هیرو داد می‌زنه: نکنه داره بلفم می‌زنه؟ من آس دارم! من بلاکر دارم! آل‌آین می‌زنم بفهمه رئیس کیه!",
+        "tts_fa": "مَغْزِ هیرو داد می‌زَنِه: نَکُنِه دارِه بْلَفَم می‌زَنِه؟ مَن آس دارَم! مَن بْلاکِر دارَم! آل‌آین می‌زَنَم بِفَهمِه رَئیس کیِه!",
+        "estimated_duration_sec": 7.5,
+        "poker_context": "Hero tilts, shoves All-in with Ace-high no pair."
+      },
+      {
+        "id": "seg_06",
+        "act": "The Golden Takeaway (آموزش طلایی)",
+        "speaker": "Narration",
+        "emotion": "authoritative_humorous",
+        "subtitle_fa": "اصغر با دست ۸ و ۷ سویتد یه پیر داره و کال می‌کنه! کل استک پر! یادت نره: دست AK فقط یک آس‌های (Ace-High) سادست!",
+        "tts_fa": "اَصْغَر با دَسْتِ هَشْت و هَفْتِ سوتِد یِه پیر دارِه و کال می‌کُنِه! کُلِّ اِستَک پَر! یادِت نَرِه: دَسْتِ اِی‌کِی فَقَط یک آس‌هایِ سادَسْت!",
+        "estimated_duration_sec": 8,
+        "poker_context": "Asghar shows 8s 7s, Pair of Eights. Hero busted."
+      },
+      {
+        "id": "seg_07",
+        "act": "The Golden Takeaway (جمع‌بندی نهایی)",
+        "speaker": "Narration",
+        "emotion": "witty_cta",
+        "subtitle_fa": "قانون طلایی: روی بورد خشک، با دست پیرنشده سایز بت رو کنترل کن و جلوی چک‌ریز فیش‌های محله، راحت فولد بده. چنل رو سابسکرایب کن تا استکت دود نشه!",
+        "tts_fa": "قانونِ طَلایی: رویِ بوردِ خُشْک، با دَسْتِ پیر نَشُدِه سایزِ بِت رو کُنْتُرُل کُن و جِلویِ چِک‌رِیزِ فیش‌هایِ مَحَلِّه، راحَت فولد بِدِه. چَنِل رو سابْسْکرایْب کُن تا اِسْتَکِت دود نَشِه!",
+        "estimated_duration_sec": 9,
+        "poker_context": "Golden rule graphic overlay and CTA animation"
+      }
+    ]
+  },
+  "scenes": [
+    {
+      "id": "scene_01",
+      "beat_index": 1,
+      "time_range": "00:00 - 00:05",
+      "title": "قلاب اول - شوک هیرو پای میز",
+      "speaker": "Narration",
+      "character_id": "char_kambiz",
+      "subtitle_fa": "فکر کردی با دست آس و شاه (AK) شدی پادشاه کل کازینو؟ صبر کن تا فلاپ برسه!",
+      "tts_fa": "فِکْر کَردی با دَسْتِ آس و شاه، اِی‌کِی، شُدی پادِشاهِ کُلِّ کاّزینو؟ صَبْر کُن تا فِلاپ بِرِسِه!",
+      "camera": "Extreme Close-Up Dutch Angle",
+      "visual_prompt": "Modern 2D cartoon adult animation style, Rick and Morty meets Archer comic style. vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16. Extreme close-up, dutch angle on Kambiz with round glasses and messy hair sweating with a terrified facial expression, looking down at the poker table. Intense, vibrant neon lighting, with a very tight shot on his face to emphasize the shock.",
+      "poker_table_state": {
+        "board": [],
+        "pot_bb": 4.5,
+        "hero_hand": "A♠ K♥",
+        "action_badge": "Preflop Deal"
+      },
+      "sfx_cue": "sfx_dramatic_heartbeat",
+      "visual_asset": "/media/ep01-sample/scenes/scene_01.svg",
+      "status": "approved",
+      "visual_prompt_en": "Modern 2D cartoon adult animation style, Rick and Morty meets Archer comic style. vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16. Extreme close-up, dutch angle on Kambiz with round glasses and messy hair sweating with a terrified facial expression, looking down at the poker table. Intense, vibrant neon lighting, with a very tight shot on his face to emphasize the shock.",
+      "motion_prompt_en": "Slow, gentle camera zoom in on Kambiz's face. Kambiz, with round glasses and messy hair, sweats profusely, a single bead of sweat slowly trickling down his temple, mouth closed, no speaking, silent expressive acting, pure facial expression and physical reaction. His eyes are wide with a terrified facial expression, looking down at the poker table. No hand movement or any other physical action. Modern 2D cartoon adult animation style, Rick and Morty meets Archer comic style, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16."
+    },
+    {
+      "id": "scene_02",
+      "beat_index": 2,
+      "time_range": "00:05 - 00:13",
+      "title": "چیدمان پوزیشن‌ها و تریبِت",
+      "speaker": "Narration",
+      "character_id": "char_asghar",
+      "subtitle_fa": "صد بیگی عمیقی، تو باتن با آس و شاه آفرین ۳-بِت زدی، اصغر فیش هم از بیگ بلایند با لبخند ژکوند کال می‌کنه.",
+      "tts_fa": "صَد بیگی عَمیقی، تو باتِن با آس و شاه آفِرین تِریبِت زَدی، اَصْغَر فیش هَم از بیگ بْلایْند با لَبْخَندِ ژوکوند کال می‌کُنِه.",
+      "camera": "Top-Down Isometric Poker Table Shot",
+      "visual_prompt": "Isometric view of stylized 2D poker table. Kambiz on Button sliding a tall stack of chips forward. Asghar on Big Blind smiling broadly, clicking amber prayer beads and tossing a casual chip into the pot, neon felt green table --ar 9:16",
+      "poker_table_state": {
+        "board": [],
+        "pot_bb": 19.5,
+        "hero_hand": "A♠ K♥",
+        "action_badge": "Hero 3-Bets to 9BB, Asghar Calls"
+      },
+      "sfx_cue": "sfx_chip_riffle",
+      "visual_asset": "/media/ep01-sample/scenes/scene_02.svg",
+      "status": "ready_for_review",
+      "motion_prompt_en": "5-second clip. Slow, smooth push-in of the camera from the isometric high angle toward the center of the table. Asghar on the Big Blind slowly spreads a gentle closed-mouth smile, then uses one hand to push a neat stack of chips slowly forward across the felt. The stack stays flat and grounded on the table and slides in a single smooth motion. His other hand rests still, holding the amber prayer beads steadily with no bead movement. Kambiz on the Button stays almost still, with a subtle neutral gaze. Mouth closed, no speaking, silent expressive acting, pure facial expression and physical reaction. Neon green felt table, stylized 2D isometric poker scene, consistent character designs, stable proportions, no morphing, no flying objects. Style lock: stylized 2D illustration look matching the keyframe. vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16"
+    },
+    {
+      "id": "scene_03",
+      "beat_index": 3,
+      "time_range": "00:13 - 00:20",
+      "title": "ورق خوردن فلاپ نامساعد (بورد خشک)",
+      "speaker": "Kambiz",
+      "character_id": "char_kambiz",
+      "subtitle_fa": "فلاپ میاد: ۸ پیک، ۴ خشت، ۲ گشنیز! هیچ لعنتی به هیچی وصل نیست، ولی سولور من می‌گه سی‌بِت بزن!",
+      "tts_fa": "فِلاپ میاد: هَشْتِ پیک، چَهارِ خِشْت، دویِ گِشْنیز! هیچ لَعْنَتی به هیچی وَصْل نیست، وَلی سولوِرِ مَن می‌گِه سی‌بِت بِزَن!",
+      "camera": "Over-The-Shoulder View of the Board",
+      "visual_prompt": "Over the shoulder view looking at 3 distinct poker cards on felt table: 8 of spades, 4 of diamonds, 2 of clubs. Holographic math formulas and glowing red exclamation marks floating above the cards, 2D comic art --ar 9:16",
+      "poker_table_state": {
+        "board": [
+          "8♠",
+          "4♦",
+          "2♣"
+        ],
+        "pot_bb": 19.5,
+        "hero_hand": "A♠ K♥",
+        "action_badge": "Flop Rainbow Dry"
+      },
+      "sfx_cue": "sfx_card_snap",
+      "visual_asset": "/media/ep01-sample/scenes/scene_03.svg",
+      "status": "ready_for_review"
+    },
+    {
+      "id": "scene_04",
+      "beat_index": 4,
+      "time_range": "00:20 - 00:27",
+      "title": "حمله غافلگیرکننده - چک‌ریز اصغر",
+      "speaker": "Asghar",
+      "character_id": "char_asghar",
+      "subtitle_fa": "کامبیز سی‌بت می‌زنه، اصغر تسبیح رو می‌ذاره زمین، یهو میگه: چِک‌رِیز، ۴۰ تا بیگی بیار وسط داداش!",
+      "tts_fa": "کامبیز سی‌بِت می‌زَنِه، اَصْغَر تَسْبیح رو می‌ذارِه زَمین، یهو میگِه: چِک‌رِیز، چِهِل تا بیگی بیار وَسَط داداش!",
+      "camera": "Dynamic Split Screen (Kambiz vs Asghar)",
+      "visual_prompt": "Comic book split screen. Left side: Kambiz biting his nails in pure panic. Right side: Asghar with giant sinister-friendly grin pushing two massive chip towers across the green felt, intense manga speed lines --ar 9:16",
+      "poker_table_state": {
+        "board": [
+          "8♠",
+          "4♦",
+          "2♣"
+        ],
+        "pot_bb": 47.5,
+        "hero_hand": "A♠ K♥",
+        "action_badge": "Asghar Check-Raises 22BB"
+      },
+      "sfx_cue": "sfx_tilt_alarm",
+      "visual_asset": "/projects/ep01-sample/scenes/scene_04.png",
+      "status": "pending_generation"
+    },
+    {
+      "id": "scene_05",
+      "beat_index": 5,
+      "time_range": "00:27 - 00:35",
+      "title": "انفجار مغزی و توهم شجاعت هیرو",
+      "speaker": "Kambiz",
+      "character_id": "char_kambiz",
+      "subtitle_fa": "مغز هیرو داد می‌زنه: نکنه داره بلفم می‌زنه؟ من آس دارم! من بلاکر دارم! آل‌آین می‌زنم بفهمه رئیس کیه!",
+      "tts_fa": "مَغْزِ هیرو داد می‌زَنِه: نَکُنِه دارِه بْلَفَم می‌زَنِه؟ مَن آس دارَم! مَن بْلاکِر دارَم! آل‌آین می‌زَنَم بِفَهمِه رَئیس کیِه!",
+      "camera": "Psychological Horror Comic Zoom",
+      "visual_prompt": "Kambiz surrounded by flaming floating poker chips and flashing neon words 'ALL IN' 'EGO TILT'. His eyes are wild spirals behind cracked glasses, screaming while shoving his entire stack forward, hilarious anime exaggeration --ar 9:16",
+      "poker_table_state": {
+        "board": [
+          "8♠",
+          "4♦",
+          "2♣"
+        ],
+        "pot_bb": 140,
+        "hero_hand": "A♠ K♥",
+        "action_badge": "Hero Shoves ALL-IN (Tilt)"
+      },
+      "sfx_cue": "sfx_glass_shatter",
+      "visual_asset": "/projects/ep01-sample/scenes/scene_05.png",
+      "status": "pending_generation"
+    },
+    {
+      "id": "scene_06",
+      "beat_index": 6,
+      "time_range": "00:35 - 00:44",
+      "title": "فاش شدن دست اصغر و سوختن استک",
+      "speaker": "Narration",
+      "character_id": "char_asghar",
+      "subtitle_fa": "اصغر با دست ۸ و ۷ سویتد یه پیر داره و کال می‌کنه! کل استک پر! یادت نره: دست AK فقط یک آس‌های (Ace-High) سادست!",
+      "tts_fa": "اَصْغَر با دَسْتِ هَشْت و هَفْتِ سوتِد یِه پیر دارِه و کال می‌کُنِه! کُلِّ اِستَک پَر! یادِت نَرِه: دَسْتِ اِی‌کِی فَقَط یک آس‌هایِ سادَسْت!",
+      "camera": "Medium Shot Table Reveal",
+      "visual_prompt": "Asghar revealing 8 of spades and 7 of spades with a smug grin, raking in a mountain of multi-colored poker chips. In the background, Kambiz has collapsed head-first onto the felt table in total defeat --ar 9:16",
+      "poker_table_state": {
+        "board": [
+          "8♠",
+          "4♦",
+          "2♣"
+        ],
+        "pot_bb": 200,
+        "hero_hand": "A♠ K♥ (Ace-High)",
+        "villain_hand": "8♠ 7♠ (Pair of 8s)",
+        "action_badge": "Asghar Wins 200 BB Pot"
+      },
+      "sfx_cue": "sfx_cash_register_ding",
+      "visual_asset": "/projects/ep01-sample/scenes/scene_06.png",
+      "status": "pending_generation"
+    },
+    {
+      "id": "scene_07",
+      "beat_index": 7,
+      "time_range": "00:44 - 00:55",
+      "title": "قانون طلایی استراتژی و پایان‌بندی",
+      "speaker": "Narration",
+      "character_id": "char_kambiz",
+      "subtitle_fa": "قانون طلایی: روی بورد خشک، با دست پیرنشده سایز بت رو کنترل کن و جلوی چک‌ریز فیش‌های محله، راحت فولد بده. چنل رو سابسکرایب کن تا استکت دود نشه!",
+      "tts_fa": "قانونِ طَلایی: رویِ بوردِ خُشْک، با دَسْتِ پیر نَشُدِه سایزِ بِت رو کُنْتُرُل کُن و جِلویِ چِک‌رِیزِ فیش‌هایِ مَحَلِّه، راحَت فولد بِدِه. چَنِل رو سابْسْکرایْب کُن تا اِسْتَکِت دود نَشِه!",
+      "camera": "Center Graphic Presentation Shot",
+      "visual_prompt": "A golden floating poker shield graphic with glowing Persian typography 'کنترل پات = بقای استک'. Kambiz next to it pointing upward with a bandaged forehead, friendly educational animated outro, neon subscribe button below --ar 9:16",
+      "poker_table_state": {
+        "board": [
+          "8♠",
+          "4♦",
+          "2♣"
+        ],
+        "pot_bb": 0,
+        "hero_hand": "A♠ K♥",
+        "action_badge": "Golden Rule: Fold to Fish Check-Raise on Dry Boards"
+      },
+      "sfx_cue": "sfx_record_scratch",
+      "visual_asset": "/projects/ep01-sample/scenes/scene_07.png",
+      "status": "pending_generation"
+    }
+  ],
+  "audio": {
+    "engine": "elevenlabs_or_manual",
+    "voice_mapping": {
+      "Narration": "eleven_persian_narrator",
+      "Kambiz": "eleven_persian_young_nerd",
+      "Asghar": "eleven_persian_warm_uncle",
+      "Behrouz": "eleven_persian_deep_grumpy"
+    },
+    "tracks": [
+      {
+        "segment_id": "seg_01",
+        "speaker": "NARRATOR",
+        "tts_text": "فِکْر کَردی با دَسْتِ آس و شاه شُدی پادِشاهِ کُلِّ کاّزینو؟ صَبْر کُن تا فِلاپ بِرِسِه!",
+        "subtitle_text": "فکر کردی با دست آس و شاه شدی پادشاه کل کازینو؟ صبر کن تا فلاپ برسه!",
+        "audio_file": "/media/ep01-sample/audio/seg_01.wav",
+        "status": "ready",
+        "duration_sec": 4.5
+      }
+    ]
+  },
+  "edit": {
+    "timeline_duration": 49.2,
+    "target_fps": 30,
+    "resolution": "1080x1920",
+    "aspect_ratio": "9:16",
+    "subtitle_settings": {
+      "font": "Vazirmatn",
+      "font_size": 42,
+      "primary_color": "&H00FFFFFF",
+      "highlight_color": "&H0022C55E",
+      "outline_color": "&H00000000",
+      "outline_width": 3,
+      "alignment": 2,
+      "margin_v": 110,
+      "direction": "rtl",
+      "libass_harfbuzz": true
+    },
+    "ffmpeg_command_template": "ffmpeg -i {video_input} -vf \"subtitles={srt_file}:force_style='FontName=Vazirmatn,FontSize=42,PrimaryColour=&H00FFFFFF,OutlineColour=&H00000000,Outline=3,Alignment=2,MarginV=110'\" -c:a copy {output_file}"
+  },
+  "publish": {
+    "platforms": [
+      "YouTube Shorts",
+      "Instagram Reels"
+    ],
+    "caption_fa": "دست آس و شاه (AK) فقط یه دست خوشگله، نه سند شش دانگ کازینو! 🃏🤦‍♂️\nوقتی رو فلاپ هیچ پیری نداری و فیش چک‌ریز می‌کنه، فرار کن داداش!\n\n🔹 کانال استودیو پوکر کمدی رو دنبال کنید تا استکتون دود نشه!\n\n#پوکر #آموزش_پوکر #پوکر_ایرانی #طنز_پوکر #پوکر_فارسی #کازینو #تگزاس_هولدم #استراتژی_پوکر #poker #pokercomedy",
+    "hashtags": [
+      "#پوکر",
+      "#آموزش_پوکر",
+      "#پوکر_ایرانی",
+      "#poker"
+    ],
+    "thumbnail_concept": "تصویر خنده‌دار کامبیز با چشم‌های از حدقه درآمده در حالی که چیپ‌هاش ریخته تو دامن اصغر که داره با چای و تسبیح بهش می‌خنده!"
+  },
+  "analytics": {
+    "target_views": 50000,
+    "retention_at_30s": "70%",
+    "click_through_rate": "8.5%",
+    "engagement_rate": "12%"
+  }
+}

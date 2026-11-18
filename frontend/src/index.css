@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    font-feature-settings: "ss01", "ss02", "cv01";
+  }
+}
+
+/* Custom scrollbar for dark studio UI */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #090d16;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1f2937;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #374151;
+}
+
+/* LTR code/prompt containers inside RTL UI */
+.ltr-content {
+  direction: ltr !important;
+  text-align: left !important;
+}
+
+/* Persian Diacritic / TTS phonetic highlighter */
+.phonetic-term {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  font-weight: 600;
+}

@@ -1,0 +1,129 @@
+{
+  "episode_id": "ep02--playwithjj",
+  "title": "پاکت سرباز، دستی ک هیچکی نمیخوادش!",
+  "english_title": "JJ, The hand that everbody hate!",
+  "version": "1.1.0",
+  "current_stage": 1,
+  "stages": [
+    {
+      "id": "stage_1",
+      "stage_number": 1,
+      "name_fa": "ایده",
+      "name_en": "Idea",
+      "status": "in_progress",
+      "approved_at": null,
+      "notes": ""
+    },
+    {
+      "id": "stage_2",
+      "stage_number": 2,
+      "name_fa": "Bible",
+      "name_en": "Bible",
+      "status": "pending",
+      "approved_at": null,
+      "notes": ""
+    },
+    {
+      "id": "stage_3",
+      "stage_number": 3,
+      "name_fa": "سناریو",
+      "name_en": "Script",
+      "status": "pending",
+      "approved_at": null,
+      "notes": ""
+    },
+    {
+      "id": "stage_4",
+      "stage_number": 4,
+      "name_fa": "کاراکترها",
+      "name_en": "Characters",
+      "status": "pending",
+      "approved_at": null,
+      "notes": ""
+    },
+    {
+      "id": "stage_5",
+      "stage_number": 5,
+      "name_fa": "صدا و میکس",
+      "name_en": "Audio & Mix",
+      "status": "pending",
+      "approved_at": null,
+      "notes": ""
+    },
+    {
+      "id": "stage_6",
+      "stage_number": 6,
+      "name_fa": "صحنه‌ها",
+      "name_en": "Scenes",
+      "status": "pending",
+      "approved_at": null,
+      "notes": ""
+    },
+    {
+      "id": "stage_7",
+      "stage_number": 7,
+      "name_fa": "تدوین",
+      "name_en": "Edit",
+      "status": "pending",
+      "approved_at": null,
+      "notes": ""
+    },
+    {
+      "id": "stage_8",
+      "stage_number": 8,
+      "name_fa": "انتشار",
+      "name_en": "Publish",
+      "status": "pending",
+      "approved_at": null,
+      "notes": ""
+    },
+    {
+      "id": "stage_9",
+      "stage_number": 9,
+      "name_fa": "عددها",
+      "name_en": "Analytics",
+      "status": "pending",
+      "approved_at": null,
+      "notes": ""
+    }
+  ],
+  "idea": {
+    "theme": "سخت بودن بازی با پاکت سرباز ",
+    "target_platform": "YouTube Shorts / Instagram Reels (9:16)",
+    "core_lesson": "",
+    "punchline": ""
+  },
+  "bible": {
+    "visual_style": "Modern stylized 2D cartoon, Rick & Morty meets Archer aesthetic",
+    "frame_aspect_ratio": "9:16",
+    "concept_summary": {},
+    "hand_details": {},
+    "comedy_beats": []
+  },
+  "characters": [],
+  "script": {
+    "title": "پاکت سرباز، دستی ک هیچکی نمیخوادش!",
+    "segments": []
+  },
+  "scenes": [],
+  "audio": {
+    "tracks": []
+  },
+  "edit": {
+    "subtitle_settings": {
+      "font": "Vazirmatn",
+      "font_size": 42,
+      "direction": "rtl",
+      "libass_harfbuzz": true
+    }
+  },
+  "publish": {
+    "platforms": [
+      "YouTube Shorts",
+      "Instagram Reels"
+    ],
+    "caption_fa": "",
+    "hashtags": []
+  },
+  "analytics": {}
+}

@@ -1,0 +1,581 @@
+{
+  "episode_id": "ep03-poker-hand",
+  "title": "وقتی به «فیشِ کال‏ استیشن» بلوف سه استریت می‌زنی!",
+  "english_title": "",
+  "version": "1.1.0",
+  "current_stage": 7,
+  "stages": [
+    {
+      "id": "stage_1",
+      "stage_number": 1,
+      "name_fa": "ایده",
+      "name_en": "Idea",
+      "status": "approved",
+      "approved_at": "2026-11-17T19:56:52.100399Z",
+      "notes": "ایده و دست با موفقیت از هوش مصنوعی ثبت شد"
+    },
+    {
+      "id": "stage_2",
+      "stage_number": 2,
+      "name_fa": "Bible",
+      "name_en": "Bible",
+      "status": "approved",
+      "approved_at": "2026-11-17T19:56:52.079959Z",
+      "notes": "کتابچه استراتژی و جوک‌ها ذخیره شد"
+    },
+    {
+      "id": "stage_3",
+      "stage_number": 3,
+      "name_fa": "سناریو",
+      "name_en": "Script",
+      "status": "approved",
+      "approved_at": "2026-11-17T19:57:55.086231Z",
+      "notes": "سناریوی دو متنی با اعراب TTS تایید و ذخیره شد"
+    },
+    {
+      "id": "stage_4",
+      "stage_number": 4,
+      "name_fa": "کاراکترها",
+      "name_en": "Characters",
+      "status": "approved",
+      "approved_at": "2026-11-17T11:24:16.316340Z",
+      "notes": "مدل شیت و لنگر استایل کاراکترها تایید شد"
+    },
+    {
+      "id": "stage_5",
+      "stage_number": 5,
+      "name_fa": "صدا و میکس",
+      "name_en": "Audio & Mix",
+      "status": "approved",
+      "approved_at": "2026-11-17T19:20:42.507712Z",
+      "notes": ""
+    },
+    {
+      "id": "stage_6",
+      "stage_number": 6,
+      "name_fa": "صحنه‌ها",
+      "name_en": "Scenes",
+      "status": "approved",
+      "approved_at": "2026-11-18T00:40:29.711618Z",
+      "notes": "بیت‌های بصری استوری‌بورد و حرکت تایید و ذخیره شد"
+    },
+    {
+      "id": "stage_7",
+      "stage_number": 7,
+      "name_fa": "تدوین",
+      "name_en": "Edit",
+      "status": "pending",
+      "approved_at": null,
+      "notes": ""
+    },
+    {
+      "id": "stage_8",
+      "stage_number": 8,
+      "name_fa": "انتشار",
+      "name_en": "Publish",
+      "status": "pending",
+      "approved_at": null,
+      "notes": ""
+    },
+    {
+      "id": "stage_9",
+      "stage_number": 9,
+      "name_fa": "عددها",
+      "name_en": "Analytics",
+      "status": "pending",
+      "approved_at": null,
+      "notes": ""
+    }
+  ],
+  "idea": {
+    "theme": "وقتی به «فیشِ کال‌استیشن» بلوف سه استریت می‌زنی؛ جدال سولور با لجاجت!",
+    "raw_hand_or_concept": "بازی کش‌گیم ۶ نفره (100BB Effective). هیرو (یک بازیکن تئوری‌باز و عاشـق GTO به اسم آرش) در پوزیشن کات‌آف با A♠ 5♠ ریز باز می‌کنه. ویلن (بیژن، معروف به بیژنِ فیش که توی عمرش دکمه فولد رو ندیده و با هر دو کارتی کال می‌کنه) از بیگ‌بلایند دفاع می‌کنه.\nفلاپ میاد: K♦ 8♣ 3♠ (بُرد کاملاً خشک). آرش سی-بت ۱/۳ پات می‌زنه به امید اینکه بیژن با دست‌های ضعیف فولد بده، اما بیژن با 8♥ 4♥ (میدل پیر با کیکر افتضاح) مثل برق کال می‌کنه.\nترن میاد: 2♦ (یه کارت بی‌ربط یا به قول آرش «بریک کامل»). آرش با خودش می‌گه «من رنج ادونتیج دارم و اون فقط با یه جفت ضعیف چسبیده» و یه بت سنگین ۷۵٪ پات می‌زنه. بیژن یه نگاه به کارتاش می‌کنه، می‌گه «حس می‌کنم داری بلوف می‌زنی داداش» و باز هم کال می‌کنه!\nریور میاد: J♣. آرش که دیگه به سیم آخر زده و غرورش جریحه‌دار شده، کل استکش رو آل-این می‌شه تا دست‌های ضعیف رو بندازه بیرون. بیژن بدون دو ثانیه فکر کردن با همون جفت هشت (8-4) اینستنت کال می‌کنه و پات ۲۰۰ بیگ‌بلایند رو جمع می‌کنه!\nدرس آموزشی: قانون طلایی پوکر؛ هرگز به بازیکنی که فولد کردن بلد نیست بلوف نزن، فقط برای ولیو بت کن!",
+    "target_platform": "YouTube Shorts / Instagram Reels (9:16)",
+    "core_lesson": "آس-پنج هم‌خال (A♠ 5♠) روی بورد خشک K♦ 8♣ 3♠ و ترن 2♦ و ریور J♣ در نهایت فقط «ایس-هایِ» بدون ارزش شوداون است. این دست نه ولیو دارد و نه بلوف‌کچر خوبی است، فقط یک بلوف خالص است. آرش سه استریت پشت سر هم برای پاتی که اصلاً قرار نیست دست بیژن را فولد کند پول ریخت: فلاپ ۱/۳ پات، ترن ۷۵٪ پات و ریور آل‌این. قانون طلایی اکسپلویت: بلوف فقط وقتی کار می‌کند که حریف توانایی فولد کردن داشته باشد. در برابر کال‌استیشن، رنج بلوف باید صفر شود. با دست‌های بی‌ارزش چک بدهید و فقط با دست‌های واقعی و قوی (Value Hands) بت سنگین بزنید.",
+    "punchline": ""
+  },
+  "bible": {
+    "visual_style": "Modern stylized 2D cartoon, Rick & Morty meets Archer aesthetic",
+    "frame_aspect_ratio": "9:16",
+    "concept_summary": {
+      "theme": "وقتی به «فیشِ کال‌استیشن» بلوف سه استریت می‌زنی؛ جدال سولور با لجاجت!",
+      "poker_lesson": "آس-پنج هم‌خال (A♠ 5♠) روی بورد خشک K♦ 8♣ 3♠ و ترن 2♦ و ریور J♣ در نهایت فقط «ایس-هایِ» بدون ارزش شوداون است. این دست نه ولیو دارد و نه بلوف‌کچر خوبی است، فقط یک بلوف خالص است. آرش سه استریت پشت سر هم برای پاتی که اصلاً قرار نیست دست بیژن را فولد کند پول ریخت: فلاپ ۱/۳ پات، ترن ۷۵٪ پات و ریور آل‌این. قانون طلایی اکسپلویت: بلوف فقط وقتی کار می‌کند که حریف توانایی فولد کردن داشته باشد. در برابر کال‌استیشن، رنج بلوف باید صفر شود. با دست‌های بی‌ارزش چک بدهید و فقط با دست‌های واقعی و قوی (Value Hands) بت سنگین بزنید.",
+      "gto_vs_exploit": "در GTO، سی-بت کوچک ۱/۳ پات روی فلاپ خشک K-high با A♠5♠ (بکدور فلاش‌دراو و اوتس) کاملاً قابل دفاع است و بخشی از رنج متعادل هیرو محسوب می‌شود. اما GTO فرض می‌کند حریف هم متعادل بازی می‌کند. وقتی ویلن بیژن است که بدون فکر کال می‌کند و فولد‌اکویتی نزدیک صفر دارد، ادامه‌ی بلوف روی ترن (۷۵٪ پات) و ریور (آل‌این) یک خط کاملاً -EV است. راه حرفه‌ای: بعد از کال فلاپ، با این دست ترن و ریور را چک کنید، شوداون ارزان بگیرید یا تسلیم شوید، و بت‌های بزرگ را فقط برای دست‌های ولیو مثل جفت‌های قوی و ست نگه دارید."
+    },
+    "hand_details": {
+      "game_type": "No-Limit Hold'em (NLH) - 6-Max Cash Game",
+      "effective_stack_bb": 100,
+      "hero_position": "Cutoff (CO)",
+      "villain_position": "Big Blind (BB)",
+      "hero_cards": "A♠ 5♠",
+      "preflop_action": "Hero (CO) raises to 2.5 BB, Villain (BB) calls (defends). Pot: 5.5 BB",
+      "flop_board": "K♦ 8♣ 3♠ (Rainbow / Dry K-high)",
+      "flop_action": "Villain checks, Hero C-bets 1/3 pot (~1.8 BB), Villain calls with middle pair. Pot: ~9.1 BB",
+      "turn_board": "2♦ (Complete Brick)",
+      "turn_action": "Villain checks, Hero bets 75% pot (~6.8 BB), Villain calls. Pot: ~22.7 BB",
+      "river_board": "J♣ (Blank)",
+      "river_action": "Villain checks, Hero shoves all-in (~89.5 BB remaining), Villain instantly calls. Final pot: 200 BB",
+      "villain_cards": "8♥ 4♥ (Pair of Eights, 4 kicker)",
+      "final_pot_bb": 200,
+      "winning_hand": "Villain wins with a pair of Eights (8♥ 4♥) against Hero's Ace-High (A♠ 5♠)"
+    },
+    "comedy_beats": [
+      "آرش سه استریت بلوف می‌زند و بیژن سه استریت چای می‌نوشد؛ آخرش بیژن هم پات را می‌برد هم چایش هنوز داغ است!",
+      "آرش روی ترن می‌گوید «فقط یک جفت ضعیف دارد» و ۷۵٪ پات می‌زند؛ بیژن نگاهی به کارت‌هایش می‌کند و می‌گوید «حس می‌کنم داری بلوف می‌زنی داداش!»؛ سولور حتی این ویژگی را نداشت!",
+      "آرش روی ریور آل‌این می‌شود تا «غرورش» را نجات دهد؛ بیژن بدون دو ثانیه فکر کال می‌کند، انگار قبل از آمدن به کلوپ با دکمه‌ی فولد قهر کرده و قول داده دیگر حرفش را هم نزند!",
+      "آرش با تبلت و انگشت‌هایش حساب می‌کند «پات اودز من ۲۸ درصده!»، بیژن تسبیح شاه‌مقصود را می‌چرخاند و می‌گوید «من فقط دلم را حساب می‌کنم»؛ دل ۱ - سولور ۰!",
+      "بیژن جفت هشتش را رو می‌کند و با لبخند می‌گوید «دست داداشیه، چاییتو بخور سرد نشه!»؛ آرش آن‌قدر عرق می‌ریزد که نمد سبز میز آبیاری می‌شود!",
+      "سولور تو جیب جا نمی‌شود، اما فولد کردن به حریف لجوج هم تو سولور نیست؛ آرش بعد از دست، مجبور است «سند شش‌دانگ کازینو» را به نام بیژن بزند!"
+    ],
+    "archetypes": [
+      {
+        "name": "آرش",
+        "flow_tag": "@Arash",
+        "role": "HERO (The Overthinking GTO Nerd)",
+        "mindset": "توهم این که «رنج ادونتیج دارم و او فقط یک جفت ضعیف دارد» یعنی هر بلوفی جواب می‌دهد، و غرور جریحه‌دار که نمی‌گذارد وسط راه تسلیم شود؛ فراموش کرده سولور فرض می‌کند حریف بلد است فولد کند."
+      },
+      {
+        "name": "بیژن",
+        "flow_tag": "@Bijan",
+        "role": "VILLAIN (The Calling Station Fish)",
+        "mindset": "با جفت هشت و کیکر افتضاح هم کال می‌کند چون «حسش» خوب است و اصلاً دکمه‌ی فولد را در عمرش ندیده؛ پوکر برایش دل است نه ریاضی."
+      },
+      {
+        "name": "راوی",
+        "flow_tag": "NARRATOR",
+        "role": "NARRATOR (The Sarcastic Narrator)",
+        "mindset": "تحلیل‌گر بی‌رحم، طناز و شوخ‌طبع با لحن یوتیوبی که شکست سولور مقابل لجاجت را مثل گزارش فوتبال روایت می‌کند."
+      }
+    ]
+  },
+  "characters": [
+    {
+      "id": "char_arash",
+      "name_fa": "آرش",
+      "name_en": "Arash",
+      "role": "The Overthinking Math Nerd",
+      "is_style_anchor": true,
+      "status": "approved",
+      "avatar_url": "/media/universe/char_char_arash_face_تصویر_20261118023050.jpg",
+      "turnaround_sheet": "/media/universe/char_char_arash_body_تصویر_20261118023052.jpg",
+      "style_prompt": "Full-body turnaround character model sheet of Arash (@Arash), a 27-year-old skinny, slightly hunched nerdy Iranian poker player. Handcrafted needle-felted stop-motion puppet style, cozy fuzzy wool and miniature fabric textures, visible delicate fibers. Messy black wool hair, oversized round black glasses, wearing an oversized dark navy knitted hoodie, rumpled gray corduroy trousers, and worn-out sneakers. Full-body views from head to toe showing front view, 3/4 view, side profile view, and back view, holding a small crumpled pocket notebook and a chewed pen in one hand (no tablets or high-tech gadgets). Soft warm studio macro lighting, solid neutral light-gray studio background, vertical 9:16 composition, centered framing.",
+      "character_sheet_prompt_en": "Full-body turnaround character model sheet of Arash (@Arash), a 27-year-old skinny, slightly hunched nerdy Iranian poker player. Handcrafted needle-felted stop-motion puppet style, cozy fuzzy wool and miniature fabric textures, visible delicate fibers. Messy black wool hair, oversized round black glasses, wearing an oversized dark navy knitted hoodie, rumpled gray corduroy trousers, and worn-out sneakers. Full-body views from head to toe showing front view, 3/4 view, side profile view, and back view, holding a small crumpled pocket notebook and a chewed pen in one hand (no tablets or high-tech gadgets). Soft warm studio macro lighting, solid neutral light-gray studio background, vertical 9:16 composition, centered framing.",
+      "consistency_tags": "@Arash",
+      "voice_id": "eleven_persian_narrator",
+      "tagline": "نام: آرش (@Arash) — تیپ شخصیتی: نِردِ خنگ و وسواسیِ ریاضی و احتمال (The Overthinking Math Nerd)\n\nویژگی‌های شخصیتی و روانی:\nآرش یک جوان ۲۷ ساله بسیار باهوش در تئوری و حساب‌وکتاب‌های ساده پوکر است، اما در عمل به‌شدت استرسی، وسواسی و ساده‌لوح است. او به جای بازی حسی، سر هر تصمیم ساده‌ای مغزش قفل می‌کند، با انگشت‌هایش اوت‌ها (Outs) و درصد شانس‌ها را می‌شمارد، مدام دچار «اورتینک» (Overthinking) می‌شود و سناریوهای عجیب‌وغریب می‌سازد؛ طوری که یا یک دست برنده را از ترس فولد می‌دهد، یا وقتی ۹۵٪ جلو است با یک کارت الکی ریور می‌بازد و شوکه می‌شود. به هیچ عنوان از اصطلاحات پیچیده و تخصصی مثل GTO یا سالور استفاده نمی‌کند و همه‌چیز را در حد درصد، اوت و شانس ساده توضیح می‌دهد.\n\nلحن صحبت و تیکه‌کلام‌های فارسی:\nلحن او تند، کمی مضطرب و پر از شک و تردید است. همیشه موقع فکر کردن زیر لب عدد و درصد زمزمه می‌کند.\nتیکه‌کلام‌ها:\n- «صبر کن، الان ۹ تا اوت دارم، ضربدر ۴ میشه ۳۶ درصد...»\n- «آخه از نظر ریاضی اصلاً منطقی نیست با این کارت بیای تو!»\n- «اگه الان آل-این بده، یعنی واقعاً داره یا داره اداشو درمیاره؟»\n- «بابا شانس ما رو ببین، یه دونه کارت تو کل دِک بود همون اومد!»\n\nزبان بدن و اکت‌های فیزیکی (برای کارگردانی صحنه):\nمدام عینکش را با انگشت اشاره بالا می‌دهد، با دست‌هایش در هوا عدد می‌شمارد، ناخن‌هایش را می‌جود، قوز می‌کند، عرق سرد روی پیشانی‌اش می‌نشیند و وقتی حریف یک حرکت غیرمنطقی می‌کند با دهان باز و چشم‌های گردشده به کارت‌های روی میز خیره می‌شود.",
+      "flow_tag": "@Arash",
+      "assigned_seat": "seat_1",
+      "default_seat": "seat_1",
+      "reference_image_path": "/media/universe/char_char_arash_body_تصویر_20261118023052.jpg",
+      "face_sheet_image_path": "/media/universe/char_char_arash_face_تصویر_20261118023050.jpg",
+      "body_sheet_image_path": "/media/universe/char_char_arash_body_تصویر_20261118023052.jpg",
+      "face_expressions_prompt_en": "Facial expression character sheet of Arash (@Arash), a 27-year-old nerdy, anxious, overthinking Iranian poker player. Handcrafted needle-felted stop-motion puppet style, cozy fuzzy wool textures, visible delicate fibers. Messy black felted hair, slightly crooked thick round black glasses, nervous posture, dark navy knitted wool hoodie. Multiple head-and-shoulders close-ups from front, 3/4, and side profile angles showing 4 distinct expressions: 1) intense squinting while counting odds in his head, 2) wide-eyed sweating panic with raised eyebrows, 3) smug \"I did the math\" awkward grin, and 4) stunned open-mouthed disbelief after a bad beat. Soft warm studio macro lighting, solid neutral light-gray studio background, vertical 9:16 composition, centered framing.",
+      "full_body_prompt_en": "Full-body turnaround character model sheet of Arash (@Arash), a 27-year-old skinny, slightly hunched nerdy Iranian poker player. Handcrafted needle-felted stop-motion puppet style, cozy fuzzy wool and miniature fabric textures, visible delicate fibers. Messy black wool hair, oversized round black glasses, wearing an oversized dark navy knitted hoodie, rumpled gray corduroy trousers, and worn-out sneakers. Full-body views from head to toe showing front view, 3/4 view, side profile view, and back view, holding a small crumpled pocket notebook and a chewed pen in one hand (no tablets or high-tech gadgets). Soft warm studio macro lighting, solid neutral light-gray studio background, vertical 9:16 composition, centered framing.",
+      "persona_behavior_prompt": "نام: آرش (@Arash) — تیپ شخصیتی: نِردِ خنگ و وسواسیِ ریاضی و احتمال (The Overthinking Math Nerd)\n\nویژگی‌های شخصیتی و روانی:\nآرش یک جوان ۲۷ ساله بسیار باهوش در تئوری و حساب‌وکتاب‌های ساده پوکر است، اما در عمل به‌شدت استرسی، وسواسی و ساده‌لوح است. او به جای بازی حسی، سر هر تصمیم ساده‌ای مغزش قفل می‌کند، با انگشت‌هایش اوت‌ها (Outs) و درصد شانس‌ها را می‌شمارد، مدام دچار «اورتینک» (Overthinking) می‌شود و سناریوهای عجیب‌وغریب می‌سازد؛ طوری که یا یک دست برنده را از ترس فولد می‌دهد، یا وقتی ۹۵٪ جلو است با یک کارت الکی ریور می‌بازد و شوکه می‌شود. به هیچ عنوان از اصطلاحات پیچیده و تخصصی مثل GTO یا سالور استفاده نمی‌کند و همه‌چیز را در حد درصد، اوت و شانس ساده توضیح می‌دهد.\n\nلحن صحبت و تیکه‌کلام‌های فارسی:\nلحن او تند، کمی مضطرب و پر از شک و تردید است. همیشه موقع فکر کردن زیر لب عدد و درصد زمزمه می‌کند.\nتیکه‌کلام‌ها:\n- «صبر کن، الان ۹ تا اوت دارم، ضربدر ۴ میشه ۳۶ درصد...»\n- «آخه از نظر ریاضی اصلاً منطقی نیست با این کارت بیای تو!»\n- «اگه الان آل-این بده، یعنی واقعاً داره یا داره اداشو درمیاره؟»\n- «بابا شانس ما رو ببین، یه دونه کارت تو کل دِک بود همون اومد!»\n\nزبان بدن و اکت‌های فیزیکی (برای کارگردانی صحنه):\nمدام عینکش را با انگشت اشاره بالا می‌دهد، با دست‌هایش در هوا عدد می‌شمارد، ناخن‌هایش را می‌جود، قوز می‌کند، عرق سرد روی پیشانی‌اش می‌نشیند و وقتی حریف یک حرکت غیرمنطقی می‌کند با دهان باز و چشم‌های گردشده به کارت‌های روی میز خیره می‌شود."
+    },
+    {
+      "id": "char_bijan",
+      "name_fa": "بیژن",
+      "name_en": "Bijan",
+      "role": "Calling Station Fish / The Unfoldable Local Gambler",
+      "is_style_anchor": false,
+      "status": "approved",
+      "avatar_url": "/media/universe/char_char_bijan_face_تصویر_20261118024416.jpg",
+      "turnaround_sheet": "/media/universe/char_char_bijan_body_تصویر_20261118024418.jpg",
+      "style_prompt": "Full-body turnaround character model sheet of Bijan (@Bijan), a 48-year-old cheerful and stubborn Iranian calling-station poker fish with a slightly stout dad-bod. Handcrafted needle-felted stop-motion puppet style, cozy fuzzy wool and miniature fabric textures, visible delicate fibers. Receding salt-and-pepper curly wool hair, thick bushy dark-gray mustache, subtle forearm hair texture, wearing a retro open-collar burnt-orange and teal geometric patterned short-sleeve casual felt shirt over a white undershirt, taupe-brown straight-leg felted wool trousers, and dark navy-black slip-on loafers. Holding a miniature traditional glass of Persian tea (estekan) in his right hand, with a chunky silver wristwatch on his left wrist and amber prayer beads (tasbih) dangling from his left hand. Full-body views from head to toe showing front view, side profile view, 3/4 view, and back view, no text labels or arrows, soft warm studio macro lighting, solid neutral light-gray studio background, vertical 9:16 composition, centered framing.",
+      "character_sheet_prompt_en": "Full-body turnaround character model sheet of Bijan (@Bijan), a 48-year-old cheerful and stubborn Iranian calling-station poker fish with a slightly stout dad-bod. Handcrafted needle-felted stop-motion puppet style, cozy fuzzy wool and miniature fabric textures, visible delicate fibers. Receding salt-and-pepper curly wool hair, thick bushy dark-gray mustache, subtle forearm hair texture, wearing a retro open-collar burnt-orange and teal geometric patterned short-sleeve casual felt shirt over a white undershirt, taupe-brown straight-leg felted wool trousers, and dark navy-black slip-on loafers. Holding a miniature traditional glass of Persian tea (estekan) in his right hand, with a chunky silver wristwatch on his left wrist and amber prayer beads (tasbih) dangling from his left hand. Full-body views from head to toe showing front view, side profile view, 3/4 view, and back view, no text labels or arrows, soft warm studio macro lighting, solid neutral light-gray studio background, vertical 9:16 composition, centered framing.",
+      "consistency_tags": "@Bijan",
+      "voice_id": "eleven_persian_narrator",
+      "tagline": "نام: بیژن (@Bijan) — تیپ شخصیتی: فیشِ خونسرد، خوش‌تیپِ قدیمی و کالی‌استیشنِ لجباز (The Cheerful Calling-Station Fish)\n\nویژگی‌های شخصیتی و روانی:\nبیژن یک کاسب قدیمی و خوش‌مشرب ۴۸ ساله است که پوکر را صرفاً برای تفریح، چای خوردن و کل‌کل بازی می‌کند. او به هیچ وجه به ریاضیات، درصد و منطق بازی اعتقاد ندارد و به‌شدت در فولد دادن لجباز است (Calling Station مطلق). او با هر دو کارت بی‌ربطی (مثل 8-3 یا J-4) تا ریور کال می‌کند چون «حس خوبی» به کارت‌ها دارد و عاشق این است که بلوف‌های سنگین حریف‌ها را با یک پرِ ضعیف (Bottom Pair) بگیرد. برعکس فرزاد که عصبی می‌شود و آرش که استرس می‌گیرد، بیژن همیشه خونسرد است، لبخند می‌زند و با آرامش اعصاب بقیه را خرد می‌کند.\n\nلحن صحبت و تیکه‌کلام‌های فارسی:\nلحن او گرم، صمیمی، بازاری، شوخ‌طبع و فوق‌العاده ریلکس است. اصلاً عجله ندارد و وسط حرف‌هایش چای هورت می‌کشد.\nتیکه‌کلام‌ها:\n- «از نظر ریاضی و این حرفا که نمیفهمم، ولی دلم میگه این دست مالِ منه... کال!»\n- «من تا ریور رو نبینم شب خوابم نمیبره داداش!»\n- «دیدم بلوف میزنی گفتم خجالت نکشی اومدم باهات!»\n- «آرش جان چاییت سرد شد، ول کن این حساب‌کتابا رو، بازی رو بچسب!»\n- «ایول، دست قشنگیه که می‌مونه...»\n\nزبان بدن و اکت‌های فیزیکی (برای کارگردانی صحنه):\nبا لبخند خونسرد و بی‌خیال روی صندلی نشسته، در دست راستش همیشه یک استکان چای کمرباریک تازه‌دم دارد که قبل از هر کال کردن یک قلپ از آن می‌خورد، با دست چپش مدام دانه‌های تسبیح کهربا را می‌چرخاند، وقتی حریف آل-این سنگین می‌دهد یک چشمش را تنگ می‌کند و با نگاه مشکوکِ «بلوف زدی کلک» به او زل می‌زند، و بعد از بردن پات با یک جفتِ الکی، شانه‌هایش را با لبخند بی‌تفاوت بالا می‌اندازد.",
+      "flow_tag": "@Bijan",
+      "default_seat": "seat_5",
+      "assigned_seat": "seat_5",
+      "reference_image_path": "/media/universe/char_char_bijan_body_تصویر_20261118024418.jpg",
+      "face_sheet_image_path": "/media/universe/char_char_bijan_face_تصویر_20261118024416.jpg",
+      "body_sheet_image_path": "/media/universe/char_char_bijan_body_تصویر_20261118024418.jpg",
+      "face_expressions_prompt_en": "Facial expression character sheet of Bijan (@Bijan), a 48-year-old cheerful and stubborn Iranian calling-station poker fish. Handcrafted needle-felted stop-motion puppet style, cozy fuzzy wool textures, visible delicate fibers. Receding salt-and-pepper curly wool hair, thick bushy dark-gray wool mustache, thick expressive dark eyebrows, warm round eyes, subtle felted stubble on jaw, wearing an open-collar burnt-orange and teal geometric patterned felt shirt over a white crew-neck undershirt. Multiple head-and-shoulders close-ups from front, 3/4, and side profile angles showing 4 distinct expressions: 1) blissfully clueless wide-eyed broad toothy grin, 2) squinting \"I sense a bluff\" suspicious one-eye wink with furrowed brow, 3) carefree relaxed half-smile with slightly raised eyebrows, and 4) calm unbothered sip-of-tea content expression. Soft warm studio macro lighting, solid neutral light-gray studio background, vertical 9:16 composition, centered framing.",
+      "full_body_prompt_en": "Full-body turnaround character model sheet of Bijan (@Bijan), a 48-year-old cheerful and stubborn Iranian calling-station poker fish with a slightly stout dad-bod. Handcrafted needle-felted stop-motion puppet style, cozy fuzzy wool and miniature fabric textures, visible delicate fibers. Receding salt-and-pepper curly wool hair, thick bushy dark-gray mustache, subtle forearm hair texture, wearing a retro open-collar burnt-orange and teal geometric patterned short-sleeve casual felt shirt over a white undershirt, taupe-brown straight-leg felted wool trousers, and dark navy-black slip-on loafers. Holding a miniature traditional glass of Persian tea (estekan) in his right hand, with a chunky silver wristwatch on his left wrist and amber prayer beads (tasbih) dangling from his left hand. Full-body views from head to toe showing front view, side profile view, 3/4 view, and back view, no text labels or arrows, soft warm studio macro lighting, solid neutral light-gray studio background, vertical 9:16 composition, centered framing.",
+      "persona_behavior_prompt": "نام: بیژن (@Bijan) — تیپ شخصیتی: فیشِ خونسرد، خوش‌تیپِ قدیمی و کالی‌استیشنِ لجباز (The Cheerful Calling-Station Fish)\n\nویژگی‌های شخصیتی و روانی:\nبیژن یک کاسب قدیمی و خوش‌مشرب ۴۸ ساله است که پوکر را صرفاً برای تفریح، چای خوردن و کل‌کل بازی می‌کند. او به هیچ وجه به ریاضیات، درصد و منطق بازی اعتقاد ندارد و به‌شدت در فولد دادن لجباز است (Calling Station مطلق). او با هر دو کارت بی‌ربطی (مثل 8-3 یا J-4) تا ریور کال می‌کند چون «حس خوبی» به کارت‌ها دارد و عاشق این است که بلوف‌های سنگین حریف‌ها را با یک پرِ ضعیف (Bottom Pair) بگیرد. برعکس فرزاد که عصبی می‌شود و آرش که استرس می‌گیرد، بیژن همیشه خونسرد است، لبخند می‌زند و با آرامش اعصاب بقیه را خرد می‌کند.\n\nلحن صحبت و تیکه‌کلام‌های فارسی:\nلحن او گرم، صمیمی، بازاری، شوخ‌طبع و فوق‌العاده ریلکس است. اصلاً عجله ندارد و وسط حرف‌هایش چای هورت می‌کشد.\nتیکه‌کلام‌ها:\n- «از نظر ریاضی و این حرفا که نمیفهمم، ولی دلم میگه این دست مالِ منه... کال!»\n- «من تا ریور رو نبینم شب خوابم نمیبره داداش!»\n- «دیدم بلوف میزنی گفتم خجالت نکشی اومدم باهات!»\n- «آرش جان چاییت سرد شد، ول کن این حساب‌کتابا رو، بازی رو بچسب!»\n- «ایول، دست قشنگیه که می‌مونه...»\n\nزبان بدن و اکت‌های فیزیکی (برای کارگردانی صحنه):\nبا لبخند خونسرد و بی‌خیال روی صندلی نشسته، در دست راستش همیشه یک استکان چای کمرباریک تازه‌دم دارد که قبل از هر کال کردن یک قلپ از آن می‌خورد، با دست چپش مدام دانه‌های تسبیح کهربا را می‌چرخاند، وقتی حریف آل-این سنگین می‌دهد یک چشمش را تنگ می‌کند و با نگاه مشکوکِ «بلوف زدی کلک» به او زل می‌زند، و بعد از بردن پات با یک جفتِ الکی، شانه‌هایش را با لبخند بی‌تفاوت بالا می‌اندازد."
+    },
+    {
+      "id": "char_1794955374211",
+      "name_fa": "آقا رحیم",
+      "name_en": "Rahim",
+      "role": "nit grandpa",
+      "flow_tag": "@Rahim",
+      "default_seat": "seat_4",
+      "assigned_seat": "seat_4",
+      "is_style_anchor": false,
+      "status": "approved",
+      "avatar_url": "/media/universe/char_char_1794955374211_face_تصویر_20261118024405.jpg",
+      "turnaround_sheet": "/media/universe/char_char_1794955374211_body_تصویر_20261118024409.jpg",
+      "reference_image_path": "/media/universe/char_char_1794955374211_body_تصویر_20261118024409.jpg",
+      "face_sheet_image_path": "/media/universe/char_char_1794955374211_face_تصویر_20261118024405.jpg",
+      "body_sheet_image_path": "/media/universe/char_char_1794955374211_body_تصویر_20261118024409.jpg",
+      "face_expressions_prompt_en": "Facial expression character sheet of Rahim (@Rahim), an 78-year-old extremely tight, nit, grumpy Iranian grandpa poker player. Handcrafted needle-felted stop-motion puppet style, cozy fuzzy wool textures, visible delicate fibers. Deeply wrinkled face, thick bushy white wool eyebrows, thin white mustache, large vintage bifocal reading glasses perched low on his nose, wearing a knitted beige wool cardigan over a buttoned-up shirt. Multiple head-and-shoulders close-ups from front, 3/4, and side profile angles showing 4 distinct expressions: 1) permanently grumpy stone-faced scowl while folding cards, 2) suspicious peering over the top of his glasses, 3) tiny micro-smirk trying to hide Pocket Aces, and 4) shocked outrage when someone dares to re-raise him. Soft warm studio macro lighting, solid neutral light-gray studio background, vertical 9:16 composition, centered framing.",
+      "full_body_prompt_en": "Full-body turnaround character model sheet of Rahim (@Rahim), a frail, slightly stooped 78-year-old ultra-tight Iranian grandpa poker player. Handcrafted needle-felted stop-motion puppet style, cozy fuzzy wool and miniature fabric textures, visible delicate fibers. Sparse white wool hair, thick white eyebrows, large vintage bifocal glasses, wearing a heavy knitted beige cardigan, dark brown pleated wool trousers pulled up high, and classic leather slippers. Full-body views from head to toe showing front view, 3/4 view, side profile view, and back view, sitting or standing with arms tightly crossed protectively over his chest, guarding a neat stack of chips with a tiny brass lucky coin on top. Soft warm studio macro lighting, solid neutral light-gray studio background, vertical 9:16 composition, centered framing.",
+      "persona_behavior_prompt": "نام: آقا رحیم (@Rahim) — تیپ شخصیتی: سوپر-نیتِ پیر و فوق‌العاده پسیو (The Ultra-Nit Grandpa)\n\nویژگی‌های شخصیتی و روانی:\nآقا رحیم پیرمردی ۷۸ ساله، محتاط، بدبین و به‌شدت خسیس در چیپ دادن است. او ساعت‌ها بدون اینکه حتی یک دست بازی کند کنار میز می‌نشیند، غر می‌زند که «جوون‌ها پولشون زیادی کرده» و ۹۵٪ دست‌ها را بلافاصله فولد می‌دهد. او به هیچ وجه بلوف نمی‌زند و فقط و فقط با AA یا KK (آن هم با احتیاط فراوان) 3-Bet می‌کند؛ طوری که به محض اینکه آقا رحیم یک ریز کوچک می‌دهد، کل میز می‌فهمند پاکت آس یا شاه دارد و همه فولد می‌دهند و او باز هم غر می‌زند که چرا کسی کال نکرد!\n\nلحن صحبت و تیکه‌کلام‌های فارسی:\nلحن او آرام، پیرمردانه، کمی غرغرو و پر از کنایه است. شمرده و با مکث صحبت می‌کند.\nتیکه‌کلام‌ها:\n- «این چه کارتاییه میدی دِیلر؟ همش آشغاله... فولد!»\n- «من با پول زحمت‌کشیده قمار بی‌خودی نمی‌کنم پسرم.»\n- «بفرما... بعد از دو ساعت یه دست اومد، همه فرار کردن!»\n- «جوونای امروزی اصلاً صبر ندارن، الکی آل-این میدن.»\n\nزبان بدن و اکت‌های فیزیکی (برای کارگردانی صحنه):\nهمیشه دست‌به‌سینه و قوزکرده نشسته است، عینک ته‌استکانی‌اش را روی نوک بینی‌اش پایین می‌آورد تا کارت‌هایش را طوری نگاه کند که انگار کل دنیا می‌خواهند تقلب کنند و کارت‌هایش را ببینند، با دو دست دور چیپ‌هایش دیوار می‌کشد و وقتی بالاخره می‌خواهد ریز بدهد با دست‌های لرزان فقط چند تا چیپ را خیلی آرام و با وسواس جلو هل می‌دهد.",
+      "style_prompt": "Full-body turnaround character model sheet of Rahim (@Rahim), a frail, slightly stooped 78-year-old ultra-tight Iranian grandpa poker player. Handcrafted needle-felted stop-motion puppet style, cozy fuzzy wool and miniature fabric textures, visible delicate fibers. Sparse white wool hair, thick white eyebrows, large vintage bifocal glasses, wearing a heavy knitted beige cardigan, dark brown pleated wool trousers pulled up high, and classic leather slippers. Full-body views from head to toe showing front view, 3/4 view, side profile view, and back view, sitting or standing with arms tightly crossed protectively over his chest, guarding a neat stack of chips with a tiny brass lucky coin on top. Soft warm studio macro lighting, solid neutral light-gray studio background, vertical 9:16 composition, centered framing.",
+      "character_sheet_prompt_en": "Full-body turnaround character model sheet of Rahim (@Rahim), a frail, slightly stooped 78-year-old ultra-tight Iranian grandpa poker player. Handcrafted needle-felted stop-motion puppet style, cozy fuzzy wool and miniature fabric textures, visible delicate fibers. Sparse white wool hair, thick white eyebrows, large vintage bifocal glasses, wearing a heavy knitted beige cardigan, dark brown pleated wool trousers pulled up high, and classic leather slippers. Full-body views from head to toe showing front view, 3/4 view, side profile view, and back view, sitting or standing with arms tightly crossed protectively over his chest, guarding a neat stack of chips with a tiny brass lucky coin on top. Soft warm studio macro lighting, solid neutral light-gray studio background, vertical 9:16 composition, centered framing.",
+      "consistency_tags": "@Rahim",
+      "voice_id": "eleven_persian_narrator",
+      "tagline": "نام: آقا رحیم (@Rahim) — تیپ شخصیتی: سوپر-نیتِ پیر و فوق‌العاده پسیو (The Ultra-Nit Grandpa)\n\nویژگی‌های شخصیتی و روانی:\nآقا رحیم پیرمردی ۷۸ ساله، محتاط، بدبین و به‌شدت خسیس در چیپ دادن است. او ساعت‌ها بدون اینکه حتی یک دست بازی کند کنار میز می‌نشیند، غر می‌زند که «جوون‌ها پولشون زیادی کرده» و ۹۵٪ دست‌ها را بلافاصله فولد می‌دهد. او به هیچ وجه بلوف نمی‌زند و فقط و فقط با AA یا KK (آن هم با احتیاط فراوان) 3-Bet می‌کند؛ طوری که به محض اینکه آقا رحیم یک ریز کوچک می‌دهد، کل میز می‌فهمند پاکت آس یا شاه دارد و همه فولد می‌دهند و او باز هم غر می‌زند که چرا کسی کال نکرد!\n\nلحن صحبت و تیکه‌کلام‌های فارسی:\nلحن او آرام، پیرمردانه، کمی غرغرو و پر از کنایه است. شمرده و با مکث صحبت می‌کند.\nتیکه‌کلام‌ها:\n- «این چه کارتاییه میدی دِیلر؟ همش آشغاله... فولد!»\n- «من با پول زحمت‌کشیده قمار بی‌خودی نمی‌کنم پسرم.»\n- «بفرما... بعد از دو ساعت یه دست اومد، همه فرار کردن!»\n- «جوونای امروزی اصلاً صبر ندارن، الکی آل-این میدن.»\n\nزبان بدن و اکت‌های فیزیکی (برای کارگردانی صحنه):\nهمیشه دست‌به‌سینه و قوزکرده نشسته است، عینک ته‌استکانی‌اش را روی نوک بینی‌اش پایین می‌آورد تا کارت‌هایش را طوری نگاه کند که انگار کل دنیا می‌خواهند تقلب کنند و کارت‌هایش را ببینند، با دو دست دور چیپ‌هایش دیوار می‌کشد و وقتی بالاخره می‌خواهد ریز بدهد با دست‌های لرزان فقط چند تا چیپ را خیلی آرام و با وسواس جلو هل می‌دهد."
+    },
+    {
+      "id": "char_1794956048213",
+      "name_fa": "کیوان",
+      "name_en": "Keyvan",
+      "role": "The Ice-Cold Silent Reg / Shark",
+      "flow_tag": "@Keyvan",
+      "default_seat": "seat_2",
+      "assigned_seat": "seat_2",
+      "is_style_anchor": false,
+      "status": "approved",
+      "avatar_url": "/media/ep03-poker-hand/characters/kambiz.svg",
+      "turnaround_sheet": "/media/ep03-poker-hand/characters/kambiz.svg",
+      "reference_image_path": "/media/ep03-poker-hand/characters/kambiz.svg",
+      "face_sheet_image_path": "",
+      "body_sheet_image_path": "",
+      "face_expressions_prompt_en": "Facial expression character sheet of Keyvan (@Keyvan), a 35-year-old calm, ice-cold, unreadable Iranian pro shark poker player. Handcrafted needle-felted stop-motion puppet style, cozy fuzzy wool textures, visible delicate fibers. Neat dark hair, sharp angular features, trimmed dark stubble, wearing sleek dark-tinted aviator/rectangular glasses and a minimalist charcoal turtleneck sweater. Multiple head-and-shoulders close-ups from front, 3/4, and side profile angles showing 4 distinct expressions: 1) complete stone-cold poker face with zero emotion, 2) subtle piercing eye-contact soul-read stare over the rim of his dark glasses, 3) tiny micro-smirk of quiet satisfaction after trapping a maniac, and 4) calm, unbothered slight eyebrow raise while watching players tilt. Soft warm studio macro lighting, solid neutral light-gray studio background, vertical 9:16 composition, centered framing.",
+      "full_body_prompt_en": "Full-body turnaround character model sheet of Keyvan (@Keyvan), a 35-year-old lean, composed, calculating Iranian regular shark poker player. Handcrafted needle-felted stop-motion puppet style, cozy fuzzy wool and miniature fabric textures, visible delicate fibers. Neat dark hair, dark-tinted glasses, wearing a fitted charcoal-gray wool turtleneck, tailored black trousers, a minimalist matte-black wristwatch, and clean dark suede shoes. Full-body views from head to toe showing front view, 3/4 view, side profile view, and back view, standing or sitting with poised upright posture, hands calmly steepled together in front of a massive neatly organized tower of poker chips. Soft warm studio macro lighting, solid neutral light-gray studio background, vertical 9:16 composition, centered framing.",
+      "persona_behavior_prompt": "نام: کیوان (@Keyvan) — تیپ شخصیتی: شارکِ واقعی و قاتلِ بی‌صدای میز (The Ice-Cold Silent Reg / Shark)\n\nویژگی‌های شخصیتی و روانی:\nکیوان یک بازیکن حرفه‌ای و رِگِ واقعی ۳۵ ساله است که در این هوم‌گیم مثل یک کوسه وسط آکواریوم شنا می‌کند. برخلاف فرزاد که داد می‌زند و آرش که اورتینک می‌کند، کیوان تقریباً هیچ‌وقت حرف نمی‌زند، احساساتش صفر است (Poker Face مطلق) و با آرامش ترسناکی تک‌تک حرکات و اشتباهات بقیه را زیر نظر دارد. او بدون نیاز به جملات پیچیده و ریاضی‌بازی‌های آرش، با خواندن دست و روانشناسی دقیق، در لحظه‌ی طلایی تله می‌گذارد (Trap)، بلوف‌های فرزاد را شکار می‌کند و بدون سر و صدا پات‌های سنگین را درو می‌کند.\n\nلحن صحبت و تیکه‌کلام‌های فارسی:\nکیوان بسیار کم‌حرف، مرموز و مقتدر است. جملاتش فوق‌العاده کوتاه، برنده و دوکلمه‌ای هستند. هیچ‌وقت بحث نمی‌کند و به فحش‌های فرزاد فقط یک لبخند خونسرد می‌زند.\nتیکه‌کلام‌ها و دیالوگ‌های نمونه:\n- «کال.» (با صدای آرام و بی‌تفاوت جلوی آل-این سنگین فرزاد)\n- «ریز.»\n- «خوب بازی کردی... ولی من ناتس دارم.»\n- «داد و بیداد چیپ نمیشه فرزاد.»\n- «ممنون بابت پات.» (در حالی که با آرامش چیپ‌ها را جمع می‌کند)\n\nزبان بدن و اکت‌های فیزیکی (برای کارگردانی صحنه):\nصاف و بی‌حرکت روی صندلی نشسته، دست‌هایش را زیر چانه به هم گره زده، در سکوت کامل به صورت حریف خیره می‌شود تا طرف زیر فشار نگاهش دستش را لو بدهد، وقتی تصمیم می‌گیرد یک دونه چیپ را با دو انگشت خیلی آرام جلو می‌اندازد (نشانه‌ی کال یا ریز سنگین) و جلوی او همیشه بلندترین و منظم‌ترین برج‌های چیپِ کل میز چیده شده است.",
+      "style_prompt": "Full-body turnaround character model sheet of Keyvan (@Keyvan), a 35-year-old lean, composed, calculating Iranian regular shark poker player. Handcrafted needle-felted stop-motion puppet style, cozy fuzzy wool and miniature fabric textures, visible delicate fibers. Neat dark hair, dark-tinted glasses, wearing a fitted charcoal-gray wool turtleneck, tailored black trousers, a minimalist matte-black wristwatch, and clean dark suede shoes. Full-body views from head to toe showing front view, 3/4 view, side profile view, and back view, standing or sitting with poised upright posture, hands calmly steepled together in front of a massive neatly organized tower of poker chips. Soft warm studio macro lighting, solid neutral light-gray studio background, vertical 9:16 composition, centered framing.",
+      "character_sheet_prompt_en": "Full-body turnaround character model sheet of Keyvan (@Keyvan), a 35-year-old lean, composed, calculating Iranian regular shark poker player. Handcrafted needle-felted stop-motion puppet style, cozy fuzzy wool and miniature fabric textures, visible delicate fibers. Neat dark hair, dark-tinted glasses, wearing a fitted charcoal-gray wool turtleneck, tailored black trousers, a minimalist matte-black wristwatch, and clean dark suede shoes. Full-body views from head to toe showing front view, 3/4 view, side profile view, and back view, standing or sitting with poised upright posture, hands calmly steepled together in front of a massive neatly organized tower of poker chips. Soft warm studio macro lighting, solid neutral light-gray studio background, vertical 9:16 composition, centered framing.",
+      "consistency_tags": "@Keyvan",
+      "voice_id": "eleven_persian_narrator",
+      "tagline": "نام: کیوان (@Keyvan) — تیپ شخصیتی: شارکِ واقعی و قاتلِ بی‌صدای میز (The Ice-Cold Silent Reg / Shark)\n\nویژگی‌های شخصیتی و روانی:\nکیوان یک بازیکن حرفه‌ای و رِگِ واقعی ۳۵ ساله است که در این هوم‌گیم مثل یک کوسه وسط آکواریوم شنا می‌کند. برخلاف فرزاد که داد می‌زند و آرش که اورتینک می‌کند، کیوان تقریباً هیچ‌وقت حرف نمی‌زند، احساساتش صفر است (Poker Face مطلق) و با آرامش ترسناکی تک‌تک حرکات و اشتباهات بقیه را زیر نظر دارد. او بدون نیاز به جملات پیچیده و ریاضی‌بازی‌های آرش، با خواندن دست و روانشناسی دقیق، در لحظه‌ی طلایی تله می‌گذارد (Trap)، بلوف‌های فرزاد را شکار می‌کند و بدون سر و صدا پات‌های سنگین را درو می‌کند.\n\nلحن صحبت و تیکه‌کلام‌های فارسی:\nکیوان بسیار کم‌حرف، مرموز و مقتدر است. جملاتش فوق‌العاده کوتاه، برنده و دوکلمه‌ای هستند. هیچ‌وقت بحث نمی‌کند و به فحش‌های فرزاد فقط یک لبخند خونسرد می‌زند.\nتیکه‌کلام‌ها و دیالوگ‌های نمونه:\n- «کال.» (با صدای آرام و بی‌تفاوت جلوی آل-این سنگین فرزاد)\n- «ریز.»\n- «خوب بازی کردی... ولی من ناتس دارم.»\n- «داد و بیداد چیپ نمیشه فرزاد.»\n- «ممنون بابت پات.» (در حالی که با آرامش چیپ‌ها را جمع می‌کند)\n\nزبان بدن و اکت‌های فیزیکی (برای کارگردانی صحنه):\nصاف و بی‌حرکت روی صندلی نشسته، دست‌هایش را زیر چانه به هم گره زده، در سکوت کامل به صورت حریف خیره می‌شود تا طرف زیر فشار نگاهش دستش را لو بدهد، وقتی تصمیم می‌گیرد یک دونه چیپ را با دو انگشت خیلی آرام جلو می‌اندازد (نشانه‌ی کال یا ریز سنگین) و جلوی او همیشه بلندترین و منظم‌ترین برج‌های چیپِ کل میز چیده شده است."
+    },
+    {
+      "id": "char_1794955710801",
+      "name_fa": "فرزاد",
+      "name_en": "Farzad",
+      "role": "The Aggressive Street-Tough Maniac",
+      "flow_tag": "@Farzad",
+      "default_seat": "seat_3",
+      "assigned_seat": "seat_3",
+      "is_style_anchor": false,
+      "status": "approved",
+      "avatar_url": "/media/ep03-poker-hand/characters/kambiz.svg",
+      "turnaround_sheet": "/media/ep03-poker-hand/characters/kambiz.svg",
+      "reference_image_path": "/media/ep03-poker-hand/characters/kambiz.svg",
+      "face_sheet_image_path": "",
+      "body_sheet_image_path": "",
+      "face_expressions_prompt_en": "Facial expression character sheet of Farzad (@Farzad), a 31-year-old cocky, ultra-aggressive Iranian maniac poker player with a flashy street-tough (\"lati\") style. Handcrafted needle-felted stop-motion puppet style, cozy fuzzy wool textures, visible delicate fibers. Sharp side-fade dark wool haircut, neatly trimmed beard, a thick shiny gold chain necklace visible at the open collar of his dark satin/velvet shirt, subtle stitched tattoo peeking on his neck. Multiple head-and-shoulders close-ups from front, 3/4, and side profile angles showing 4 distinct expressions: 1) arrogant cocky smirk with one raised eyebrow while shoving all-in, 2) fearless wild grin laughing at a huge bluff, 3) aggressive intimidating stare-down across the table, and 4) dramatic theatrical shrug when caught bluffing with 7-2 offsuit. Soft warm studio macro lighting, solid neutral light-gray studio background, vertical 9:16 composition, centered framing.",
+      "full_body_prompt_en": "Full-body turnaround character model sheet of Farzad (@Farzad), a 31-year-old muscular, broad-shouldered Iranian maniac poker player with a swaggering street-tough (\"lati\") aesthetic. Handcrafted needle-felted stop-motion puppet style, cozy fuzzy wool and miniature fabric textures, visible delicate fibers. Sharp faded dark wool hair, trimmed beard, wearing a fitted black velvet button-up shirt with top buttons open showing a thick gold chain necklace, sleeves rolled up to show miniature stitched forearm tattoos and a chunky gold bracelet and watch, tailored dark trousers, and glossy loafers. Full-body views from head to toe showing front view, 3/4 view, side profile view, and back view, standing with a confident wide-legged swagger and tossing a stack of poker chips casually in one hand. Soft warm studio macro lighting, solid neutral light-gray studio background, vertical 9:16 composition, centered framing.",
+      "persona_behavior_prompt": "نام: فرزاد (@Farzad) — تیپ شخصیتی: لاتیِ شاخ و مانی‌اکِ بی‌رحم (The Aggressive Street-Tough Maniac)\n\nویژگی‌های شخصیتی و روانی:\nفرزاد یک جوان ۳۱ ساله پرانرژی، کله‌شق، نترس و فوق‌العاده اگرسیو است که پوکر را نه با ریاضی، بلکه با «زورگیری روانی و فشار» بازی می‌کند. او از فولد دادن متنفر است، با هر دو کارت بی‌ربطی (مثل 7-2 یا 9-4) 3-Bet و 4-Bet می‌زند و عاشق این است که حریف‌های ترسو (مخصوصاً آقا رحیم و آرش) را مجبور کند دست‌های خوبشان را فولد بدهند. برد و باخت برایش فرقی ندارد، فقط دنبال آدرنالین، کل‌کل و پات‌های سنگین است و اگر ببازد بلافاصله یک دسته اسکناس یا چیپ جدید می‌ریزد روی میز.\n\nلحن صحبت و تیکه‌کلام‌های فارسی:\nلحن او کوچه-بازاری، مشتی، پرطمطراق و با اعتمادبه‌نفس کاذب بالاست. صدایش بم و پرانرژی است و وسط حرف‌هایش رجز می‌خواند.\nتیکه‌کلام‌ها:\n- «پات مالِ مردشه داداش، کارت که بهونه است!»\n- «آل-این! هر کی دلشو داره بیاد وسط!»\n- «آرش جان فرمول ننویس، اینجا خیابونه، جدول ضرب جواب نمیده!»\n- «آقا رحیم باز دو ساعت خوابیدی رو آس؟ بیا ببینم جراتشو داری کال کنی!»\n- «فدای سرم، ری‌بای بده بیاد!»\n\nزبان بدن و اکت‌های فیزیکی (برای کارگردانی صحنه):\nلم داده روی صندلی، سینه را جلو می‌دهد، با یک دست ستون چیپ‌هایش را تندتند به هم می‌زند (Chip Shuffle)، گردنبند طلایش را با انگشت جابه‌جا می‌کند، بدون اینکه حتی به کارت‌هایش نگاه کند کل چیپ‌هایش را با ضربه محکم هُل می‌دهد وسط میز و بعد از بلوف زدن پوزخند می‌زند و چشمک می‌زند.",
+      "style_prompt": "Full-body turnaround character model sheet of Farzad (@Farzad), a 31-year-old muscular, broad-shouldered Iranian maniac poker player with a swaggering street-tough (\"lati\") aesthetic. Handcrafted needle-felted stop-motion puppet style, cozy fuzzy wool and miniature fabric textures, visible delicate fibers. Sharp faded dark wool hair, trimmed beard, wearing a fitted black velvet button-up shirt with top buttons open showing a thick gold chain necklace, sleeves rolled up to show miniature stitched forearm tattoos and a chunky gold bracelet and watch, tailored dark trousers, and glossy loafers. Full-body views from head to toe showing front view, 3/4 view, side profile view, and back view, standing with a confident wide-legged swagger and tossing a stack of poker chips casually in one hand. Soft warm studio macro lighting, solid neutral light-gray studio background, vertical 9:16 composition, centered framing.",
+      "character_sheet_prompt_en": "Full-body turnaround character model sheet of Farzad (@Farzad), a 31-year-old muscular, broad-shouldered Iranian maniac poker player with a swaggering street-tough (\"lati\") aesthetic. Handcrafted needle-felted stop-motion puppet style, cozy fuzzy wool and miniature fabric textures, visible delicate fibers. Sharp faded dark wool hair, trimmed beard, wearing a fitted black velvet button-up shirt with top buttons open showing a thick gold chain necklace, sleeves rolled up to show miniature stitched forearm tattoos and a chunky gold bracelet and watch, tailored dark trousers, and glossy loafers. Full-body views from head to toe showing front view, 3/4 view, side profile view, and back view, standing with a confident wide-legged swagger and tossing a stack of poker chips casually in one hand. Soft warm studio macro lighting, solid neutral light-gray studio background, vertical 9:16 composition, centered framing.",
+      "consistency_tags": "@Farzad",
+      "voice_id": "eleven_persian_narrator",
+      "tagline": "نام: فرزاد (@Farzad) — تیپ شخصیتی: لاتیِ شاخ و مانی‌اکِ بی‌رحم (The Aggressive Street-Tough Maniac)\n\nویژگی‌های شخصیتی و روانی:\nفرزاد یک جوان ۳۱ ساله پرانرژی، کله‌شق، نترس و فوق‌العاده اگرسیو است که پوکر را نه با ریاضی، بلکه با «زورگیری روانی و فشار» بازی می‌کند. او از فولد دادن متنفر است، با هر دو کارت بی‌ربطی (مثل 7-2 یا 9-4) 3-Bet و 4-Bet می‌زند و عاشق این است که حریف‌های ترسو (مخصوصاً آقا رحیم و آرش) را مجبور کند دست‌های خوبشان را فولد بدهند. برد و باخت برایش فرقی ندارد، فقط دنبال آدرنالین، کل‌کل و پات‌های سنگین است و اگر ببازد بلافاصله یک دسته اسکناس یا چیپ جدید می‌ریزد روی میز.\n\nلحن صحبت و تیکه‌کلام‌های فارسی:\nلحن او کوچه-بازاری، مشتی، پرطمطراق و با اعتمادبه‌نفس کاذب بالاست. صدایش بم و پرانرژی است و وسط حرف‌هایش رجز می‌خواند.\nتیکه‌کلام‌ها:\n- «پات مالِ مردشه داداش، کارت که بهونه است!»\n- «آل-این! هر کی دلشو داره بیاد وسط!»\n- «آرش جان فرمول ننویس، اینجا خیابونه، جدول ضرب جواب نمیده!»\n- «آقا رحیم باز دو ساعت خوابیدی رو آس؟ بیا ببینم جراتشو داری کال کنی!»\n- «فدای سرم، ری‌بای بده بیاد!»\n\nزبان بدن و اکت‌های فیزیکی (برای کارگردانی صحنه):\nلم داده روی صندلی، سینه را جلو می‌دهد، با یک دست ستون چیپ‌هایش را تندتند به هم می‌زند (Chip Shuffle)، گردنبند طلایش را با انگشت جابه‌جا می‌کند، بدون اینکه حتی به کارت‌هایش نگاه کند کل چیپ‌هایش را با ضربه محکم هُل می‌دهد وسط میز و بعد از بلوف زدن پوزخند می‌زند و چشمک می‌زند."
+    }
+  ],
+  "script": {
+    "title": "وقتی به «فیشِ کال‌استیشن» بلوف سه استریت می‌زنی!",
+    "segments": [
+      {
+        "id": "seg_01",
+        "act": "Hook (0-5s)",
+        "speaker": "NARRATOR",
+        "emotion": "sarcastic",
+        "subtitle_fa": "سه استریت بلوف زدی به کسی که تو عمرش فولد نکرده؟ بیا ببینیم سولور چقدر به دادت می‌رسه!",
+        "tts_fa": "سِه اِستْریت بْلَف زَدی بِه کَسی کِه تو عُمْرَش فولد نَکَرْده؟ بیا بِبینیم سولوِر چِقَدر بِه دادِت می‌رَسِه!",
+        "estimated_duration_sec": 5.0,
+        "poker_context": "Hook. Hero holds A♠ 5♠ (Ace-high, no value). Villain is a pure calling station."
+      },
+      {
+        "id": "seg_02",
+        "act": "Hand Setup",
+        "speaker": "NARRATOR",
+        "emotion": "hype",
+        "subtitle_fa": "صد بیگی عمیق، شش نفره. آرش از کات‌آف با آس و پنج هم‌خال ریز می‌کنه و بیژن از بیگ بلایند با یه لبخند کال می‌کنه!",
+        "tts_fa": "صَد بیگی عَمیق، شِش نَفَرِه. آرَش از کاتْ‌آف با آس و پَنْجِ هَم‌خال رِیز می‌کُنِه و بیژَن از بیگ بْلایْند با یِه لَبْخَند کال می‌کُنِه!",
+        "estimated_duration_sec": 6.5,
+        "poker_context": "CO opens 2.5 BB with A♠ 5♠, BB calls. Pot 5.5 BB."
+      },
+      {
+        "id": "seg_03",
+        "act": "Hand Setup",
+        "speaker": "HERO",
+        "emotion": "smug",
+        "subtitle_fa": "فلاپ کا، هشت، سه! بورد خشک خشک! فلاپ رو رینج من برتری اکوئیتی داره! سی‌بت یک‌سوم پات!",
+        "tts_fa": "فِلاپ شاه، هَشْت، سِه! بورْدِ خُشْکِ خُشْک! فِلاپ رو رِینجِ مَن بَرتَریِ اِکوئیتی داره! سی‌بِتِ یِک‌سُومِ پات!",
+        "estimated_duration_sec": 6.5,
+        "poker_context": "Flop K♦ 8♣ 3♠ (Dry). Hero c-bets 1/3 pot (~1.8 BB)."
+      },
+      {
+        "id": "seg_04",
+        "act": "Comedy Breakdown",
+        "speaker": "VILLAIN",
+        "emotion": "deadpan",
+        "subtitle_fa": "بیژن با هشت و چهار هم‌خال، یه نگاه به کارتاش می‌کنه، یه قلپ چای می‌خوره و مثل برق کال می‌کنه!",
+        "tts_fa": "بیژَن با هَشْت و چَهارِ هَم‌خال، یِه نِگاه بِه کارتاش می‌کُنِه، یِه قُلْپ چایی می‌خورِه و مِثْلِ بَرْق کال می‌کُنِه!",
+        "estimated_duration_sec": 6.0,
+        "poker_context": "Villain calls flop with 8♥ 4♥ (middle pair, bad kicker). Pot ~9.1 BB."
+      },
+      {
+        "id": "seg_05",
+        "act": "Comedy Breakdown",
+        "speaker": "HERO",
+        "emotion": "panicked",
+        "subtitle_fa": "ترن دو! بریک کامل! اون فقط یه جفت ضعیف داره! پات اودز من ۲۸ درصده ولی طرف اصلاً اودز نمی‌فهمه! بت هفتاد و پنج درصد پات!",
+        "tts_fa": "تِرن دو! بْرِیکِ کامِل! اون فَقَط یِه جُفْتِ ضَعیف داره! پات اودزِ مَن بیست و هَشْت دَرصَدِه وَلی طَرَف اَصْلَن اودز نَمی‌فَهمِه! بِتِ هَفتاد و پَنج دَرصَدِ پات!",
+        "estimated_duration_sec": 8.0,
+        "poker_context": "Turn 2♦ (Brick). Hero bets 75% pot (~6.8 BB). Pot ~22.7 BB after call."
+      },
+      {
+        "id": "seg_06",
+        "act": "Comedy Breakdown",
+        "speaker": "VILLAIN",
+        "emotion": "smug",
+        "subtitle_fa": "بیژن تسبیح رو می‌چرخونه و میگه: حس می‌کنم داری بلوف می‌زنی داداش! و باز هم کال می‌کنه!",
+        "tts_fa": "بیژَن تَسْبیح رو می‌چَرخونِه و میگِه: حِس می‌کُنَم داری بْلَف می‌زَنی داداش! و باز هَم کال می‌کُنِه!",
+        "estimated_duration_sec": 5.5,
+        "poker_context": "Villain calls turn bet. Reads bluff but has no fold button."
+      },
+      {
+        "id": "seg_07",
+        "act": "Comedy Breakdown",
+        "speaker": "HERO",
+        "emotion": "panicked",
+        "subtitle_fa": "ریور بی! غرورم جریحه‌دار شده! از نظر ریاضی و تعادل نش، این دست غیرممکنه! آل‌این!",
+        "tts_fa": "ریوِر والِه! غُرورَم جَریحِه‌دار شُدِه! اَز نَظَرِ ریاضی و تَعادُلِ نَش، این دَست غِیرِمُمْکِنِه! آل‌آین!",
+        "estimated_duration_sec": 6.0,
+        "poker_context": "River J♣ (Blank). Hero shoves all-in (~89.5 BB) with Ace-high, a pure bluff."
+      },
+      {
+        "id": "seg_08",
+        "act": "Comedy Breakdown",
+        "speaker": "VILLAIN",
+        "emotion": "smug",
+        "subtitle_fa": "بیژن بدون دو ثانیه فکر کردن میگه: دیدم بلوف می‌زنی گفتم خجالت نکشی! کال! جفت هشت منو رو کن داداش!",
+        "tts_fa": "بیژَن بی‌دونِ دو ثانیِه فِکر کَردَن میگِه: دیدَم بْلَف می‌زَنی گُفتَم خَجالَت نَکِشی! کال! جُفْتِ هَشْتِ مَنو رو کُن داداش!",
+        "estimated_duration_sec": 6.5,
+        "poker_context": "Villain instantly calls all-in with 8♥ 4♥ (pair of eights). Final pot 200 BB."
+      },
+      {
+        "id": "seg_09",
+        "act": "Comedy Breakdown",
+        "speaker": "HERO",
+        "emotion": "confused",
+        "subtitle_fa": "آخه با چه منطقی با جفت هشت و کیکر چهار کال کردی؟! آرش انقدر عرق می‌ریزه که نمد سبز میز آبیاری می‌شه!",
+        "tts_fa": "آخِه با چِه مَنْطِقی با جُفْتِ هَشْت و کیکِرِ چَهار کال کَردی؟! آرَش اِنْقَدر عَرَق می‌ریزِه کِه نَمَدِ سَبزِ میز آبْیاری می‌شِه!",
+        "estimated_duration_sec": 6.5,
+        "poker_context": "Showdown. Villain's pair of 8s beats Hero's Ace-high. Villain wins 200 BB."
+      },
+      {
+        "id": "seg_10",
+        "act": "Golden Takeaway",
+        "speaker": "VILLAIN",
+        "emotion": "smug",
+        "subtitle_fa": "پوکر بازی دله داداش، نه کامپیوتر! دست داداشیه، چاییتو بخور سرد نشه!",
+        "tts_fa": "پوکِر بازیِ دِلِه داداش، نَهِ کامپیوتِر! دَسْتِ داداشیِه، چاییتو بِخور سَرد نَشِه!",
+        "estimated_duration_sec": 4.5,
+        "poker_context": "Bijan collects the pot, sipping hot tea."
+      },
+      {
+        "id": "seg_11",
+        "act": "Golden Takeaway",
+        "speaker": "NARRATOR",
+        "emotion": "deadpan",
+        "subtitle_fa": "قانون طلایی: به کسی که فولد بلد نیست بلوف نزن! با دست‌های بی‌ارزش چک بده و فقط با دست قوی بت سنگین بزن. وگرنه سند شش‌دانگ کازینو می‌ره به نام بیژن!",
+        "tts_fa": "قانونِ طَلایی: بِه کَسی کِه فولد بَلَد نیست بْلَف نَزَن! با دَست‌هایِ بی‌اَرْزِش چِک بِده و فَقَط با دَستِ قَوی بِتِ سَنگین بِزَن. وَگَرْنِه سَندِ شِش‌دانگِ کازینو می‌رِه بِه نامِ بیژَن!",
+        "estimated_duration_sec": 9.0,
+        "poker_context": "Takeaway: versus a calling station, zero out the bluff range; bet big only for value."
+      }
+    ]
+  },
+  "scenes": [
+    {
+      "id": "scene_01",
+      "beat_index": 1,
+      "time_range": "00:00 - 00:02",
+      "title": "نمای مستر معرف میز و شروع دست",
+      "duration_sec": 2.0,
+      "segment_ids": [
+        "seg_01"
+      ],
+      "characters_present": [
+        "@Arash",
+        "@Bijan"
+      ],
+      "adjacent_players": [
+        "@Bijan (seat_5)"
+      ],
+      "table_state_en": "Updated table state test",
+      "camera": "@Room_Master Wide Establishing Shot",
+      "shot_mode": "static_zoom",
+      "camera_effect": "zoom_in",
+      "visual_prompt": "Handcrafted needle-felted stop-motion animation style, wide establishing master shot at @Room_Master showing 6-max oval table with Arash (@Arash) at seat 1 and Bijan (@Bijan) at seat 5. Soft warm studio macro lighting, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "visual_prompt_en": "Handcrafted needle-felted stop-motion animation style, wide establishing master shot at @Room_Master showing 6-max oval table with Arash (@Arash) at seat 1 and Bijan (@Bijan) at seat 5. Soft warm studio macro lighting, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "motion_prompt_en": "Slow dramatic push-in on a tilted Dutch-angle extreme close-up of Arash. Single primary action: mouth closed, no talking, no lip-sync, silent expressive acting, pure facial expression. His eyes widen in sheer cartoon frustration behind thick black-rimmed glasses while one heavy sweat bead rolls slowly down his temple. A red alarm light pulses softly and reflects across his glasses lenses. Nothing else moves. No flying objects. Dark atmospheric casino background stays steady with a subtle neon glow. Maintain exact character design, proportions, vector outlines, and colors from reference frame. Smooth 24fps 2D cartoon animation, vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "target_video_sec": 2.0,
+      "poker_table_state": {
+        "hero_hand": "A♠ K♥",
+        "board": "Preflop Deal",
+        "pot_bb": 4.5,
+        "action_badge": "Hero Deals AK Offsuit"
+      },
+      "sfx_cue": "card_deal",
+      "visual_asset": "/media/ep03-poker-hand/scenes/Generated_Image_November_17,_2026_-_5_47PM.jpg",
+      "video_path": null,
+      "video_asset": null,
+      "status": "approved"
+    },
+    {
+      "id": "scene_02",
+      "beat_index": 2,
+      "time_range": "00:02 - 00:04",
+      "title": "تریبِت آرش و واکنش زیرچشمی بیژن",
+      "duration_sec": 2.2,
+      "segment_ids": [
+        "seg_02"
+      ],
+      "characters_present": [
+        "@Arash"
+      ],
+      "adjacent_players": [
+        "@Bijan (seat_5, soft out-of-focus shoulder at frame edge)"
+      ],
+      "table_state_en": "Preflop 3-Bet: 19.5 BB pot pushed towards center, no community cards on green felt yet",
+      "camera": "@Seat_1 Medium Close-Up",
+      "shot_mode": "static_zoom",
+      "camera_effect": "zoom_in",
+      "visual_prompt": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_1 on Arash (@Arash) chest-up. In background behind him is seat 1 landmark: dark brick wall with warm bookshelf. On right edge, soft out-of-focus wool shoulder of Bijan (@Bijan). Vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "visual_prompt_en": "Maintain exact visual continuity, character seating positions, chip stack colors, and table prop placement matching [Episode_Scene_1_Master]. Handcrafted needle-felted stop-motion animation style, tight Medium Close-Up framed at @Seat_1 on Arash (@Arash) chest-up. In background behind him is seat 1 landmark: dark brick wall with warm bookshelf. On right edge, soft out-of-focus wool shoulder of Bijan (@Bijan). Vertical 9:16 composition, centered framing for YouTube Shorts and Instagram Reels --ar 9:16",
+      "motion_prompt_en": "Slow push-in on Arash (@Arash). Mouth closed, no talking, no speaking, silent expressive acting. His smug smirk slowly stiffens as a single comic sweat drop forms and rolls down his temple, the two cards held steady in his hand. Clean 2D cartoon animation, vibrant colors",
+      "target_video_sec": 2.0,
+      "poker_table_state": {
+        "hero_hand": "A♠ K♥",
+        "board": "No Cards Yet",
+        "pot_bb": 19.5,
+        "action_badge": "Hero 3-Bets 9BB | Bijan Calls"
+      },
+      "sfx_cue": "chip_splash",
+      "visual_asset": "/media/ep03-poker-hand/scenes/Generated_Image_November_17,_2026_-_5_47PM_(1).jpg",
+      "video_path": null,
+      "video_asset": null,
+      "status": "approved"
+    }
+  ],
+  "audio": {
+    "tracks": [
+      {
+        "segment_id": "seg_01",
+        "speaker": "NARRATOR",
+        "tts_text": "سِه اِستْریت بْلَف زَدی بِه کَسی کِه تو عُمْرَش فولد نَکَرْده؟ بیا بِبینیم سولوِر چِقَدر بِه دادِت می‌رَسِه!",
+        "subtitle_text": "سه استریت بلوف زدی به کسی که تو عمرش فولد نکرده؟ بیا ببینیم سولور چقدر به دادت می‌رسه!",
+        "audio_file": "/media/ep03-poker-hand/audio/seg_01.wav",
+        "status": "ready",
+        "duration_sec": 5.0
+      },
+      {
+        "segment_id": "seg_02",
+        "speaker": "NARRATOR",
+        "tts_text": "صَد بیگی عَمیق، شِش نَفَرِه. آرَش از کاتْ‌آف با آس و پَنْجِ هَم‌خال رِیز می‌کُنِه و بیژَن از بیگ بْلایْند با یِه لَبْخَند کال می‌کُنِه!",
+        "subtitle_text": "صد بیگی عمیق، شش نفره. آرش از کات‌آف با آس و پنج هم‌خال ریز می‌کنه و بیژن از بیگ بلایند با یه لبخند کال می‌کنه!",
+        "audio_file": "/media/ep03-poker-hand/audio/seg_02.wav",
+        "status": "ready",
+        "duration_sec": 6.5
+      },
+      {
+        "segment_id": "seg_03",
+        "speaker": "HERO",
+        "tts_text": "فِلاپ شاه، هَشْت، سِه! بورْدِ خُشْکِ خُشْک! فِلاپ رو رِینجِ مَن بَرتَریِ اِکوئیتی داره! سی‌بِتِ یِک‌سُومِ پات!",
+        "subtitle_text": "فلاپ کا، هشت، سه! بورد خشک خشک! فلاپ رو رینج من برتری اکوئیتی داره! سی‌بت یک‌سوم پات!",
+        "audio_file": "/media/ep03-poker-hand/audio/seg_03.wav",
+        "status": "ready",
+        "duration_sec": 6.5
+      },
+      {
+        "segment_id": "seg_04",
+        "speaker": "VILLAIN",
+        "tts_text": "بیژَن با هَشْت و چَهارِ هَم‌خال، یِه نِگاه بِه کارتاش می‌کُنِه، یِه قُلْپ چایی می‌خورِه و مِثْلِ بَرْق کال می‌کُنِه!",
+        "subtitle_text": "بیژن با هشت و چهار هم‌خال، یه نگاه به کارتاش می‌کنه، یه قلپ چای می‌خوره و مثل برق کال می‌کنه!",
+        "audio_file": "/media/ep03-poker-hand/audio/seg_04.wav",
+        "status": "ready",
+        "duration_sec": 6.0
+      },
+      {
+        "segment_id": "seg_05",
+        "speaker": "HERO",
+        "tts_text": "تِرن دو! بْرِیکِ کامِل! اون فَقَط یِه جُفْتِ ضَعیف داره! پات اودزِ مَن بیست و هَشْت دَرصَدِه وَلی طَرَف اَصْلَن اودز نَمی‌فَهمِه! بِتِ هَفتاد و پَنج دَرصَدِ پات!",
+        "subtitle_text": "ترن دو! بریک کامل! اون فقط یه جفت ضعیف داره! پات اودز من ۲۸ درصده ولی طرف اصلاً اودز نمی‌فهمه! بت هفتاد و پنج درصد پات!",
+        "audio_file": "/media/ep03-poker-hand/audio/seg_05.wav",
+        "status": "ready",
+        "duration_sec": 8.0
+      },
+      {
+        "segment_id": "seg_06",
+        "speaker": "VILLAIN",
+        "tts_text": "بیژَن تَسْبیح رو می‌چَرخونِه و میگِه: حِس می‌کُنَم داری بْلَف می‌زَنی داداش! و باز هَم کال می‌کُنِه!",
+        "subtitle_text": "بیژن تسبیح رو می‌چرخونه و میگه: حس می‌کنم داری بلوف می‌زنی داداش! و باز هم کال می‌کنه!",
+        "audio_file": "/media/ep03-poker-hand/audio/seg_06.wav",
+        "status": "ready",
+        "duration_sec": 5.5
+      },
+      {
+        "segment_id": "seg_07",
+        "speaker": "HERO",
+        "tts_text": "ریوِر والِه! غُرورَم جَریحِه‌دار شُدِه! اَز نَظَرِ ریاضی و تَعادُلِ نَش، این دَست غِیرِمُمْکِنِه! آل‌آین!",
+        "subtitle_text": "ریور بی! غرورم جریحه‌دار شده! از نظر ریاضی و تعادل نش، این دست غیرممکنه! آل‌این!",
+        "audio_file": "/media/ep03-poker-hand/audio/seg_07.wav",
+        "status": "ready",
+        "duration_sec": 6.0
+      },
+      {
+        "segment_id": "seg_08",
+        "speaker": "VILLAIN",
+        "tts_text": "بیژَن بی‌دونِ دو ثانیِه فِکر کَردَن میگِه: دیدَم بْلَف می‌زَنی گُفتَم خَجالَت نَکِشی! کال! جُفْتِ هَشْتِ مَنو رو کُن داداش!",
+        "subtitle_text": "بیژن بدون دو ثانیه فکر کردن میگه: دیدم بلوف می‌زنی گفتم خجالت نکشی! کال! جفت هشت منو رو کن داداش!",
+        "audio_file": "/media/ep03-poker-hand/audio/seg_08.wav",
+        "status": "ready",
+        "duration_sec": 6.5
+      },
+      {
+        "segment_id": "seg_09",
+        "speaker": "HERO",
+        "tts_text": "آخِه با چِه مَنْطِقی با جُفْتِ هَشْت و کیکِرِ چَهار کال کَردی؟! آرَش اِنْقَدر عَرَق می‌ریزِه کِه نَمَدِ سَبزِ میز آبْیاری می‌شِه!",
+        "subtitle_text": "آخه با چه منطقی با جفت هشت و کیکر چهار کال کردی؟! آرش انقدر عرق می‌ریزه که نمد سبز میز آبیاری می‌شه!",
+        "audio_file": "/media/ep03-poker-hand/audio/seg_09.wav",
+        "status": "ready",
+        "duration_sec": 6.5
+      },
+      {
+        "segment_id": "seg_10",
+        "speaker": "VILLAIN",
+        "tts_text": "پوکِر بازیِ دِلِه داداش، نَهِ کامپیوتِر! دَسْتِ داداشیِه، چاییتو بِخور سَرد نَشِه!",
+        "subtitle_text": "پوکر بازی دله داداش، نه کامپیوتر! دست داداشیه، چاییتو بخور سرد نشه!",
+        "audio_file": "/media/ep03-poker-hand/audio/seg_10.wav",
+        "status": "ready",
+        "duration_sec": 4.5
+      },
+      {
+        "segment_id": "seg_11",
+        "speaker": "NARRATOR",
+        "tts_text": "قانونِ طَلایی: بِه کَسی کِه فولد بَلَد نیست بْلَف نَزَن! با دَست‌هایِ بی‌اَرْزِش چِک بِده و فَقَط با دَستِ قَوی بِتِ سَنگین بِزَن. وَگَرْنِه سَندِ شِش‌دانگِ کازینو می‌رِه بِه نامِ بیژَن!",
+        "subtitle_text": "قانون طلایی: به کسی که فولد بلد نیست بلوف نزن! با دست‌های بی‌ارزش چک بده و فقط با دست قوی بت سنگین بزن. وگرنه سند شش‌دانگ کازینو می‌ره به نام بیژن!",
+        "audio_file": "/media/ep03-poker-hand/audio/seg_11.wav",
+        "status": "ready",
+        "duration_sec": 9.0
+      }
+    ]
+  },
+  "edit": {
+    "subtitle_settings": {
+      "font": "Vazirmatn",
+      "font_size": 42,
+      "direction": "rtl",
+      "libass_harfbuzz": true
+    }
+  },
+  "publish": {
+    "platforms": [
+      "YouTube Shorts",
+      "Instagram Reels"
+    ],
+    "caption_fa": "",
+    "hashtags": []
+  },
+  "analytics": {}
+}
