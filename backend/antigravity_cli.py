@@ -75,7 +75,10 @@ class EpisodeTask:
 
     def add_log(self, message: str):
         timestamp = time.strftime("%H:%M:%S")
-        self.logs.append(f"[{timestamp}] {message}")
+        for line in str(message).strip().splitlines():
+            line = line.strip()
+            if line:
+                self.logs.append(f"[{timestamp}] {line}")
         if len(self.logs) > 60:
             self.logs = self.logs[-60:]
         self.updated_at = time.time()
@@ -167,8 +170,9 @@ async def _run_antigravity_cli_process(prompt: str, title: str) -> Optional[str]
     err_text = stderr.decode("utf-8", errors="replace").strip()
 
     if proc.returncode != 0:
-        logger.error("Antigravity CLI failed with code %d: %s", proc.returncode, err_text)
-        raise RuntimeError(f"Antigravity CLI returned code {proc.returncode}: {err_text or out_text}")
+        err_msg = err_text or out_text or f"Process failed with returncode {proc.returncode}"
+        logger.error("Antigravity CLI failed with code %d: %s", proc.returncode, err_msg)
+        raise RuntimeError(f"Antigravity CLI returned code {proc.returncode}: {err_msg}")
 
     # Parse conversationId
     try:
@@ -189,8 +193,7 @@ async def _run_antigravity_cli_process(prompt: str, title: str) -> Optional[str]
     if match:
         return match.group(1)
 
-    logger.warning("Could not parse conversationId from output: %s", out_text)
-    return None
+    raise RuntimeError(f"Could not extract conversationId from output: {out_text or 'Empty output'}")
 
 
 async def _monitor_task(task: EpisodeTask):

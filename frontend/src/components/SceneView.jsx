@@ -164,14 +164,26 @@ export default function SceneView({
 
   // Button 1: Launch Real Antigravity Background Storyboard Task
   const handleStartStoryboard = async () => {
-    if (taskState.status === 'running') return;
     try {
       setIsTriggeringStoryboard(true);
       setBannerDismissed(false);
+      setTaskState(prev => ({
+        ...prev,
+        task_type: 'storyboard',
+        status: 'running',
+        current_step: 'راه‌اندازی ایجنت کارگردان آنتی‌گرویتی برای نگارش استوری‌بورد...',
+        error_message: null,
+        progress: 5
+      }));
       const res = await triggerStoryboardGeneration(episodeId);
       setTaskState(res);
     } catch (err) {
-      alert('خطا در شروع استوری‌بورد در آنتی‌گرویتی: ' + err.message);
+      setTaskState(prev => ({
+        ...prev,
+        status: 'error',
+        error_message: err.message,
+        current_step: 'خطا در راه‌اندازی ایجنت استوری‌بورد'
+      }));
     } finally {
       setIsTriggeringStoryboard(false);
     }
@@ -179,14 +191,26 @@ export default function SceneView({
 
   // Button 2: Launch Real Antigravity Background Sequential Image Generation
   const handleStartImages = async () => {
-    if (taskState.status === 'running') return;
     try {
       setIsTriggeringImages(true);
       setBannerDismissed(false);
+      setTaskState(prev => ({
+        ...prev,
+        task_type: 'images',
+        status: 'running',
+        current_step: 'راه‌اندازی ایجنت تولید تصویر بومی آنتی‌گرویتی...',
+        error_message: null,
+        progress: 5
+      }));
       const res = await triggerImagesGeneration(episodeId);
       setTaskState(res);
     } catch (err) {
-      alert('خطا در شروع تولید تصاویر در آنتی‌گرویتی: ' + err.message);
+      setTaskState(prev => ({
+        ...prev,
+        status: 'error',
+        error_message: err.message,
+        current_step: 'خطا در راه‌اندازی ایجنت تصویرسازی'
+      }));
     } finally {
       setIsTriggeringImages(false);
     }
@@ -194,17 +218,27 @@ export default function SceneView({
 
   // Single Scene Card: Regenerate Single Frame Image
   const handleRegenerateScene = async (sceneId) => {
-    if (taskState.status === 'running') {
-      alert('یک فرآیند دیگر در آنتی‌گرویتی هم‌اکنون در حال اجراست. لطفاً تا اتمام آن منتظر بمانید.');
-      return;
-    }
     try {
       setRegeneratingSceneId(sceneId);
       setBannerDismissed(false);
+      setTaskState(prev => ({
+        ...prev,
+        task_type: 'regenerate_scene',
+        target_scene_id: sceneId,
+        status: 'running',
+        current_step: `راه‌اندازی ایجنت برای بازسازی فریم ${sceneId}...`,
+        error_message: null,
+        progress: 10
+      }));
       const res = await triggerSceneRegeneration(episodeId, sceneId);
       setTaskState(res);
     } catch (err) {
-      alert(`خطا در بازسازی فریم ${sceneId}: ` + err.message);
+      setTaskState(prev => ({
+        ...prev,
+        status: 'error',
+        error_message: err.message,
+        current_step: `خطا در بازسازی فریم ${sceneId}`
+      }));
     } finally {
       setRegeneratingSceneId(null);
     }
@@ -466,6 +500,11 @@ export default function SceneView({
                 <p className="text-[11px] text-slate-300 font-mono mt-0.5">
                   {taskState.current_step || 'در حال انجام عملیات...'}
                 </p>
+                {taskState.status === 'error' && taskState.error_message && (
+                  <div className="mt-1.5 p-2 rounded-lg bg-rose-950/80 border border-rose-800 text-[10px] font-mono text-rose-200 whitespace-pre-wrap break-all text-start" dir="ltr">
+                    {taskState.error_message}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -515,10 +554,10 @@ export default function SceneView({
 
           {/* Collapsible Logs Drawer */}
           {showLogs && taskState.logs && taskState.logs.length > 0 && (
-            <div className="mt-3 p-3 rounded-xl bg-slate-950 border border-slate-800 font-mono text-[10px] text-slate-300 max-h-40 overflow-y-auto space-y-1 ltr-content">
+            <div className="mt-3 p-3 rounded-xl bg-slate-950 border border-slate-800 font-mono text-[10px] text-slate-300 max-h-48 overflow-y-auto space-y-1.5 text-start" dir="ltr">
               {taskState.logs.map((logLine, idx) => (
-                <div key={idx} className="leading-snug text-slate-400">
-                  <span className="text-amber-400 mr-2">›</span>
+                <div key={idx} className="leading-relaxed text-slate-300 whitespace-pre-wrap break-all">
+                  <span className="text-amber-400 mr-2 font-bold">›</span>
                   {logLine}
                 </div>
               ))}
