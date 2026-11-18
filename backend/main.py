@@ -798,7 +798,7 @@ Follow {skill_filename} to generate the complete, exhaustive storyboard array (`
 
 ---
 ### OUTPUT REQUIREMENT:
-Return ONLY a valid JSON object with key `"scenes"` containing cinema-grade, richly detailed visual prompts (80-120 words minimum), motion prompts for ai_video shots, persistent table states, seated neighbors, and Scene 1 master continuity locks.
+Return ONLY a valid JSON object with key `"scenes"` containing cinema-grade, richly detailed visual prompts (80-120 words minimum), motion prompts for ai_video shots, automated camera_direction objects for static_image shots, persistent table states, seated neighbors, and Scene 1 master continuity locks.
 """
         return {
             "episode_id": episode_id,
@@ -941,11 +941,24 @@ def import_ai_studio_json(episode_id: str, stage: str, req: ImportJsonRequest):
                 hud = {"action_badge": hud}
                 
             motion_p = sc.get("motion_prompt_en") or old_sc.get("motion_prompt_en", "")
-            mode = sc.get("shot_mode") or ("ai_video" if motion_p.strip() else "static_zoom")
+            media_type = sc.get("media_type") or ("ai_video" if motion_p.strip() or sc.get("shot_mode") == "ai_video" else "static_image")
+            mode = "ai_video" if media_type == "ai_video" else "static_zoom"
             effect = sc.get("camera_effect") or old_sc.get("camera_effect", "zoom_in")
             dur = float(sc.get("duration_sec") or old_sc.get("duration_sec") or 2.0)
             table_state_text = sc.get("table_state_en") or old_sc.get("table_state_en", "")
             adjacent = sc.get("adjacent_players") or old_sc.get("adjacent_players", [])
+
+            # Automated FFmpeg Camera Direction for static_image
+            cam_direction = sc.get("camera_direction") or old_sc.get("camera_direction")
+            if not cam_direction and media_type == "static_image":
+                cam_direction = {
+                    "motion_type": "slow_zoom_in",
+                    "start_focus_region": f"chest-up framing on {(sc.get('characters_present') or ['Hero'])[0]}",
+                    "end_focus_region": f"tight macro push towards {(sc.get('characters_present') or ['Hero'])[0]} and table felt",
+                    "zoom_intensity": 1.15,
+                    "easing": "smooth",
+                    "camera_prompt_en": "Cinematic slow zoom in focusing on the character's reaction and the table chips"
+                }
 
             # Determine best image asset URL
             img_asset = old_sc.get("visual_asset") or old_sc.get("image_path") or sc.get("visual_asset") or sc.get("image_path") or f"/media/{episode_id}/assets/images/{sc_id}.png"
@@ -961,8 +974,10 @@ def import_ai_studio_json(episode_id: str, stage: str, req: ImportJsonRequest):
                 "adjacent_players": adjacent,
                 "table_state_en": table_state_text,
                 "camera": sc.get("camera_angle", "Medium Shot"),
+                "media_type": media_type,
                 "shot_mode": mode,
                 "camera_effect": effect,
+                "camera_direction": cam_direction,
                 "visual_prompt": sc.get("visual_prompt_en", sc.get("visual_prompt", old_sc.get("visual_prompt", ""))),
                 "visual_prompt_en": sc.get("visual_prompt_en", sc.get("visual_prompt", old_sc.get("visual_prompt", ""))),
                 "motion_prompt_en": motion_p,
@@ -993,7 +1008,9 @@ def import_ai_studio_json(episode_id: str, stage: str, req: ImportJsonRequest):
 
 class UpdateSceneDetailsRequest(BaseModel):
     shot_mode: Optional[str] = None
+    media_type: Optional[str] = None
     camera_effect: Optional[str] = None
+    camera_direction: Optional[Dict[str, Any]] = None
     motion_prompt_en: Optional[str] = None
     duration_sec: Optional[float] = None
     title: Optional[str] = None
@@ -1015,8 +1032,14 @@ def update_scene_details(episode_id: str, scene_id: str, req: UpdateSceneDetails
     if not found_scene:
         raise HTTPException(status_code=404, detail=f"Scene '{scene_id}' not found")
         
+    if req.media_type is not None:
+        found_scene["media_type"] = req.media_type
+        found_scene["shot_mode"] = "ai_video" if req.media_type == "ai_video" else "static_zoom"
     if req.shot_mode is not None:
         found_scene["shot_mode"] = req.shot_mode
+        found_scene["media_type"] = "ai_video" if req.shot_mode == "ai_video" else "static_image"
+    if req.camera_direction is not None:
+        found_scene["camera_direction"] = req.camera_direction
     if req.camera_effect is not None:
         found_scene["camera_effect"] = req.camera_effect
     if req.motion_prompt_en is not None:

@@ -19,13 +19,29 @@ import {
   RefreshCw,
   Sparkles,
   Bot,
-  Play
+  Play,
+  Sliders,
+  Compass,
+  FileText,
+  Palette
 } from 'lucide-react';
 import { 
   uploadAsset, 
   uploadSceneVideo, 
   updateSceneDetails
 } from '../api';
+
+const MOTION_TYPE_CONFIG = {
+  slow_zoom_in: { label: '🔍 زوم آرام به داخل (Slow Push-In)', color: 'text-amber-400 bg-amber-500/10 border-amber-500/30' },
+  fast_punch_in: { label: '⚡ زوم ضربه‌ای سریع (Punch-In)', color: 'text-rose-400 bg-rose-500/10 border-rose-500/30' },
+  slow_zoom_out: { label: '🔎 زوم آرام به خارج (Pull-Out)', color: 'text-blue-400 bg-blue-500/10 border-blue-500/30' },
+  pan_left_to_right: { label: '➡️ حرکت افقی چپ به راست (Pan R)', color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30' },
+  pan_right_to_left: { label: '⬅️ حرکت افقی راست به چپ (Pan L)', color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30' },
+  tilt_up: { label: '⬆️ حرکت عمودی به بالا (Tilt Up)', color: 'text-purple-400 bg-purple-500/10 border-purple-500/30' },
+  tilt_down: { label: '⬇️ حرکت عمودی به پایین (Tilt Down)', color: 'text-purple-400 bg-purple-500/10 border-purple-500/30' },
+  subtle_tilt_shake: { label: '💓 لرزش اضطراب (Subtle Shake)', color: 'text-amber-300 bg-amber-500/20 border-amber-500/40' },
+  static_hold: { label: '⏸️ قاب ثابت بدون حرکت (Static Hold)', color: 'text-slate-300 bg-slate-800 border-slate-700' },
+};
 
 export default function SceneView({
   scenes = [],
@@ -36,10 +52,15 @@ export default function SceneView({
   onSceneAssetUpdated,
   onRefresh
 }) {
-  const [copiedExecutionCmd, setCopiedExecutionCmd] = useState(false);
+  // Two distinct button states
+  const [copiedStoryboardCmd, setCopiedStoryboardCmd] = useState(false);
+  const [copiedImagesCmd, setCopiedImagesCmd] = useState(false);
+
+  // Single card action states
   const [copiedSingleCmdId, setCopiedSingleCmdId] = useState(null);
   const [copiedPromptId, setCopiedPromptId] = useState(null);
   const [copiedMotionId, setCopiedMotionId] = useState(null);
+  const [copiedCameraPromptId, setCopiedCameraPromptId] = useState(null);
   const [uploadingImageId, setUploadingImageId] = useState(null);
   const [uploadingVideoId, setUploadingVideoId] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -49,7 +70,11 @@ export default function SceneView({
 
   // Local editable motion prompts map: { [sceneId]: text }
   const [editedMotionPrompts, setEditedMotionPrompts] = useState({});
-  const [savingPromptId, setSavingPromptId] = useState(null);
+  const [savingMotionId, setSavingMotionId] = useState(null);
+
+  // Local editable camera direction prompt map: { [sceneId]: text }
+  const [editedCameraPrompts, setEditedCameraPrompts] = useState({});
+  const [savingCameraPromptId, setSavingCameraPromptId] = useState(null);
 
   const copyText = (id, text, type = 'image') => {
     if (!text) return;
@@ -57,21 +82,42 @@ export default function SceneView({
     if (type === 'image') {
       setCopiedPromptId(id);
       setTimeout(() => setCopiedPromptId(null), 2000);
-    } else {
+    } else if (type === 'motion') {
       setCopiedMotionId(id);
       setTimeout(() => setCopiedMotionId(null), 2000);
+    } else if (type === 'camera') {
+      setCopiedCameraPromptId(id);
+      setTimeout(() => setCopiedCameraPromptId(null), 2000);
     }
   };
 
-  const handleCopyFullExecutionCommand = async () => {
-    const cmd = `لطفاً مرحله ۶ (کارگردانی استوری‌بورد و تولید کامل تصاویر) را برای اپیزود "${episodeId}" طبق سند .agent/skills/04-scene-director.md به طور کامل و انتها به انتها اجرا کن:
-۱. سناریو و چیدمان صندلی‌های اپیزود "${episodeId}" را بخوان و استوری‌بورد کامل و دقیق با کادربندی ۹:۱۶ عمودی، جزئیات بالا (حداقل ۸۰ تا ۱۲۰ کلمه برای هر پرامپت)، همسایگان صندلی (adjacent_players) و وضعیت زنده میز (table_state_en) بنویس و در projects/${episodeId}/state.json ذخیره کن.
-۲. سپس با استفاده از ابزار image-generator، تک تک فریم‌های کلیدی (scene_01.png تا scene_N.png) را به صورت متوالی و با اعمال رفرنس‌های تصویری روی دیسک (برای صحنه ۱: رفرنس @Room_Master و شیت‌های کاراکترها؛ برای صحنه‌های ۲ به بعد: تصویر scene_01.png به عنوان Episode Master Reference + رفرنس زاویه صندلی @Seat_X) تولید کن و مستقیماً در فولدر projects/${episodeId}/assets/images/ ذخیره نما.
-۳. پس از تولید، از وجود و کیفیت فایل‌ها مطمئن شو و state.json را با مسیرهای نهایی بروزرسانی کن.`;
+  // Button 1: Prompt Generation ONLY (Storyboard)
+  const handleCopyStoryboardCommand = async () => {
+    const cmd = `لطفاً مرحله ۶ (فاز ۱: نگارش استوری‌بورد و پرامپت‌ها) را برای اپیزود "${episodeId}" طبق سند .agent/skills/04-scene-director.md اجرا کن:
+۱. فایل‌های projects/universe.json و /projects/${episodeId}/state.json را بخوان.
+۲. استوری‌بورد کامل و جامع را به صورت آرایه scenes با کادربندی عمودی ۹:۱۶ بنویس:
+   - برای هر صحنه: visual_prompt_en غنی و سینمایی با حداقل ۸۰ تا ۱۲۰ کلمه، همسایگان صندلی (adjacent_players)، وضعیت پیوسته میز (table_state_en) و قفل پیوستگی صحنه ۱ برای صحنه‌های ۲ به بعد.
+   - برای صحنه‌های static_image: شیء ساختاریافته camera_direction را به صورت خودکار متناسب با کشمکش دراماتیک (motion_type, start_focus_region, end_focus_region, zoom_intensity, easing, camera_prompt_en) تولید کن.
+   - برای صحنه‌های ai_video: فیلد motion_prompt_en را با اکشن فیزیکی خالص و بازیگری بی‌صدا تولید کن.
+۳. خروجی را فقط در /projects/${episodeId}/state.json ذخیره کن و در این فاز هیچ تصویری تولید نکن تا پرامپت‌ها قابل بازبینی و تایید باشند.`;
 
     await navigator.clipboard.writeText(cmd);
-    setCopiedExecutionCmd(true);
-    setTimeout(() => setCopiedExecutionCmd(false), 3500);
+    setCopiedStoryboardCmd(true);
+    setTimeout(() => setCopiedStoryboardCmd(false), 3500);
+  };
+
+  // Button 2: Direct Image Generation in Antigravity
+  const handleCopyImagesCommand = async () => {
+    const cmd = `لطفاً مرحله ۶ (فاز ۲: تولید مستقیم و متوالی تصاویر) را برای اپیزود "${episodeId}" طبق سند .agent/skills/04-scene-director.md اجرا کن:
+۱. استوری‌بورد تاییدشده را از /projects/${episodeId}/state.json بخوان.
+۲. با ابزار image-generator، تک‌تک فریم‌های کلیدی (scene_01.png تا scene_N.png) را به صورت متوالی در /projects/${episodeId}/assets/images/ تولید کن:
+   - برای scene_01.png: رفرنس تصویری @Room_Master و شیت‌های چهره و بدن کاراکترهای فعال.
+   - برای scene_02.png تا scene_N.png: تصویر تولیدشده scene_01.png (به عنوان Episode Master Reference) + رفرنس زاویه صندلی هدف @Seat_X + شیت کاراکتر فوکوس.
+۳. پس از تولید هر تصویر، وجود و سلامت فایل را بررسی کرده و فیلدهای image_path و visual_asset را در state.json به مسیر نهایی /media/${episodeId}/assets/images/scene_XX.png متصل کن.`;
+
+    await navigator.clipboard.writeText(cmd);
+    setCopiedImagesCmd(true);
+    setTimeout(() => setCopiedImagesCmd(false), 3500);
   };
 
   const handleCopySingleFrameCommand = async (scene, idx) => {
@@ -143,86 +189,131 @@ ${visualPrompt}
     }
   };
 
-  const handleToggleShotMode = async (sceneId, newMode) => {
+  const handleToggleMediaType = async (sceneId, newMediaType) => {
     try {
-      await updateSceneDetails(episodeId, sceneId, { shot_mode: newMode });
+      await updateSceneDetails(episodeId, sceneId, { 
+        media_type: newMediaType,
+        shot_mode: newMediaType === 'ai_video' ? 'ai_video' : 'static_zoom'
+      });
       if (onRefresh) {
         await onRefresh();
       }
     } catch (err) {
-      alert('خطا در تغییر حالت نما: ' + err.message);
-    }
-  };
-
-  const handleCameraEffectChange = async (sceneId, newEffect) => {
-    try {
-      await updateSceneDetails(episodeId, sceneId, { camera_effect: newEffect });
-      if (onRefresh) {
-        await onRefresh();
-      }
-    } catch (err) {
-      alert('خطا در تغییر افکت دوربین: ' + err.message);
+      alert('خطا در تغییر نوع مدیا: ' + err.message);
     }
   };
 
   const handleSaveMotionPrompt = async (sceneId, fallbackCurrentPrompt) => {
     const newText = editedMotionPrompts[sceneId] !== undefined ? editedMotionPrompts[sceneId] : fallbackCurrentPrompt;
-    setSavingPromptId(sceneId);
+    setSavingMotionId(sceneId);
     try {
-      await updateSceneDetails(episodeId, sceneId, { motion_prompt_en: newText, shot_mode: 'ai_video' });
+      await updateSceneDetails(episodeId, sceneId, { 
+        motion_prompt_en: newText, 
+        media_type: 'ai_video',
+        shot_mode: 'ai_video' 
+      });
       if (onRefresh) {
         await onRefresh();
       }
     } catch (err) {
       alert('خطا در ذخیره پرامپت حرکت: ' + err.message);
     } finally {
-      setSavingPromptId(null);
+      setSavingMotionId(null);
+    }
+  };
+
+  const handleSaveCameraPrompt = async (sceneId, currentCamDir, fallbackPrompt) => {
+    const newPrompt = editedCameraPrompts[sceneId] !== undefined ? editedCameraPrompts[sceneId] : fallbackPrompt;
+    setSavingCameraPromptId(sceneId);
+    try {
+      const updatedDir = {
+        ...(currentCamDir || {
+          motion_type: 'slow_zoom_in',
+          start_focus_region: 'wide framing',
+          end_focus_region: 'tighter facial focus',
+          zoom_intensity: 1.15,
+          easing: 'smooth'
+        }),
+        camera_prompt_en: newPrompt
+      };
+      await updateSceneDetails(episodeId, sceneId, { camera_direction: updatedDir });
+      if (onRefresh) {
+        await onRefresh();
+      }
+    } catch (err) {
+      alert('خطا در ذخیره حرکت دوربین: ' + err.message);
+    } finally {
+      setSavingCameraPromptId(null);
     }
   };
 
   return (
     <div className="space-y-6">
       
-      {/* Top Banner with Antigravity Native Pipeline Execution Button */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-5 rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 border border-amber-500/30 shadow-2xl">
+      {/* Top Banner with TWO Distinct Dedicated Action Buttons */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5 p-5 rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 border border-amber-500/30 shadow-2xl">
         <div className="space-y-1.5">
           <div className="flex items-center gap-2 mb-1 flex-wrap">
             <span className="text-xs font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2.5 py-0.5 rounded-full flex items-center gap-1.5">
               <Bot className="w-3.5 h-3.5" />
-              مرحله ۶: کارگردانی یکپارچه استوری‌بورد و تصاویر (Antigravity Native)
+              مرحله ۶: کارگردانی یکپارچه استوری‌بورد و حرکت (Antigravity Native)
             </span>
             <span className="text-xs text-slate-400 font-mono">
-              تعداد نماها: {scenes.length} کات سریع (~۲s)
+              تعداد نماها: {scenes.length} کات (~۲s)
             </span>
           </div>
           <h2 className="text-xl font-black text-white">
-            کارگردانی نماهای سریع عمودی و تولید مستقیم تصاویر در آنتی‌گرویتی
+            فرآیند دو مرحله‌ای: نگارش دقیق استوری‌بورد ➔ تولید مستقیم تصاویر
           </h2>
           <p className="text-xs text-slate-400 max-w-2xl leading-relaxed">
-            تقطیع سناریو طبق استاندارد <span className="text-amber-300 font-mono font-semibold">04-scene-director.md</span>: کادربندی عمودی ۹:۱۶، همسایگان صندلی، وضعیت زنده میز و تولید مستقیم تک‌تک فریم‌ها در <span className="text-emerald-300 font-mono">/projects/{episodeId}/assets/images/</span> با حفظ کامل پیوستگی صحنه ۱.
+            ابتدا با <span className="text-amber-300 font-bold">دکمه ۱</span> استوری‌بورد و پرامپت‌ها را تولید و بازبینی کنید؛ سپس با <span className="text-emerald-300 font-bold">دکمه ۲</span> تصاویر باکیفیت استاپ‌موشن را با حفظ کامل پیوستگی روی دیسک بسازید.
           </p>
         </div>
 
         <div className="flex items-center gap-2.5 flex-wrap flex-shrink-0">
           
-          {/* Prominent Action Button: Full Storyboard & Image Generation in Antigravity */}
+          {/* BUTTON 1: Generate Prompts ONLY (Storyboard) */}
           <button
-            onClick={handleCopyFullExecutionCommand}
-            className={`flex items-center gap-2 px-5 py-3 rounded-xl font-black text-xs shadow-xl transition-all hover:scale-105 active:scale-95 ${
-              copiedExecutionCmd
-                ? 'bg-emerald-400 text-slate-950 shadow-emerald-500/30 ring-2 ring-emerald-300'
-                : 'bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-slate-950 shadow-amber-500/25'
+            onClick={handleCopyStoryboardCommand}
+            className={`flex items-center gap-2 px-4 py-3 rounded-xl font-black text-xs shadow-lg transition-all hover:scale-105 active:scale-95 ${
+              copiedStoryboardCmd
+                ? 'bg-amber-400 text-slate-950 ring-2 ring-amber-300'
+                : 'bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/40 hover:border-amber-400'
             }`}
+            title="کپی دستور تولید استوری‌بورد، پرامپت‌ها و هدایت دوربین بدون تولید تصویر"
           >
-            {copiedExecutionCmd ? (
+            {copiedStoryboardCmd ? (
               <>
                 <Check className="w-4 h-4 text-slate-950" />
-                <span>دستور کپی شد! در چت آنتی‌گرویتی ارسال کنید ✓</span>
+                <span>دستور پرامپت‌ها کپی شد! در چت ارسال کنید ✓</span>
               </>
             ) : (
               <>
-                <Sparkles className="w-4 h-4 text-slate-950" />
-                <span>🎬 دستور اجرای کامل صحنه‌سازی و تولید تصاویر در آنتی‌گرویتی</span>
+                <FileText className="w-4 h-4 text-amber-400" />
+                <span>📝 ۱. دستور تولید پرامپت‌های صحنه (استوری‌بورد)</span>
+              </>
+            )}
+          </button>
+
+          {/* BUTTON 2: Generate Images Sequentially */}
+          <button
+            onClick={handleCopyImagesCommand}
+            className={`flex items-center gap-2 px-4 py-3 rounded-xl font-black text-xs shadow-xl transition-all hover:scale-105 active:scale-95 ${
+              copiedImagesCmd
+                ? 'bg-emerald-400 text-slate-950 ring-2 ring-emerald-300 shadow-emerald-500/30'
+                : 'bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 hover:from-emerald-400 hover:to-teal-300 text-slate-950 shadow-emerald-500/25'
+            }`}
+            title="کپی دستور تولید متوالی تصاویر در پوشه assets/images بر اساس پرامپت‌های استوری‌بورد"
+          >
+            {copiedImagesCmd ? (
+              <>
+                <Check className="w-4 h-4 text-slate-950" />
+                <span>دستور تصاویر کپی شد! در چت ارسال کنید ✓</span>
+              </>
+            ) : (
+              <>
+                <Palette className="w-4 h-4 text-slate-950" />
+                <span>🎨 ۲. دستور تولید مستقیم تصاویر در آنتی‌گرویتی</span>
               </>
             )}
           </button>
@@ -231,11 +322,11 @@ ${visualPrompt}
           <button
             onClick={handleManualRefresh}
             disabled={isRefreshing}
-            className="flex items-center gap-1.5 px-3.5 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs border border-slate-700 transition-all hover:scale-102"
+            className="flex items-center gap-1.5 px-3 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs border border-slate-700 transition-all hover:scale-102"
             title="همگام‌سازی و بارگذاری مجدد فایل‌های تصویر از روی دیسک"
           >
             <RefreshCw className={`w-3.5 h-3.5 text-amber-400 ${isRefreshing ? 'animate-spin' : ''}`} />
-            <span>{isRefreshing ? 'در حال همگام‌سازی...' : 'همگام‌سازی تصاویر ↻'}</span>
+            <span>{isRefreshing ? 'همگام‌سازی...' : 'همگام‌سازی ↻'}</span>
           </button>
 
           {/* External Link to Google Flow */}
@@ -243,8 +334,8 @@ ${visualPrompt}
             href="https://labs.google/fx/tools/flow"
             target="_blank"
             rel="noreferrer"
-            className="flex items-center gap-1.5 px-3.5 py-3 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 font-bold text-xs border border-slate-700 transition-all hover:scale-102"
-            title="محیط Google Flow برای متحرک‌سازی کلیپ‌های ویدیویی"
+            className="flex items-center gap-1.5 px-3 py-3 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 font-bold text-xs border border-slate-700 transition-all hover:scale-102"
+            title="محیط Google Flow برای متحرک‌سازی دستی کلیپ‌های ویدیویی"
           >
             <span>Google Flow</span>
             <ExternalLink className="w-3.5 h-3.5 text-indigo-400" />
@@ -275,15 +366,15 @@ ${visualPrompt}
           <div className="space-y-1">
             <h3 className="text-base font-bold text-slate-200">هنوز استوری‌بورد این اپیزود تولید نشده است</h3>
             <p className="text-xs text-slate-400 max-w-lg mx-auto">
-              روی دکمه طلایی بالا کلیک کنید تا دستور اجرای کامل مهارت ۰۴ در کلیپ‌بورد کپی شود و آن را در چت آنتی‌گرویتی ارسال نمایید تا همه صحنه‌ها و تصاویر به صورت محلی و دقیق ساخته شوند.
+              ابتدا روی دکمه «۱. دستور تولید پرامپت‌های صحنه» کلیک کنید و آن را در چت آنتی‌گرویتی ارسال نمایید تا سناریو به نماهای عمودی با هدایت خودکار دوربین تقطیع شود.
             </p>
           </div>
           <button
-            onClick={handleCopyFullExecutionCommand}
+            onClick={handleCopyStoryboardCommand}
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs shadow-lg transition-all"
           >
-            <Sparkles className="w-4 h-4" />
-            <span>کپی دستور اجرای کامل در آنتی‌گرویتی</span>
+            <FileText className="w-4 h-4" />
+            <span>کپی دستور تولید استوری‌بورد در آنتی‌گرویتی</span>
           </button>
         </div>
       )}
@@ -300,19 +391,29 @@ ${visualPrompt}
           const motionPrompt = editedMotionPrompts[sceneId] !== undefined
             ? editedMotionPrompts[sceneId]
             : (scene.motion_prompt_en || '');
-          const shotMode = scene.shot_mode || (motionPrompt.trim() || scene.video_path ? 'ai_video' : 'static_zoom');
-          const isAiVideo = shotMode === 'ai_video';
 
-          const cameraEffect = scene.camera_effect || 'zoom_in';
+          // Media type: static_image vs ai_video
+          const isAiVideo = (scene.media_type === 'ai_video') || (scene.shot_mode === 'ai_video') || Boolean(motionPrompt.trim() && !scene.camera_direction);
           const duration = scene.duration_sec ? Number(scene.duration_sec).toFixed(1) : '2.0';
-
           const videoUrl = scene.video_path || scene.video_asset;
-          
+
+          // Camera direction for static_image
+          const cameraDir = scene.camera_direction || {
+            motion_type: 'slow_zoom_in',
+            start_focus_region: 'wide chest-up framing',
+            end_focus_region: 'tight focal push',
+            zoom_intensity: 1.15,
+            easing: 'smooth',
+            camera_prompt_en: 'Slow, smooth camera push-in towards the character'
+          };
+          const motionType = cameraDir.motion_type || 'slow_zoom_in';
+          const motionCfg = MOTION_TYPE_CONFIG[motionType] || { label: motionType, color: 'text-amber-400 bg-amber-500/10 border-amber-500/30' };
+
+          const cameraPrompt = editedCameraPrompts[sceneId] !== undefined
+            ? editedCameraPrompts[sceneId]
+            : (cameraDir.camera_prompt_en || '');
+
           // Image resolution order:
-          // 1. Explicit scene.image_path if valid and not errored
-          // 2. Default native assets path: /media/${episodeId}/assets/images/${sceneId}.png
-          // 3. Fallback to /media/${episodeId}/scenes/${sceneId}.png
-          // 4. scene.visual_asset
           const errorCount = imgErrorMap[sceneId] || 0;
           let imageUrl = null;
           if (errorCount === 0) {
@@ -320,7 +421,7 @@ ${visualPrompt}
           } else if (errorCount === 1) {
             imageUrl = scene.visual_asset || `/media/${episodeId}/scenes/${sceneId}.png`;
           } else {
-            imageUrl = null; // show placeholder
+            imageUrl = null;
           }
 
           const isSingleCommandCopied = copiedSingleCmdId === sceneId;
@@ -382,11 +483,11 @@ ${visualPrompt}
                   <span>{scene.title || scene.scene_title_fa || `صحنه #${idx + 1}`}</span>
                 </h3>
 
-                {/* Mode Switcher Segmented Control */}
+                {/* Media Type Switcher Segmented Control */}
                 <div className="flex items-center p-1 rounded-xl bg-slate-950 border border-slate-800/90 text-xs">
                   <button
                     type="button"
-                    onClick={() => handleToggleShotMode(sceneId, 'static_zoom')}
+                    onClick={() => handleToggleMediaType(sceneId, 'static_image')}
                     className={`flex-1 py-1.5 px-2 rounded-lg font-bold transition-all flex items-center justify-center gap-1.5 ${
                       !isAiVideo
                         ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm'
@@ -394,12 +495,12 @@ ${visualPrompt}
                     }`}
                   >
                     <ImageIcon className="w-3.5 h-3.5 text-amber-400" />
-                    <span>تصویر + موشن FFmpeg (~2s)</span>
+                    <span>تصویر + حرکت خودکار دوربین</span>
                   </button>
 
                   <button
                     type="button"
-                    onClick={() => handleToggleShotMode(sceneId, 'ai_video')}
+                    onClick={() => handleToggleMediaType(sceneId, 'ai_video')}
                     className={`flex-1 py-1.5 px-2 rounded-lg font-bold transition-all flex items-center justify-center gap-1.5 ${
                       isAiVideo
                         ? 'bg-indigo-600/30 text-indigo-300 border border-indigo-500/50 shadow-sm'
@@ -571,46 +672,105 @@ ${visualPrompt}
                 </div>
 
                 {/* ======================================================== */}
-                {/* CONDITIONAL BODY: STATIC ZOOM vs AI VIDEO */}
+                {/* CONDITIONAL BODY: AUTOMATED CAMERA DIRECTION vs AI VIDEO */}
                 {/* ======================================================== */}
                 {!isAiVideo ? (
-                  /* MODE A: STATIC ZOOM (FFMPEG CAMERA MOTION) */
-                  <div className="p-3.5 rounded-xl bg-slate-950/40 border border-slate-800/80 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1.5 text-xs font-bold text-amber-300">
-                        <ImageIcon className="w-4 h-4 text-amber-400" />
-                        <span>حرکت دوربین FFmpeg (Ken Burns)</span>
+                  /* MODE A: AUTOMATED FFMPEG CAMERA DIRECTION (Ken Burns) */
+                  <div className="p-3.5 rounded-xl bg-slate-950/60 border border-amber-500/20 space-y-3">
+                    
+                    {/* Header */}
+                    <div className="flex items-center justify-between flex-wrap gap-2">
+                      <div className="flex items-center gap-2">
+                        <span className="w-5 h-5 rounded-md bg-amber-500 text-slate-950 text-[11px] font-black flex items-center justify-center">
+                          ۲
+                        </span>
+                        <span className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+                          <Compass className="w-3.5 h-3.5" />
+                          هدایت خودکار دوربین FFmpeg (Camera Direction)
+                        </span>
                       </div>
-                      <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-                        تصویر ثابت + حرکت دوربین
-                      </span>
+
+                      <div className="flex items-center gap-1.5">
+                        {cameraPrompt && (
+                          <button
+                            onClick={() => copyText(sceneId, cameraPrompt, 'camera')}
+                            className="flex items-center gap-1 text-[11px] font-bold text-slate-300 hover:text-white bg-slate-800 px-2 py-1 rounded-md border border-slate-700 transition-colors"
+                            title="کپی پرامپت حرکت دوربین"
+                          >
+                            {copiedCameraPromptId === sceneId ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                            <span>{copiedCameraPromptId === sceneId ? 'کپی شد!' : 'کپی حرکت'}</span>
+                          </button>
+                        )}
+
+                        {cameraPrompt && (
+                          <button
+                            onClick={() => handleSaveCameraPrompt(sceneId, cameraDir, cameraPrompt)}
+                            disabled={savingCameraPromptId === sceneId}
+                            title="ذخیره ویرایش پرامپت حرکت دوربین"
+                            className="p-1 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs"
+                          >
+                            <Save className={`w-3.5 h-3.5 ${savingCameraPromptId === sceneId ? 'animate-spin' : ''}`} />
+                          </button>
+                        )}
+                      </div>
                     </div>
 
-                    {/* Camera Effect Buttons */}
-                    <div className="grid grid-cols-2 gap-2 text-xs">
-                      {[
-                        { id: 'zoom_in', label: '🔍 زوم به داخل (Dramatic Push)', icon: ZoomIn },
-                        { id: 'zoom_out', label: '🔎 زوم به خارج (Establish)', icon: ZoomOut },
-                        { id: 'pan_left', label: '↔️ حرکت افقی (Pan)', icon: MoveHorizontal },
-                        { id: 'shake', label: '⚡ لرزش شدید (Tilt/Shock)', icon: Zap },
-                      ].map((eff) => (
-                        <button
-                          key={eff.id}
-                          type="button"
-                          onClick={() => handleCameraEffectChange(sceneId, eff.id)}
-                          className={`p-2 rounded-lg text-start transition-all border ${
-                            cameraEffect === eff.id
-                              ? 'bg-amber-500/15 border-amber-500/50 text-amber-300 font-bold'
-                              : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200 hover:bg-slate-800'
-                          }`}
-                        >
-                          <div className="text-[11px] leading-snug">{eff.label}</div>
-                        </button>
-                      ))}
+                    {/* AI Trajectory Badges */}
+                    <div className="flex items-center gap-2 flex-wrap text-xs">
+                      {/* Motion Type Badge */}
+                      <span className={`px-2.5 py-1 rounded-lg border font-bold text-[11px] flex items-center gap-1 ${motionCfg.color}`}>
+                        <span>🎬</span>
+                        <span>{motionCfg.label}</span>
+                      </span>
+
+                      {/* Zoom Intensity & Easing */}
+                      {cameraDir.zoom_intensity && (
+                        <span className="px-2 py-0.5 rounded-md bg-slate-900 border border-slate-700 text-slate-300 font-mono text-[10px]">
+                          زوم: {cameraDir.zoom_intensity}x
+                        </span>
+                      )}
+
+                      {cameraDir.easing && (
+                        <span className="px-2 py-0.5 rounded-md bg-slate-900 border border-slate-700 text-slate-400 font-mono text-[10px]">
+                          شتاب: {cameraDir.easing}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Focus Regions Flow */}
+                    {(cameraDir.start_focus_region || cameraDir.end_focus_region) && (
+                      <div className="p-2 rounded-lg bg-slate-900/80 border border-slate-800 text-[10px] space-y-1 font-mono ltr-content">
+                        {cameraDir.start_focus_region && (
+                          <div className="text-slate-400 flex items-start gap-1">
+                            <span className="text-amber-400 font-bold flex-shrink-0">Start:</span>
+                            <span className="truncate">{cameraDir.start_focus_region}</span>
+                          </div>
+                        )}
+                        {cameraDir.end_focus_region && (
+                          <div className="text-emerald-400 flex items-start gap-1">
+                            <span className="text-emerald-400 font-bold flex-shrink-0">End:</span>
+                            <span className="truncate">{cameraDir.end_focus_region}</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Editable Camera Direction Prompt */}
+                    <div className="space-y-1">
+                      <label className="text-[10px] text-slate-400 font-medium block">
+                        دستور حرکت دوربین FFmpeg (تولید خودکار بر اساس کشمکش داستان - قابل ویرایش):
+                      </label>
+                      <textarea
+                        rows={2}
+                        value={cameraPrompt}
+                        onChange={(e) => setEditedCameraPrompts({ ...editedCameraPrompts, [sceneId]: e.target.value })}
+                        placeholder="دستور حرکت دوربین Ken Burns..."
+                        className="w-full p-2.5 rounded-lg bg-slate-950 border border-slate-800 text-[11px] font-mono text-amber-200/90 focus:border-amber-400 focus:outline-none ltr-content leading-relaxed resize-y"
+                      />
                     </div>
 
                     <p className="text-[10px] text-slate-500 leading-relaxed">
-                      💡 در تدوین نهایی FFmpeg، تصویر فریم کلیدی بالا به مدت ~{duration} ثانیه با افکت انتخابی متحرک می‌شود.
+                      💡 در تدوین نهایی، FFmpeg تصویر فریم کلیدی بالا را به مدت ~{duration}s با مسیر، شدت و فکوس مشخص‌شده بالا متحرک می‌سازد.
                     </p>
                   </div>
                 ) : (
@@ -646,11 +806,11 @@ ${visualPrompt}
                         {motionPrompt && (
                           <button
                             onClick={() => handleSaveMotionPrompt(sceneId, motionPrompt)}
-                            disabled={savingPromptId === sceneId}
+                            disabled={savingMotionId === sceneId}
                             title="ذخیره ویرایش پرامپت حرکت"
                             className="p-1 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs"
                           >
-                            <Save className={`w-3.5 h-3.5 ${savingPromptId === sceneId ? 'animate-spin' : ''}`} />
+                            <Save className={`w-3.5 h-3.5 ${savingMotionId === sceneId ? 'animate-spin' : ''}`} />
                           </button>
                         )}
                       </div>

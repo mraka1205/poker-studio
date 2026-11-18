@@ -5,23 +5,22 @@
 تمامی محتواها در کادربندی عمودی سینمایی **Vertical 9:16 (YouTube Shorts & Instagram Reels)** و در سبک اختصاصی و اصیل **استاپ‌موشن عروسکی نمدی دست‌ساز (Handcrafted Needle-Felted Stop-Motion Animation Style)** تولید می‌شوند.
 
 > [!IMPORTANT]
-> **قانون طلایی اجرای کامل بدون میان‌بر (Zero-Shortcut Execution Protocol):**
-> هنگام فراخوانی برای مرحله ۶ (کارگردانی صحنه‌ها و تولید تصاویر)، شما **اکیداً مجاز نیستید فقط به نوشتن JSON در `state.json` بسنده کنید**.
-> شما موظفید فرآیند تولید را در دو فاز پیوسته و تا مرحله نهایی به پایان برسانید:
-> 1. فاز ۱: نگارش استوری‌بورد سینمایی و کامل در `/projects/<episode_id>/state.json`.
-> 2. فاز ۲: **تولید مستقیم و متوالی تک‌تک تصاویر فریم‌های کلیدی (`scene_01.png`, `scene_02.png`, ...)** در پوشه `/projects/<episode_id>/assets/images/` با فراخوانی قابلیت تصویرسازی بومی (`image-generator`) و پاس دادن فایل‌های مرجع واقعی روی دیسک.
+> **تفکیک دو فاز اصلی تولید صحنه‌ها (Two-Phase Workflow):**
+> فرآیند مرحله ۶ به دو فاز مستقل و شفاف تفکیک شده است:
+> - **فاز ۱ — نگارش استوری‌بورد و پرامپت‌ها (Storyboard Generation):** در این فاز، شما سناریو و چیدمان صندلی‌ها را می‌خوانید و **فقط و فقط** ساختار کامل استوری‌بورد شامل پرامپت‌های تصویری (`visual_prompt_en`)، جهت‌دهی خودکار دوربین برای تصاویر ثابت (`camera_direction`) و پرامپت‌های حرکت برای ویدیوها (`motion_prompt_en`) را در `/projects/<episode_id>/state.json` ذخیره می‌کنید — **بدون اینکه هنوز تصویری تولید شود**، تا کاربر بتواند پرامپت‌ها را بازبینی و تایید کند.
+> - **فاز ۲ — تولید مستقیم تصاویر در آنتی‌گرویتی (Direct Image Production):** پس از تایید فاز ۱، شما استوری‌بورد ذخیره‌شده را می‌خوانید و تک‌تک فریم‌ها (`scene_01.png`, `scene_02.png`, ...) را با فراخوانی قابلیت تصویرسازی بومی (`image-generator`) و پاس دادن رفرنس‌های تصویری واقعی روی دیسک مستقیماً در پوشه `/projects/<episode_id>/assets/images/` می‌سازید.
 
 ---
 
 ## ۱. قوانین فوق‌سخت‌گیرانه پرامپت‌نویسی (Ultra-Strict Prompting & Quality Rules)
 
-### پرامپت‌های تنبل، خلاصه یا شتاب‌زده اکیداً ممنوع است:
-- هرگونه نوشتن پرامپت‌های کوتاه (زیر ۸۰ کلمه)، عبارات کلیشه‌ای مانند "Arash playing poker", "Bijan smiling at table" یا حذف جزئیات صندلی‌ها و بافت‌ها **مردود** است.
-- هر صحنه (`scene_01`, `scene_02`, ...) **الزاماً و بدون استثنا** باید دارای یک `visual_prompt_en` سینمایی، جامع، غنی و توصیفی با **حداقل ۸۰ تا ۱۲۰ کلمه** باشد.
-- برای تمام نماهای متحرک (`"shot_mode": "ai_video"`), نگارش فیلد `motion_prompt_en` با اکشن فیزیکی شفاف و بدون صدا الزامی است.
+### الف) پرامپت‌های تنبل، خلاصه یا شتاب‌زده اکیداً ممنوع است:
+- هرگونه پرامپت کوتاه (زیر ۸۰ کلمه)، عبارات کلیشه‌ای یا حذف لندمارک‌های صندلی و بافت‌های نمدی **مردود** است.
+- هر صحنه (`scene_01`, `scene_02`, ...) **الزاماً و بدون استثنا** باید دارای یک `visual_prompt_en` سینمایی، غنی و توصیفی با **حداقل ۸۰ تا ۱۲۰ کلمه** باشد.
+- برای تمام نماهای متحرک (`"media_type": "ai_video"`), نگارش فیلد `motion_prompt_en` با اکشن فیزیکی شفاف و بدون صدا الزامی است.
 
-### آناتومی اجباری پرامپت برای تک‌تک نماها (Mandatory Prompt Anatomy):
-هر متن `visual_prompt_en` باید مو به مو شامل ۶ بخش کلیدی زیر باشد:
+### ب) آناتومی اجباری پرامپت برای تک‌تک نماها (Mandatory Prompt Anatomy):
+هر متن `visual_prompt_en` باید شامل ۶ بخش کلیدی زیر باشد:
 
 1. **کادربندی دقیق دوربین، لنز و زاویه (Camera Framing & Lens):**
    - تعیین دقیق زاویه از میان زوایای دنیای کانال: `@Room_Master` (نمای واید معرف کل اتاق)، `@Seat_1` تا `@Seat_6` (مدیوم کلوزآپ سینه به بالا Tight Medium Close-Up)، `@Room_TopDown` (ایزومتریک ماکرو عمودی)، `@Room_OTS` (روی شانه سینمایی).
@@ -34,7 +33,7 @@
 
 3. **حضور صریح همسایگان صندلی در حاشیه کادر (`adjacent_players`):**
    - بر اساس چیدمان ساعت‌گرد صندلی‌های ۶ نفره (`Seat_1` ➔ `Seat_2` ➔ `Seat_3` ➔ `Seat_4` ➔ `Seat_5` ➔ `Seat_6`):
-   - در نماهای کلوزآپ هر صندلی، **شانه، آستین لباس بافتنی یا نیم‌رخ مات و فلو (soft out-of-focus wool shoulder/profile)** کاراکترهای همسایه چپ یا راست باید به وضوح در گوشه کادر توصیف شود تا احساس میز بسته ۶ نفره حفظ گردد.
+   - در نماهای کلوزآپ هر صندلی، **شانه، آستین لباس بافتنی یا نیم‌رخ مات و فلو (soft out-of-focus wool shoulder/profile)** کاراکترهای همسایه چپ یا راست باید به وضوح در گوشه کادر توصیف شود.
 
 4. **وضعیت زنده و پیوسته وسط میز (`table_state_en`):**
    - وضعیت پات در مرکز میز: تعداد دقیق چیپ‌ها بر حسب BB (مثلاً initial 4.5 BB pot, raised 19.5 BB pot, dense 47.5 BB main pot).
@@ -55,64 +54,79 @@
 
 ---
 
-## ۲. پروتکل تولید متوالی و مستقیم تصاویر توسط ایجنت (Direct Sequential Image Generation Protocol)
+## ۲. هدایت خودکار دوربین FFmpeg برای تصاویر ثابت (`camera_direction`)
 
-هنگامی که دستور ساخت صحنه‌ها به شما ارجاع داده می‌شود، این پروتکل ۳ مرحله‌ای را بدون وقفه و گام‌به‌گام پیاده‌سازی کنید:
+برای تمام نماهایی که دارای `"media_type": "static_image"` هستند:
+- **کاربر دیگر حرکت دوربین را به صورت دستی انتخاب نمی‌کند.**
+- هوش مصنوعی کارگردان صحنه موظف است بر اساس کشمکش دراماتیک سناریو، ریتم و ضرباهنگ کمدی، بهترین مسیر تراژکتوری دوربین برای افکت Ken Burns در FFmpeg را محاسبه کرده و در قالب یک شیء ساختاریافته به نام `camera_direction` تولید کند:
 
-### گام اول: نگارش و اعتبارسنجی استوری‌بورد در `state.json`
-1. سناریو (`script.segments`) و کاراکترهای تخصیص‌یافته به صندلی‌ها را از `/projects/<episode_id>/state.json` و محیط دنیای کانال `/projects/universe.json` بخوانید.
-2. آرایه `scenes` را طبق آناتومی ۶ بخشی بالا و زمان‌بندی کات‌های سریع ~۲ ثانیه‌ای (۱.۵ تا ۲.۵ ثانیه) بنویسید.
-3. فایل `/projects/<episode_id>/state.json` را با استوری‌بورد جدید ذخیره کنید.
-4. مطمئن شوید پوشه `/projects/<episode_id>/assets/images/` وجود دارد.
+```json
+"camera_direction": {
+  "motion_type": "slow_zoom_in | fast_punch_in | slow_zoom_out | pan_left_to_right | pan_right_to_left | tilt_up | tilt_down | subtle_tilt_shake | static_hold",
+  "start_focus_region": "توصیف کادربندی شروع، مثلاً: wide chest-up framing centered on Arash",
+  "end_focus_region": "توصیف کادربندی پایان، مثلاً: tight macro close-up on Arash's wide panicked eyes and crooked glasses in upper-center",
+  "zoom_intensity": 1.18,
+  "easing": "smooth | dramatic_punch",
+  "camera_prompt_en": "Detailed camera movement instruction describing exact start framing, trajectory, focal target, and pacing for FFmpeg Ken Burns rendering"
+}
+```
 
-### گام دوم: تولید متوالی فریم‌های کلیدی با `image-generator`
-برای تک‌تک صحنه‌ها به صورت ترتیبی (`scene_01.png`, `scene_02.png`, ...):
-
-1. **برای `scene_01.png` (فریم مستر معرف کل اپیزود):**
-   - زاویه دوربین: `@Room_Master` (نمای واید از کل اتاق و میز ۶ نفره).
-   - رفرنس‌های بصری ورودی روی دیسک:
-     - عکس میز و اتاق: `projects/universe/angle_room_master_Miniature_poker_room_set_d7100594_2K.jpg` (یا تصویر متناظر در `universe.json`).
-     - شیت‌های چهره و بدن تمامی کاراکترهای فعال حاضر در صحنه (مثلاً `char_char_arash_body_...jpg`, `char_char_bijan_face_...jpg`).
-   - اجرای فراخوانی تصویرسازی با استفاده از پرامپت کامل `visual_prompt_en`.
-   - ذخیره مستقیم فایل تولیدشده در مسیر:
-     `/projects/<episode_id>/assets/images/scene_01.png`
-
-2. **برای `scene_02.png` تا `scene_N.png` (فریم‌های کات و واکنش):**
-   - **الزام قطعی:** به عنوان لنگر و رفرنس اول، تصویر تازه تولیدشده `/projects/<episode_id>/assets/images/scene_01.png` را به عنوان `[Episode_Scene_1_Master]` ارسال کنید!
-   - رفرنس دوم: تصویر زاویه صندلی هدف از `projects/universe/angle_seat_X_...jpg`.
-   - رفرنس سوم: شیت‌های چهره و بدن کاراکتر یا کاراکترهای فوکوس آن صحنه.
-   - ذخیره مستقیم فایل در مسیر:
-     `/projects/<episode_id>/assets/images/scene_XX.png`
-
-### گام سوم: صحه‌گذاری فایل‌ها و به‌روزرسانی نهایی
-1. پس از تولید هر فریم، بررسی کنید که فایل در `/projects/<episode_id>/assets/images/scene_XX.png` ایجاد شده، حجم آن غیرصفر است و ویژگی‌های توصیف‌شده (همسایگان، وضعیت میز، رنگ‌ها) را به درستی منعکس می‌کند.
-2. در صورتی که تصویری دچار دریفت استایل، صندلی خالی اشتباه یا المان‌های ناخواسته شد، بلافاصله همان فریم را با تاکید اصلاحی بازتولید کنید.
-3. در پایان، فیلدهای `image_path` و `visual_asset` در شیء صحنه متناظر در `state.json` را به مسیر `/media/<episode_id>/assets/images/scene_XX.png` متصل نمایید و وضعیت صحنه را به `ready_for_review` یا `approved` ارتقا دهید.
+### راهنمای انواع حرکات دوربین (`motion_type`):
+- `slow_zoom_in`: زوم آرام و پیوسته به سمت مرکز توجه (مناسب دیالوگ‌های متفکرانه و تحلیل دست).
+- `fast_punch_in`: زوم سریع و ضربه‌ای (پانچ‌لاین، شوک هیرو، بت غیرمنتظره حریف).
+- `slow_zoom_out`: باز شدن ملایم کادر (نمایش کلیت میز و پیامدهای یک بت بزرگ).
+- `pan_left_to_right`: حرکت افقی از چپ به راست (انتقال توجه از هیرو به حریف یا از پات به کارت‌ها).
+- `pan_right_to_left`: حرکت افقی معکوس.
+- `tilt_up`: حرکت عمودی دوربین از سطح نمد و چیپ‌ها به سمت چهره بازیکن.
+- `tilt_down`: حرکت عمودی از چهره به کارت‌های مینیاتوری روی نمد.
+- `subtle_tilt_shake`: لرزش ملایم با تکان‌های تصادفی ناشی از استرس و بالا رفتن ضربان قلب.
+- `static_hold`: قاب ثابت بدون تحرک برای تاکید بر سکوت مرگبار میز.
 
 ---
 
-## ۳. توزیع حالت‌های نما (Shot Modes: ~70% Static Zoom vs ~30% AI Video)
+## ۳. توزیع حالت‌های نما (`media_type`: ~70% Static Image vs ~30% AI Video)
 
-### الف) ۷۰٪ نماها: `"shot_mode": "static_zoom"` (مدت ۱.۵ تا ۲.۵ ثانیه):
-- **کاربرد:** دیالوگ‌های ضرب‌الاجلی، اعلام بت، نریشن آموزشی، محاسبات شانس پات.
-- **مکانیسم:** تصویر فریم کلیدی ۹:۱۶ با حرکت نرم زوم/پن دوربین در FFmpeg (Ken Burns).
+### الف) ۷۰٪ نماها: `"media_type": "static_image"` (مدت ۱.۵ تا ۲.۵ ثانیه):
+- **کاربرد:** دیالوگ‌های سریع، اعلام شرط‌بندی، نریشن راوی، تصمیمات استراتژیک.
+- **تولید بصری:** فریم کلیدی ثابت ۹:۱۶ تولیدشده با `image-generator` + متحرک‌سازی نرم با `camera_direction` در رندر FFmpeg.
 - **فیلدها:**
-  - `"camera_effect"`: یکی از مقادیر `"zoom_in"` | `"zoom_out"` | `"pan_left"` | `"shake"`.
+  - `"media_type"`: `"static_image"`
+  - `"camera_direction"`: شیء کامل هدایت خودکار دوربین.
   - `"motion_prompt_en"`: رشته خالی `""`.
 
-### ب) ۳۰٪ نماها: `"shot_mode": "ai_video"` (مدت ۱.۵ تا ۲.۵ ثانیه):
-- **کاربرد:** پانچ‌لاین اصلی جوک، اوج تیلت، لغزاندن اسلوموشن چیپ‌های آل‌این، پوزخند معنی‌دار.
-- **مکانیسم:** پرامپت حرکتی اختصاصی برای ابزارهای Vidu یا Google Flow.
+### ب) ۳۰٪ نماها: `"media_type": "ai_video"` (مدت ۱.۵ تا ۲.۵ ثانیه):
+- **کاربرد:** پانچ‌لاین‌های اصلی خنده، اوج عصبانیت و تیلت، اسلوموشن ریختن چیپ‌ها، پوزخند معنی‌دار.
+- **تولید بصری:** فریم کلیدی ۹:۱۶ + تولید کلیپ متحرک با ابزارهای ویدیویی (Vidu / Google Flow).
 - **قوانین پرامپت حرکتی (`motion_prompt_en`):**
-  - تک‌حرکت مشخص و متمرکز برای هایلایت ۲ ثانیه‌ای.
+  - یک اکشن فیزیکی مشخص برای هایلایت ۲ ثانیه‌ای.
   - بازیگری کاملاً بی‌صدا با دهان بسته:
     `tactile 12fps stop-motion puppet animation, subtle wool fiber texture movement, silent expressive acting (mouth closed, no talking)`
-  - چیپ‌ها و کارت‌ها چسبیده به سطح نمد؛ بدون پرواز یا تعلیق جاذبه در هوا.
-  - بدون درج فلگ‌های ابعاد (`--ar`) یا زمان در متن پرامپت.
+  - تمام چیپ‌ها و کارت‌ها چسبیده به سطح نمد؛ بدون پرواز یا تعلیق در هوا.
+  - بدون فلگ‌های ابعاد (`--ar`) یا زمان در متن پرامپت.
 
 ---
 
-## ۴. اطلس جغرافیایی صندلی‌ها و لندمارک‌های میز ۶ نفره (6-Max Poker Table Atlas)
+## ۴. پروتکل اجرای دو دکمه در Antigravity (Execution Protocol)
+
+### دکمه ۱ — 📝 دستور تولید پرامپت‌های صحنه (استوری‌بورد):
+هنگامی که این دستور از طریق دکمه ۱ در چت ارسال می‌شود:
+1. فایل‌های `projects/universe.json` و `/projects/<episode_id>/state.json` را بخوانید.
+2. استوری‌بورد کامل را به صورت آرایه `scenes` با تمام فیلدها (`visual_prompt_en` با ۸۰ تا ۱۲۰ کلمه، `camera_direction` برای نماهای `static_image`، `motion_prompt_en` برای نماهای `ai_video`، همسایگان صندلی و وضعیت میز) تهیه کنید.
+3. خروجی را **فقط و فقط** درون `/projects/<episode_id>/state.json` ذخیره کنید.
+4. **هیچ تصویری در این مرحله تولید نکنید.** به کاربر اعلام کنید که استوری‌بورد ثبت شد و آماده بازبینی است.
+
+### دکمه ۲ — 🎨 دستور تولید مستقیم تصاویر در آنتی‌گرویتی:
+هنگامی که این دستور از طریق دکمه ۲ در چت ارسال می‌شود:
+1. استوری‌بورد تاییدشده را از `/projects/<episode_id>/state.json` بخوانید.
+2. مطمئن شوید پوشه `/projects/<episode_id>/assets/images/` وجود دارد.
+3. تک‌تک فریم‌های کلیدی را به صورت متوالی با ابزار `image-generator` بسازید:
+   - برای `scene_01.png`: پاس دادن رفرنس تصویر `@Room_Master` و شیت‌های چهره و بدن کاراکترهای فعال.
+   - برای `scene_02.png` تا `scene_N.png`: پاس دادن **تصویر `scene_01.png` (Episode Master Reference)** + رفرنس زاویه صندلی هدف `@Seat_X` + شیت کاراکتر فوکوس.
+4. پس از ساخت هر فریم، وجود و کیفیت فایل را بررسی کرده و مسیر `/media/<episode_id>/assets/images/scene_XX.png` را در فیلدهای `image_path` و `visual_asset` شیء صحنه در `state.json` به‌روزرسانی نمایید.
+
+---
+
+## ۵. اطلس صندلی‌ها و لندمارک‌های میز ۶ نفره (6-Max Poker Table Atlas)
 
 1. **صندلی ۱ (`seat_1` / `@Seat_1` - انتهای چپ):**
    - *پس‌زمینه:* دیوار آجری تیره نمدی + قفسه چوبی با نور ملایم LED حاوی کتاب‌های پوکر قدیمی و کاپ‌های آنتیک.
@@ -131,7 +145,7 @@
 
 ---
 
-## ۵. ساختار کامل خروجی JSON (Strict JSON Output Example)
+## ۶. ساختار خروجی استاندارد JSON (Strict JSON Output Example)
 
 ```json
 {
@@ -142,8 +156,16 @@
       "segment_ids": ["seg_01"],
       "duration_sec": 2.0,
       "scene_title_fa": "نمای معرف مستر - شروع دست و چیدمان میز آرش و بیژن",
+      "media_type": "static_image",
       "shot_mode": "static_zoom",
-      "camera_effect": "zoom_in",
+      "camera_direction": {
+        "motion_type": "slow_zoom_in",
+        "start_focus_region": "wide establishing overview of the entire 6-max oval table and chandelier",
+        "end_focus_region": "closer push toward center table felt focusing on Arash and Bijan across from each other",
+        "zoom_intensity": 1.15,
+        "easing": "smooth",
+        "camera_prompt_en": "Gentle, cinematic slow zoom in from the wide 9:16 room master establishing shot into the table felt, emphasizing the start of the hand"
+      },
       "camera_angle": "@Room_Master Wide Establishing Shot",
       "characters_present": ["@Arash", "@Bijan"],
       "adjacent_players": ["@Arash at seat_1", "@Bijan at seat_5"],
@@ -165,8 +187,16 @@
       "segment_ids": ["seg_02"],
       "duration_sec": 2.0,
       "scene_title_fa": "تریبِت پرقدرت آرش و فکوس بر چیپ‌ها",
+      "media_type": "static_image",
       "shot_mode": "static_zoom",
-      "camera_effect": "zoom_in",
+      "camera_direction": {
+        "motion_type": "fast_punch_in",
+        "start_focus_region": "medium close-up from chest up showing Arash behind his chip stacks",
+        "end_focus_region": "tight macro punch on Arash's focused eyes behind wire glasses and the sliding red chips",
+        "zoom_intensity": 1.22,
+        "easing": "dramatic_punch",
+        "camera_prompt_en": "Rapid dramatic punch-in targeting Arash's analytical gaze as he firmly commits the 3-bet chips forward"
+      },
       "camera_angle": "@Seat_1 Medium Close-Up",
       "characters_present": ["@Arash"],
       "adjacent_players": ["@Bijan (seat_5, soft out-of-focus shoulder at frame edge)"],
@@ -188,8 +218,9 @@
       "segment_ids": ["seg_03"],
       "duration_sec": 2.2,
       "scene_title_fa": "پانچ‌لاین و پوزخند بیژن در فلاپ",
+      "media_type": "ai_video",
       "shot_mode": "ai_video",
-      "camera_effect": "shake",
+      "camera_direction": null,
       "camera_angle": "@Seat_5 Medium Close-Up",
       "characters_present": ["@Bijan"],
       "adjacent_players": ["@Arash (seat_1, soft out-of-focus navy shoulder at frame edge)"],
