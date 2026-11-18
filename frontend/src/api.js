@@ -258,3 +258,45 @@ export async function updateCharacterSeat(episodeId, charId, seat) {
   }
   return res.json();
 }
+
+export async function triggerStoryboardGeneration(episodeId) {
+  const res = await fetch(`${API_BASE}/episodes/${episodeId}/generate-storyboard`, {
+    method: 'POST'
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || 'Failed to start storyboard generation');
+  }
+  return res.json();
+}
+
+export async function triggerImagesGeneration(episodeId) {
+  const res = await fetch(`${API_BASE}/episodes/${episodeId}/generate-images`, {
+    method: 'POST'
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || 'Failed to start images generation');
+  }
+  return res.json();
+}
+
+export async function triggerSceneRegeneration(episodeId, sceneId) {
+  const res = await fetch(`${API_BASE}/episodes/${episodeId}/scenes/${sceneId}/regenerate-image`, {
+    method: 'POST'
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || 'Failed to start scene regeneration');
+  }
+  return res.json();
+}
+
+export async function fetchTaskStatus(episodeId) {
+  const res = await fetch(`${API_BASE}/episodes/${episodeId}/task-status`);
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || 'Failed to fetch task status');
+  }
+  return res.json();
+}

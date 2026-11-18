@@ -10,6 +10,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
+from backend.antigravity_cli import (
+    get_task_for_episode,
+    start_storyboard_generation,
+    start_images_generation,
+    start_scene_regeneration,
+)
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 PROJECTS_DIR = BASE_DIR / "projects"
 SKILLS_DIR = BASE_DIR / ".agent" / "skills"
@@ -1200,6 +1207,46 @@ def get_ffmpeg_render_command(episode_id: str):
         "rtl_shaping_engine": "libass with HarfBuzz enabled",
         "output_expected": output_path
     }
+
+
+# ---------------------------------------------------------
+# Antigravity CLI Execution Endpoints
+# ---------------------------------------------------------
+
+@app.post("/api/episodes/{episode_id}/generate-storyboard")
+@app.post("/api/projects/{episode_id}/generate-storyboard")
+async def api_generate_storyboard(episode_id: str):
+    get_project_path(episode_id)
+    task = await start_storyboard_generation(episode_id)
+    return task.to_dict()
+
+
+@app.post("/api/episodes/{episode_id}/generate-images")
+@app.post("/api/projects/{episode_id}/generate-images")
+async def api_generate_images(episode_id: str):
+    get_project_path(episode_id)
+    task = await start_images_generation(episode_id)
+    return task.to_dict()
+
+
+@app.post("/api/episodes/{episode_id}/scenes/{scene_id}/regenerate-image")
+@app.post("/api/projects/{episode_id}/scenes/{scene_id}/regenerate-image")
+async def api_regenerate_scene_image(episode_id: str, scene_id: str):
+    get_project_path(episode_id)
+    task = await start_scene_regeneration(episode_id, scene_id)
+    return task.to_dict()
+
+
+@app.get("/api/episodes/{episode_id}/task-status")
+@app.get("/api/projects/{episode_id}/task-status")
+def api_get_task_status(episode_id: str):
+    get_project_path(episode_id)
+    task = get_task_for_episode(episode_id)
+    try:
+        load_state(episode_id)
+    except Exception:
+        pass
+    return task.to_dict()
 
 
 # Mount frontend dist static files at the end

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   Film, 
   Copy, 
@@ -23,12 +23,22 @@ import {
   Sliders,
   Compass,
   FileText,
-  Palette
+  Palette,
+  Loader2,
+  AlertCircle,
+  Terminal,
+  ChevronDown,
+  ChevronUp,
+  XCircle
 } from 'lucide-react';
 import { 
   uploadAsset, 
   uploadSceneVideo, 
-  updateSceneDetails
+  updateSceneDetails,
+  triggerStoryboardGeneration,
+  triggerImagesGeneration,
+  triggerSceneRegeneration,
+  fetchTaskStatus
 } from '../api';
 
 const MOTION_TYPE_CONFIG = {
@@ -52,12 +62,27 @@ export default function SceneView({
   onSceneAssetUpdated,
   onRefresh
 }) {
-  // Two distinct button states
-  const [copiedStoryboardCmd, setCopiedStoryboardCmd] = useState(false);
-  const [copiedImagesCmd, setCopiedImagesCmd] = useState(false);
+  // Live Antigravity Task State
+  const [taskState, setTaskState] = useState({
+    status: 'idle',
+    task_type: 'idle',
+    current_step: '',
+    progress: 0,
+    total_scenes: scenes.length,
+    completed_scenes: 0,
+    conversation_id: null,
+    logs: [],
+    error_message: null,
+    generated_images: []
+  });
 
-  // Single card action states
-  const [copiedSingleCmdId, setCopiedSingleCmdId] = useState(null);
+  const [isTriggeringStoryboard, setIsTriggeringStoryboard] = useState(false);
+  const [isTriggeringImages, setIsTriggeringImages] = useState(false);
+  const [regeneratingSceneId, setRegeneratingSceneId] = useState(null);
+  const [showLogs, setShowLogs] = useState(false);
+  const [bannerDismissed, setBannerDismissed] = useState(false);
+
+  // Single card copy & upload states
   const [copiedPromptId, setCopiedPromptId] = useState(null);
   const [copiedMotionId, setCopiedMotionId] = useState(null);
   const [copiedCameraPromptId, setCopiedCameraPromptId] = useState(null);
@@ -76,6 +101,52 @@ export default function SceneView({
   const [editedCameraPrompts, setEditedCameraPrompts] = useState({});
   const [savingCameraPromptId, setSavingCameraPromptId] = useState(null);
 
+  const lastImageCountRef = useRef(0);
+
+  // Check initial task status on mount
+  useEffect(() => {
+    let mounted = true;
+    async function checkInitialStatus() {
+      if (!episodeId) return;
+      try {
+        const status = await fetchTaskStatus(episodeId);
+        if (mounted) {
+          setTaskState(status);
+          lastImageCountRef.current = (status.generated_images || []).length;
+        }
+      } catch (e) {
+        // Silent fail on initial poll
+      }
+    }
+    checkInitialStatus();
+    return () => { mounted = false; };
+  }, [episodeId]);
+
+  // Polling loop when task is running
+  useEffect(() => {
+    if (!episodeId || taskState.status !== 'running') return;
+
+    setBannerDismissed(false);
+    const interval = setInterval(async () => {
+      try {
+        const status = await fetchTaskStatus(episodeId);
+        setTaskState(status);
+
+        const currentImgCount = (status.generated_images || []).length;
+        if (currentImgCount !== lastImageCountRef.current || status.status === 'completed') {
+          lastImageCountRef.current = currentImgCount;
+          if (onRefresh) {
+            onRefresh();
+          }
+        }
+      } catch (err) {
+        console.error('Task status poll error:', err);
+      }
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, [episodeId, taskState.status, onRefresh]);
+
   const copyText = (id, text, type = 'image') => {
     if (!text) return;
     navigator.clipboard.writeText(text);
@@ -91,84 +162,84 @@ export default function SceneView({
     }
   };
 
-  // Button 1: Prompt Generation ONLY (Storyboard)
-  const handleCopyStoryboardCommand = async () => {
-    const cmd = `لطفاً مرحله ۶ (فاز ۱: نگارش استوری‌بورد و پرامپت‌ها) را برای اپیزود "${episodeId}" طبق سند .agent/skills/04-scene-director.md اجرا کن:
-۱. فایل‌های projects/universe.json و /projects/${episodeId}/state.json را بخوان.
-۲. استوری‌بورد کامل و جامع را به صورت آرایه scenes با کادربندی عمودی ۹:۱۶ بنویس:
-   - برای هر صحنه: visual_prompt_en غنی و سینمایی با حداقل ۸۰ تا ۱۲۰ کلمه، همسایگان صندلی (adjacent_players)، وضعیت پیوسته میز (table_state_en) و قفل پیوستگی صحنه ۱ برای صحنه‌های ۲ به بعد.
-   - برای صحنه‌های static_image: شیء ساختاریافته camera_direction را به صورت خودکار متناسب با کشمکش دراماتیک (motion_type, start_focus_region, end_focus_region, zoom_intensity, easing, camera_prompt_en) تولید کن.
-   - برای صحنه‌های ai_video: فیلد motion_prompt_en را با اکشن فیزیکی خالص و بازیگری بی‌صدا تولید کن.
-۳. خروجی را فقط در /projects/${episodeId}/state.json ذخیره کن و در این فاز هیچ تصویری تولید نکن تا پرامپت‌ها قابل بازبینی و تایید باشند.`;
-
-    await navigator.clipboard.writeText(cmd);
-    setCopiedStoryboardCmd(true);
-    setTimeout(() => setCopiedStoryboardCmd(false), 3500);
+  // Button 1: Launch Real Antigravity Background Storyboard Task
+  const handleStartStoryboard = async () => {
+    if (taskState.status === 'running') return;
+    try {
+      setIsTriggeringStoryboard(true);
+      setBannerDismissed(false);
+      const res = await triggerStoryboardGeneration(episodeId);
+      setTaskState(res);
+    } catch (err) {
+      alert('خطا در شروع استوری‌بورد در آنتی‌گرویتی: ' + err.message);
+    } finally {
+      setIsTriggeringStoryboard(false);
+    }
   };
 
-  // Button 2: Direct Image Generation in Antigravity
-  const handleCopyImagesCommand = async () => {
-    const cmd = `لطفاً مرحله ۶ (فاز ۲: تولید مستقیم و متوالی تصاویر) را برای اپیزود "${episodeId}" طبق سند .agent/skills/04-scene-director.md اجرا کن:
-۱. استوری‌بورد تاییدشده را از /projects/${episodeId}/state.json بخوان.
-۲. با ابزار image-generator، تک‌تک فریم‌های کلیدی (scene_01.png تا scene_N.png) را به صورت متوالی در /projects/${episodeId}/assets/images/ تولید کن:
-   - برای scene_01.png: رفرنس تصویری @Room_Master و شیت‌های چهره و بدن کاراکترهای فعال.
-   - برای scene_02.png تا scene_N.png: تصویر تولیدشده scene_01.png (به عنوان Episode Master Reference) + رفرنس زاویه صندلی هدف @Seat_X + شیت کاراکتر فوکوس.
-۳. پس از تولید هر تصویر، وجود و سلامت فایل را بررسی کرده و فیلدهای image_path و visual_asset را در state.json به مسیر نهایی /media/${episodeId}/assets/images/scene_XX.png متصل کن.`;
-
-    await navigator.clipboard.writeText(cmd);
-    setCopiedImagesCmd(true);
-    setTimeout(() => setCopiedImagesCmd(false), 3500);
+  // Button 2: Launch Real Antigravity Background Sequential Image Generation
+  const handleStartImages = async () => {
+    if (taskState.status === 'running') return;
+    try {
+      setIsTriggeringImages(true);
+      setBannerDismissed(false);
+      const res = await triggerImagesGeneration(episodeId);
+      setTaskState(res);
+    } catch (err) {
+      alert('خطا در شروع تولید تصاویر در آنتی‌گرویتی: ' + err.message);
+    } finally {
+      setIsTriggeringImages(false);
+    }
   };
 
-  const handleCopySingleFrameCommand = async (scene, idx) => {
-    const sId = scene.id || scene.scene_id || `scene_${String(idx + 1).padStart(2, '0')}`;
-    const visualPrompt = scene.visual_prompt_en || scene.visual_prompt || '';
-    const cameraAngle = scene.camera || scene.camera_angle || '@Seat_X';
-    const chars = (scene.characters_present || []).join(', ');
-    const adjacent = Array.isArray(scene.adjacent_players) ? scene.adjacent_players.join(', ') : (scene.adjacent_players || 'مطابق چیدمان صندلی');
-    const tableState = scene.table_state_en || '';
-
-    const cmd = `لطفاً فریم کلیدی صحنه "${sId}" اپیزود "${episodeId}" را طبق دستورالعمل .agent/skills/04-scene-director.md با استفاده از ابزار image-generator بازسازی کن:
-- فایل خروجی مقصد: projects/${episodeId}/assets/images/${sId}.png
-- زاویه دوربین: ${cameraAngle}
-- کاراکترهای حاضر: ${chars}
-- همسایگان صندلی: ${adjacent}
-- وضعیت میز: ${tableState}
-- رفرنس پیوستگی: ${idx === 0 ? 'رفرنس @Room_Master و شیت‌های کاراکترها' : `تصویر projects/${episodeId}/assets/images/scene_01.png (Episode Master Reference) + رفرنس زاویه صندلی`}
-- پرامپت دقیق تصویر:
-${visualPrompt}
-پس از تولید، فایل را در projects/${episodeId}/assets/images/${sId}.png ذخیره و state.json را بروزرسانی کن.`;
-
-    await navigator.clipboard.writeText(cmd);
-    setCopiedSingleCmdId(sId);
-    setTimeout(() => setCopiedSingleCmdId(null), 2500);
+  // Single Scene Card: Regenerate Single Frame Image
+  const handleRegenerateScene = async (sceneId) => {
+    if (taskState.status === 'running') {
+      alert('یک فرآیند دیگر در آنتی‌گرویتی هم‌اکنون در حال اجراست. لطفاً تا اتمام آن منتظر بمانید.');
+      return;
+    }
+    try {
+      setRegeneratingSceneId(sceneId);
+      setBannerDismissed(false);
+      const res = await triggerSceneRegeneration(episodeId, sceneId);
+      setTaskState(res);
+    } catch (err) {
+      alert(`خطا در بازسازی فریم ${sceneId}: ` + err.message);
+    } finally {
+      setRegeneratingSceneId(null);
+    }
   };
 
   const handleManualRefresh = async () => {
     setIsRefreshing(true);
-    setImgErrorMap({});
     try {
       if (onRefresh) {
         await onRefresh();
       }
+      const status = await fetchTaskStatus(episodeId);
+      setTaskState(status);
+    } catch (err) {
+      console.error(err);
     } finally {
-      setTimeout(() => setIsRefreshing(false), 500);
+      setIsRefreshing(false);
     }
   };
 
-  const handleKeyframeImageUpload = async (sceneId, file) => {
+  const handleImageUpload = async (sceneId, file) => {
     if (!file) return;
-    setUploadingImageId(sceneId);
     try {
-      const res = await uploadAsset(episodeId, 'scenes', file);
+      setUploadingImageId(sceneId);
+      const res = await uploadAsset(episodeId, 'scene_image', file);
+      const updatedPath = res.image_path || res.asset_path || res.url;
       if (onSceneAssetUpdated) {
-        onSceneAssetUpdated(sceneId, res.url);
+        onSceneAssetUpdated(sceneId, 'image_path', updatedPath);
       }
+      setImgErrorMap(prev => ({ ...prev, [sceneId]: false }));
       if (onRefresh) {
         await onRefresh();
       }
     } catch (err) {
-      alert('خطا در آپلود فریم کلیدی: ' + err.message);
+      alert('خطا در آپلود تصویر صحنه: ' + err.message);
     } finally {
       setUploadingImageId(null);
     }
@@ -176,42 +247,26 @@ ${visualPrompt}
 
   const handleVideoUpload = async (sceneId, file) => {
     if (!file) return;
-    setUploadingVideoId(sceneId);
     try {
-      await uploadSceneVideo(episodeId, sceneId, file);
+      setUploadingVideoId(sceneId);
+      const res = await uploadSceneVideo(episodeId, sceneId, file);
+      if (onSceneAssetUpdated) {
+        onSceneAssetUpdated(sceneId, 'video_path', res.video_path || res.asset_path);
+      }
       if (onRefresh) {
         await onRefresh();
       }
     } catch (err) {
-      alert('خطا در آپلود ویدیوی متحرک: ' + err.message);
+      alert('خطا در آپلود ویدیوی صحنه: ' + err.message);
     } finally {
       setUploadingVideoId(null);
     }
   };
 
-  const handleToggleMediaType = async (sceneId, newMediaType) => {
+  const handleSaveMotionPrompt = async (sceneId, newPrompt) => {
     try {
-      await updateSceneDetails(episodeId, sceneId, { 
-        media_type: newMediaType,
-        shot_mode: newMediaType === 'ai_video' ? 'ai_video' : 'static_zoom'
-      });
-      if (onRefresh) {
-        await onRefresh();
-      }
-    } catch (err) {
-      alert('خطا در تغییر نوع مدیا: ' + err.message);
-    }
-  };
-
-  const handleSaveMotionPrompt = async (sceneId, fallbackCurrentPrompt) => {
-    const newText = editedMotionPrompts[sceneId] !== undefined ? editedMotionPrompts[sceneId] : fallbackCurrentPrompt;
-    setSavingMotionId(sceneId);
-    try {
-      await updateSceneDetails(episodeId, sceneId, { 
-        motion_prompt_en: newText, 
-        media_type: 'ai_video',
-        shot_mode: 'ai_video' 
-      });
+      setSavingMotionId(sceneId);
+      await updateSceneDetails(episodeId, sceneId, { motion_prompt_en: newPrompt });
       if (onRefresh) {
         await onRefresh();
       }
@@ -222,10 +277,9 @@ ${visualPrompt}
     }
   };
 
-  const handleSaveCameraPrompt = async (sceneId, currentCamDir, fallbackPrompt) => {
-    const newPrompt = editedCameraPrompts[sceneId] !== undefined ? editedCameraPrompts[sceneId] : fallbackPrompt;
-    setSavingCameraPromptId(sceneId);
+  const handleSaveCameraPrompt = async (sceneId, newPrompt, currentCamDir) => {
     try {
+      setSavingCameraPromptId(sceneId);
       const updatedDir = {
         ...(currentCamDir || {
           motion_type: 'slow_zoom_in',
@@ -247,73 +301,77 @@ ${visualPrompt}
     }
   };
 
+  const isRunning = taskState.status === 'running';
+
   return (
     <div className="space-y-6">
       
-      {/* Top Banner with TWO Distinct Dedicated Action Buttons */}
+      {/* Top Banner with Direct Antigravity CLI Execution */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5 p-5 rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 border border-amber-500/30 shadow-2xl">
         <div className="space-y-1.5">
           <div className="flex items-center gap-2 mb-1 flex-wrap">
             <span className="text-xs font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2.5 py-0.5 rounded-full flex items-center gap-1.5">
               <Bot className="w-3.5 h-3.5" />
-              مرحله ۶: کارگردانی یکپارچه استوری‌بورد و حرکت (Antigravity Native)
+              مرحله ۶: کارگردانی یکپارچه و اجرای بومی آنتی‌گرویتی (Antigravity CLI)
             </span>
             <span className="text-xs text-slate-400 font-mono">
               تعداد نماها: {scenes.length} کات (~۲s)
             </span>
           </div>
           <h2 className="text-xl font-black text-white">
-            فرآیند دو مرحله‌ای: نگارش دقیق استوری‌بورد ➔ تولید مستقیم تصاویر
+            فرآیند دو مرحله‌ای خودکار: تولید استوری‌بورد ➔ تولید تصاویر متوالی
           </h2>
           <p className="text-xs text-slate-400 max-w-2xl leading-relaxed">
-            ابتدا با <span className="text-amber-300 font-bold">دکمه ۱</span> استوری‌بورد و پرامپت‌ها را تولید و بازبینی کنید؛ سپس با <span className="text-emerald-300 font-bold">دکمه ۲</span> تصاویر باکیفیت استاپ‌موشن را با حفظ کامل پیوستگی روی دیسک بسازید.
+            کلیک روی دکمه‌ها مستقیماً ایجنت پس‌زمینه <span className="text-amber-300 font-bold">Antigravity CLI</span> را فراخوانی می‌کند و تصاویر فریم‌ها را بدون نیاز به کپی-پیست در پوشه پروژه ذخیره می‌سازد.
           </p>
         </div>
 
         <div className="flex items-center gap-2.5 flex-wrap flex-shrink-0">
           
-          {/* BUTTON 1: Generate Prompts ONLY (Storyboard) */}
+          {/* BUTTON 1: Real Storyboard Generation */}
           <button
-            onClick={handleCopyStoryboardCommand}
+            onClick={handleStartStoryboard}
+            disabled={isRunning || isTriggeringStoryboard}
             className={`flex items-center gap-2 px-4 py-3 rounded-xl font-black text-xs shadow-lg transition-all hover:scale-105 active:scale-95 ${
-              copiedStoryboardCmd
-                ? 'bg-amber-400 text-slate-950 ring-2 ring-amber-300'
-                : 'bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/40 hover:border-amber-400'
+              isRunning && taskState.task_type === 'storyboard'
+                ? 'bg-amber-500/20 text-amber-300 border border-amber-500 animate-pulse cursor-wait'
+                : 'bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/40 hover:border-amber-400 disabled:opacity-50 disabled:cursor-not-allowed'
             }`}
-            title="کپی دستور تولید استوری‌بورد، پرامپت‌ها و هدایت دوربین بدون تولید تصویر"
+            title="اجرای مستقیم ایجنت آنتی‌گرویتی برای نوشتن پرامپت‌ها و جهت‌دهی دوربین در state.json"
           >
-            {copiedStoryboardCmd ? (
+            {isTriggeringStoryboard || (isRunning && taskState.task_type === 'storyboard') ? (
               <>
-                <Check className="w-4 h-4 text-slate-950" />
-                <span>دستور پرامپت‌ها کپی شد! در چت ارسال کنید ✓</span>
+                <Loader2 className="w-4 h-4 text-amber-400 animate-spin" />
+                <span>در حال نگارش استوری‌بورد...</span>
               </>
             ) : (
               <>
                 <FileText className="w-4 h-4 text-amber-400" />
-                <span>📝 ۱. دستور تولید پرامپت‌های صحنه (استوری‌بورد)</span>
+                <span>📝 ۱. تولید استوری‌بورد و پرامپت‌ها</span>
               </>
             )}
           </button>
 
-          {/* BUTTON 2: Generate Images Sequentially */}
+          {/* BUTTON 2: Real Sequential Images Generation */}
           <button
-            onClick={handleCopyImagesCommand}
+            onClick={handleStartImages}
+            disabled={isRunning || isTriggeringImages}
             className={`flex items-center gap-2 px-4 py-3 rounded-xl font-black text-xs shadow-xl transition-all hover:scale-105 active:scale-95 ${
-              copiedImagesCmd
-                ? 'bg-emerald-400 text-slate-950 ring-2 ring-emerald-300 shadow-emerald-500/30'
-                : 'bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 hover:from-emerald-400 hover:to-teal-300 text-slate-950 shadow-emerald-500/25'
+              isRunning && taskState.task_type === 'images'
+                ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-400 animate-pulse cursor-wait'
+                : 'bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 hover:from-emerald-400 hover:to-teal-300 text-slate-950 shadow-emerald-500/25 disabled:opacity-50 disabled:cursor-not-allowed'
             }`}
-            title="کپی دستور تولید متوالی تصاویر در پوشه assets/images بر اساس پرامپت‌های استوری‌بورد"
+            title="اجرای مستقیم ایجنت آنتی‌گرویتی برای ساخت متوالی تصاویر با حفظ پیوستگی فریم ۱"
           >
-            {copiedImagesCmd ? (
+            {isTriggeringImages || (isRunning && taskState.task_type === 'images') ? (
               <>
-                <Check className="w-4 h-4 text-slate-950" />
-                <span>دستور تصاویر کپی شد! در چت ارسال کنید ✓</span>
+                <Loader2 className="w-4 h-4 text-slate-950 animate-spin" />
+                <span>در حال ساخت فریم‌ها در آنتی‌گرویتی...</span>
               </>
             ) : (
               <>
                 <Palette className="w-4 h-4 text-slate-950" />
-                <span>🎨 ۲. دستور تولید مستقیم تصاویر در آنتی‌گرویتی</span>
+                <span>🎨 ۲. تولید مستقیم تصاویر صحنه‌ها</span>
               </>
             )}
           </button>
@@ -359,169 +417,203 @@ ${visualPrompt}
         </div>
       </div>
 
-      {/* Empty State Banner if no scenes yet */}
-      {scenes.length === 0 && (
-        <div className="p-12 text-center rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
-          <Film className="w-12 h-12 text-slate-600 mx-auto" />
-          <div className="space-y-1">
-            <h3 className="text-base font-bold text-slate-200">هنوز استوری‌بورد این اپیزود تولید نشده است</h3>
-            <p className="text-xs text-slate-400 max-w-lg mx-auto">
-              ابتدا روی دکمه «۱. دستور تولید پرامپت‌های صحنه» کلیک کنید و آن را در چت آنتی‌گرویتی ارسال نمایید تا سناریو به نماهای عمودی با هدایت خودکار دوربین تقطیع شود.
-            </p>
+      {/* ======================================================== */}
+      {/* LIVE ANTIGRAVITY TASK PROGRESS BANNER & LOG CONSOLE */}
+      {/* ======================================================== */}
+      {taskState.status !== 'idle' && !bannerDismissed && (
+        <div className={`p-4 rounded-2xl border transition-all shadow-xl ${
+          isRunning
+            ? 'bg-slate-900/95 border-amber-500/40 shadow-amber-500/10'
+            : taskState.status === 'completed'
+            ? 'bg-emerald-950/40 border-emerald-500/40 shadow-emerald-500/10'
+            : 'bg-rose-950/40 border-rose-500/40 shadow-rose-500/10'
+        }`}>
+          <div className="flex items-center justify-between gap-4 flex-wrap mb-3">
+            <div className="flex items-center gap-3">
+              {isRunning ? (
+                <div className="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                </div>
+              ) : taskState.status === 'completed' ? (
+                <div className="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
+                  <CheckCircle2 className="w-5 h-5" />
+                </div>
+              ) : (
+                <div className="w-8 h-8 rounded-lg bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-rose-400">
+                  <AlertCircle className="w-5 h-5" />
+                </div>
+              )}
+
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-black text-white">
+                    {taskState.task_type === 'storyboard'
+                      ? '📝 نگارش استوری‌بورد و پرامپت‌ها در آنتی‌گرویتی'
+                      : taskState.task_type === 'images'
+                      ? '🎨 تولید مستقیم تصاویر کلیدی فریم‌ها'
+                      : `🔄 بازسازی فریم ${taskState.target_scene_id || ''}`}
+                  </span>
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${
+                    isRunning 
+                      ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                      : taskState.status === 'completed'
+                      ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                      : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+                  }`}>
+                    {taskState.status === 'running' ? 'در حال اجرا' : taskState.status === 'completed' ? 'تکمیل شد ✓' : 'خطا'}
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-300 font-mono mt-0.5">
+                  {taskState.current_step || 'در حال انجام عملیات...'}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setShowLogs(!showLogs)}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-mono border border-slate-700"
+              >
+                <Terminal className="w-3.5 h-3.5 text-amber-400" />
+                <span>لاگ ایجنت ({taskState.logs?.length || 0})</span>
+                {showLogs ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+              </button>
+
+              {!isRunning && (
+                <button
+                  onClick={() => setBannerDismissed(true)}
+                  className="p-1 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800"
+                  title="بستن اعلان"
+                >
+                  <XCircle className="w-4 h-4" />
+                </button>
+              )}
+            </div>
           </div>
-          <button
-            onClick={handleCopyStoryboardCommand}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs shadow-lg transition-all"
-          >
-            <FileText className="w-4 h-4" />
-            <span>کپی دستور تولید استوری‌بورد در آنتی‌گرویتی</span>
-          </button>
+
+          {/* Progress Bar */}
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between text-[11px] text-slate-400 font-mono">
+              <span>پیشرفت فرآیند</span>
+              <span className="text-amber-300 font-bold">
+                {taskState.progress}% {taskState.task_type === 'images' && `(${taskState.completed_scenes} از ${taskState.total_scenes} فریم)`}
+              </span>
+            </div>
+            <div className="w-full h-2 rounded-full bg-slate-950 overflow-hidden border border-slate-800">
+              <div 
+                className={`h-full transition-all duration-500 rounded-full ${
+                  taskState.status === 'completed'
+                    ? 'bg-emerald-400'
+                    : taskState.status === 'error'
+                    ? 'bg-rose-500'
+                    : 'bg-gradient-to-r from-amber-500 via-emerald-400 to-amber-400'
+                }`}
+                style={{ width: `${Math.max(4, Math.min(100, taskState.progress))}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Collapsible Logs Drawer */}
+          {showLogs && taskState.logs && taskState.logs.length > 0 && (
+            <div className="mt-3 p-3 rounded-xl bg-slate-950 border border-slate-800 font-mono text-[10px] text-slate-300 max-h-40 overflow-y-auto space-y-1 ltr-content">
+              {taskState.logs.map((logLine, idx) => (
+                <div key={idx} className="leading-snug text-slate-400">
+                  <span className="text-amber-400 mr-2">›</span>
+                  {logLine}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
-      {/* Scenes Grid: Responsive 9:16 Vertical Cards */}
+      {/* Grid of Storyboard Scenes */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {scenes.map((scene, idx) => {
           const sceneId = scene.id || scene.scene_id || `scene_${String(idx + 1).padStart(2, '0')}`;
-          const isApproved = scene.status === 'approved';
-          const isReady = scene.status === 'ready_for_review';
-          const tableState = scene.poker_table_state || {};
+          const isAiVideo = scene.media_type === 'ai_video' || scene.shot_mode === 'ai_video';
           const visualPrompt = scene.visual_prompt_en || scene.visual_prompt || '';
           
-          const motionPrompt = editedMotionPrompts[sceneId] !== undefined
-            ? editedMotionPrompts[sceneId]
-            : (scene.motion_prompt_en || '');
-
-          // Media type: static_image vs ai_video
-          const isAiVideo = (scene.media_type === 'ai_video') || (scene.shot_mode === 'ai_video') || Boolean(motionPrompt.trim() && !scene.camera_direction);
-          const duration = scene.duration_sec ? Number(scene.duration_sec).toFixed(1) : '2.0';
-          const videoUrl = scene.video_path || scene.video_asset;
-
-          // Camera direction for static_image
-          const cameraDir = scene.camera_direction || {
-            motion_type: 'slow_zoom_in',
-            start_focus_region: 'wide chest-up framing',
-            end_focus_region: 'tight focal push',
-            zoom_intensity: 1.15,
-            easing: 'smooth',
-            camera_prompt_en: 'Slow, smooth camera push-in towards the character'
-          };
+          // Motion Prompt State (for ai_video)
+          const motionPrompt = editedMotionPrompts[sceneId] !== undefined 
+            ? editedMotionPrompts[sceneId] 
+            : (scene.motion_prompt_en || scene.motion_prompt || '');
+          
+          // Camera Direction State (for static_image)
+          const cameraDir = scene.camera_direction || {};
           const motionType = cameraDir.motion_type || 'slow_zoom_in';
-          const motionCfg = MOTION_TYPE_CONFIG[motionType] || { label: motionType, color: 'text-amber-400 bg-amber-500/10 border-amber-500/30' };
-
+          const motionConfig = MOTION_TYPE_CONFIG[motionType] || MOTION_TYPE_CONFIG.slow_zoom_in;
           const cameraPrompt = editedCameraPrompts[sceneId] !== undefined
             ? editedCameraPrompts[sceneId]
             : (cameraDir.camera_prompt_en || '');
 
-          // Image resolution order:
-          const errorCount = imgErrorMap[sceneId] || 0;
-          let imageUrl = null;
-          if (errorCount === 0) {
-            imageUrl = scene.image_path || `/media/${episodeId}/assets/images/${sceneId}.png`;
-          } else if (errorCount === 1) {
-            imageUrl = scene.visual_asset || `/media/${episodeId}/scenes/${sceneId}.png`;
-          } else {
-            imageUrl = null;
-          }
-
-          const isSingleCommandCopied = copiedSingleCmdId === sceneId;
+          const duration = scene.duration_sec || scene.duration || 2.0;
+          const cameraAngle = scene.camera_angle || '@Room_Master';
+          const tableState = scene.poker_table_state || {};
+          
+          // Image path resolution
+          const resolvedImagePath = scene.image_path || scene.visual_asset || `/media/${episodeId}/assets/images/${sceneId}.png`;
+          const isImgError = imgErrorMap[sceneId];
+          const hasImage = !isImgError && Boolean(resolvedImagePath);
+          const hasVideo = Boolean(scene.video_path);
+          const isCurrentRegenerating = isRunning && taskState.task_type === 'regenerate_scene' && taskState.target_scene_id === sceneId;
 
           return (
-            <div
+            <div 
               key={sceneId}
-              className={`rounded-2xl border transition-all flex flex-col justify-between overflow-hidden shadow-lg group ${
-                isAiVideo 
-                  ? 'bg-slate-900 border-indigo-500/30 ring-1 ring-indigo-500/10'
-                  : 'bg-slate-900 border-slate-800 hover:border-slate-700/80'
-              }`}
+              className="flex flex-col rounded-2xl bg-slate-900 border border-slate-800 overflow-hidden shadow-xl hover:border-slate-700 transition-all duration-200"
             >
-              
-              {/* Card Header */}
-              <div className="p-4 border-b border-slate-800/80 space-y-3 bg-slate-950/40">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="w-7 h-7 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 font-bold text-xs flex items-center justify-center font-mono">
-                      #{scene.beat_index || idx + 1}
-                    </span>
-                    <span className="text-xs font-mono text-slate-300 flex items-center gap-1 font-semibold">
-                      <Clock className="w-3.5 h-3.5 text-slate-400" />
-                      {duration}s
-                    </span>
-                    {scene.camera && (
-                      <span className="text-[10px] font-mono text-slate-400 bg-slate-800 px-2 py-0.5 rounded border border-slate-700 ltr-content">
-                        🎥 {scene.camera}
+              {/* Scene Card Header */}
+              <div className="p-4 border-b border-slate-800/80 bg-slate-900/60 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2.5">
+                  <span className="w-7 h-7 rounded-lg bg-indigo-600/30 border border-indigo-500/40 text-indigo-300 font-mono font-black text-xs flex items-center justify-center">
+                    {idx + 1}
+                  </span>
+                  <div>
+                    <h3 className="text-sm font-black text-slate-100 flex items-center gap-1.5">
+                      <span>{sceneId}</span>
+                      <span className="text-[10px] text-slate-500 font-normal">| {cameraAngle}</span>
+                    </h3>
+                    <div className="flex items-center gap-2 text-[10px] text-slate-400 font-mono mt-0.5">
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-3 h-3 text-slate-500" />
+                        {duration}s
                       </span>
-                    )}
-                    {idx === 0 || scene.beat_index === 1 ? (
-                      <span className="text-[10px] font-bold text-amber-300 bg-amber-500/15 border border-amber-500/30 px-2 py-0.5 rounded">
-                        ⭐ نمای معرف مستر
-                      </span>
-                    ) : (
-                      <span className="text-[10px] font-medium text-slate-400 bg-slate-800/80 border border-slate-700/60 px-2 py-0.5 rounded">
-                        🔗 پیوسته با صحنه ۱
-                      </span>
-                    )}
+                      <span>•</span>
+                      <span className="text-indigo-400">{scene.focal_character || 'All Players'}</span>
+                    </div>
                   </div>
-
-                  {/* Status Toggle Badge */}
-                  <button
-                    onClick={() => onUpdateSceneStatus(sceneId, isApproved ? 'ready_for_review' : 'approved')}
-                    className={`flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-lg transition-all ${
-                      isApproved
-                        ? 'bg-emerald-500/10 text-emerald-300 border border-emerald-500/30'
-                        : isReady
-                        ? 'bg-purple-500/10 text-purple-300 border border-purple-500/30'
-                        : 'bg-slate-800 text-slate-400 border border-slate-700'
-                    }`}
-                  >
-                    {isApproved ? 'تایید شد ✓' : isReady ? 'آماده بازبینی' : 'در صف ساخت'}
-                  </button>
                 </div>
 
-                {/* Scene Title */}
-                <h3 className="text-sm font-bold text-slate-100 flex items-center gap-2">
-                  <span>{scene.title || scene.scene_title_fa || `صحنه #${idx + 1}`}</span>
-                </h3>
-
-                {/* Media Type Switcher Segmented Control */}
-                <div className="flex items-center p-1 rounded-xl bg-slate-950 border border-slate-800/90 text-xs">
-                  <button
-                    type="button"
-                    onClick={() => handleToggleMediaType(sceneId, 'static_image')}
-                    className={`flex-1 py-1.5 px-2 rounded-lg font-bold transition-all flex items-center justify-center gap-1.5 ${
-                      !isAiVideo
-                        ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm'
-                        : 'text-slate-400 hover:text-slate-200'
-                    }`}
-                  >
-                    <ImageIcon className="w-3.5 h-3.5 text-amber-400" />
-                    <span>تصویر + حرکت خودکار دوربین</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => handleToggleMediaType(sceneId, 'ai_video')}
-                    className={`flex-1 py-1.5 px-2 rounded-lg font-bold transition-all flex items-center justify-center gap-1.5 ${
-                      isAiVideo
-                        ? 'bg-indigo-600/30 text-indigo-300 border border-indigo-500/50 shadow-sm'
-                        : 'text-slate-400 hover:text-slate-200'
-                    }`}
-                  >
-                    <Video className="w-3.5 h-3.5 text-indigo-400" />
-                    <span>ویدیو متحرک (~2s)</span>
-                  </button>
+                {/* Media Type Badge */}
+                <div className="flex items-center gap-1.5">
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1 border ${
+                    isAiVideo 
+                      ? 'bg-purple-500/15 border-purple-500/40 text-purple-300'
+                      : 'bg-amber-500/15 border-amber-500/40 text-amber-300'
+                  }`}>
+                    {isAiVideo ? (
+                      <>
+                        <Video className="w-3 h-3 text-purple-400" />
+                        ویدیو هوش‌مصنوعی
+                      </>
+                    ) : (
+                      <>
+                        <ImageIcon className="w-3 h-3 text-amber-400" />
+                        تصویر استاتیک
+                      </>
+                    )}
+                  </span>
                 </div>
               </div>
 
               {/* Card Body */}
-              <div className="p-4 space-y-4 flex-1">
-
-                {/* ======================================================== */}
-                {/* STEP 1: KEYFRAME IMAGE */}
-                {/* ======================================================== */}
-                <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-3">
-                  <div className="flex items-center justify-between flex-wrap gap-2">
-                    <div className="flex items-center gap-2">
+              <div className="p-4 flex-1 flex flex-col justify-between space-y-4">
+                
+                {/* 1. KEYFRAME IMAGE SECTION */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5">
                       <span className="w-5 h-5 rounded-md bg-amber-500 text-slate-950 text-[11px] font-black flex items-center justify-center">
                         ۱
                       </span>
@@ -531,25 +623,26 @@ ${visualPrompt}
                     </div>
 
                     <div className="flex items-center gap-2 flex-wrap justify-end">
-                      {/* 1-Click Rebuild Frame in Antigravity */}
+                      {/* Real Rebuild Frame in Antigravity Button */}
                       <button
-                        onClick={() => handleCopySingleFrameCommand(scene, idx)}
+                        onClick={() => handleRegenerateScene(sceneId)}
+                        disabled={isRunning || regeneratingSceneId === sceneId}
                         className={`flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-md transition-all shadow-sm ${
-                          isSingleCommandCopied
-                            ? 'bg-emerald-500 text-slate-950 font-black'
-                            : 'bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300'
+                          isCurrentRegenerating
+                            ? 'bg-amber-400 text-slate-950 font-black animate-pulse cursor-wait'
+                            : 'bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 disabled:opacity-50 disabled:cursor-not-allowed'
                         }`}
-                        title="کپی دستور بازسازی این فریم کلیدی در آنتی‌گرویتی"
+                        title="اجرای مستقیم ایجنت آنتی‌گرویتی برای بازسازی این فریم کلیدی"
                       >
-                        {isSingleCommandCopied ? (
+                        {isCurrentRegenerating ? (
                           <>
-                            <Check className="w-3 h-3 text-slate-950" />
-                            <span>دستور کپی شد!</span>
+                            <Loader2 className="w-3 h-3 animate-spin text-slate-950" />
+                            <span>در حال ساخت فریم...</span>
                           </>
                         ) : (
                           <>
                             <Bot className="w-3 h-3 text-amber-400" />
-                            <span>بازسازی این فریم در آنتی‌گرویتی</span>
+                            <span>بازسازی این تصویر</span>
                           </>
                         )}
                       </button>
@@ -563,49 +656,24 @@ ${visualPrompt}
                         {copiedPromptId === sceneId ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
                         <span>{copiedPromptId === sceneId ? 'کپی شد!' : 'پرامپت'}</span>
                       </button>
-
-                      {/* Image Upload Button */}
-                      <label className="flex items-center gap-1 text-[11px] font-bold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 px-2 py-0.5 rounded-md cursor-pointer transition-colors">
-                        <Upload className="w-3 h-3 text-amber-400" />
-                        <span>آپلود دستی</span>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={(e) => handleKeyframeImageUpload(sceneId, e.target.files?.[0])}
-                        />
-                      </label>
                     </div>
                   </div>
 
-                  {/* Continuity lock badge for Scene 2+ */}
-                  {(scene.beat_index > 1 || idx > 0) && (
-                    <div className="text-[10px] font-bold text-amber-300/90 bg-amber-950/60 border border-amber-800/60 px-2.5 py-1 rounded-lg flex items-center gap-1.5 shadow-sm">
-                      <span>🔗</span>
-                      <span>قفل پیوستگی: رفرنس به تصویر صحنه ۱ (Master) + زاویه صندلی</span>
-                    </div>
-                  )}
-
-                  {/* Image Display & Preview (Vertical 9:16) */}
-                  <div className="relative aspect-[9/16] w-full max-h-[380px] mx-auto bg-[#070b13] rounded-xl border border-slate-800 overflow-hidden flex items-center justify-center shadow-inner">
-                    {imageUrl ? (
-                      <img
-                        src={imageUrl}
-                        alt={scene.title || 'Keyframe Preview'}
-                        onError={() => {
-                          setImgErrorMap(prev => ({
-                            ...prev,
-                            [sceneId]: (prev[sceneId] || 0) + 1
-                          }));
-                        }}
-                        className="w-full h-full object-contain transition-transform group-hover:scale-101"
+                  {/* Image Viewer Container (9:16 Vertical Ratio) */}
+                  <div className="relative aspect-[9/16] w-full max-h-64 rounded-xl bg-slate-950 border border-slate-800 overflow-hidden flex items-center justify-center group">
+                    {hasImage ? (
+                      <img 
+                        src={resolvedImagePath}
+                        alt={`Scene ${sceneId}`}
+                        onError={() => setImgErrorMap(prev => ({ ...prev, [sceneId]: true }))}
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                       />
                     ) : (
-                      <div className="p-4 text-center space-y-2">
-                        <Camera className="w-8 h-8 text-slate-600 mx-auto" />
+                      <div className="text-center p-4 space-y-2">
+                        <ImageIcon className="w-8 h-8 text-slate-600 mx-auto" />
                         <span className="text-xs font-bold text-slate-300 block">فریم کلیدی ۹:۱۶ موجود نیست</span>
                         <p className="text-[10px] text-slate-500 max-w-[200px] mx-auto leading-relaxed">
-                          با کلیک روی «بازسازی این فریم در آنتی‌گرویتی»، دستور آن را برای ایجنت ارسال کنید یا تصویر را دستی آپلود نمایید.
+                          با کلیک روی «بازسازی این تصویر»، ایجنت آنتی‌گرویتی فریم را تولید می‌کند یا تصویر را دستی آپلود نمایید.
                         </p>
                       </div>
                     )}
@@ -677,64 +745,55 @@ ${visualPrompt}
                 {!isAiVideo ? (
                   /* MODE A: AUTOMATED FFMPEG CAMERA DIRECTION (Ken Burns) */
                   <div className="p-3.5 rounded-xl bg-slate-950/60 border border-amber-500/20 space-y-3">
-                    
-                    {/* Header */}
-                    <div className="flex items-center justify-between flex-wrap gap-2">
-                      <div className="flex items-center gap-2">
-                        <span className="w-5 h-5 rounded-md bg-amber-500 text-slate-950 text-[11px] font-black flex items-center justify-center">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-5 h-5 rounded-md bg-amber-500/20 border border-amber-500/40 text-amber-300 text-[11px] font-black flex items-center justify-center">
                           ۲
                         </span>
-                        <span className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
-                          <Compass className="w-3.5 h-3.5" />
-                          هدایت خودکار دوربین FFmpeg (Camera Direction)
+                        <span className="text-xs font-bold text-amber-300">
+                          جهت‌دهی خودکار حرکت دوربین (FFmpeg Direction)
                         </span>
                       </div>
-
-                      <div className="flex items-center gap-1.5">
-                        {cameraPrompt && (
+                      
+                      {cameraPrompt && (
+                        <div className="flex items-center gap-1">
                           <button
-                            onClick={() => copyText(sceneId, cameraPrompt, 'camera')}
-                            className="flex items-center gap-1 text-[11px] font-bold text-slate-300 hover:text-white bg-slate-800 px-2 py-1 rounded-md border border-slate-700 transition-colors"
-                            title="کپی پرامپت حرکت دوربین"
-                          >
-                            {copiedCameraPromptId === sceneId ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
-                            <span>{copiedCameraPromptId === sceneId ? 'کپی شد!' : 'کپی حرکت'}</span>
-                          </button>
-                        )}
-
-                        {cameraPrompt && (
-                          <button
-                            onClick={() => handleSaveCameraPrompt(sceneId, cameraDir, cameraPrompt)}
+                            onClick={() => handleSaveCameraPrompt(sceneId, cameraPrompt, cameraDir)}
                             disabled={savingCameraPromptId === sceneId}
-                            title="ذخیره ویرایش پرامپت حرکت دوربین"
+                            title="ذخیره ویرایش دستور دوربین"
                             className="p-1 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs"
                           >
                             <Save className={`w-3.5 h-3.5 ${savingCameraPromptId === sceneId ? 'animate-spin' : ''}`} />
                           </button>
-                        )}
-                      </div>
+                          <button
+                            onClick={() => copyText(sceneId, cameraPrompt, 'camera')}
+                            className="p-1 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs"
+                            title="کپی دستور دوربین"
+                          >
+                            {copiedCameraPromptId === sceneId ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                          </button>
+                        </div>
+                      )}
                     </div>
 
-                    {/* AI Trajectory Badges */}
-                    <div className="flex items-center gap-2 flex-wrap text-xs">
-                      {/* Motion Type Badge */}
-                      <span className={`px-2.5 py-1 rounded-lg border font-bold text-[11px] flex items-center gap-1 ${motionCfg.color}`}>
-                        <span>🎬</span>
-                        <span>{motionCfg.label}</span>
-                      </span>
-
-                      {/* Zoom Intensity & Easing */}
-                      {cameraDir.zoom_intensity && (
-                        <span className="px-2 py-0.5 rounded-md bg-slate-900 border border-slate-700 text-slate-300 font-mono text-[10px]">
-                          زوم: {cameraDir.zoom_intensity}x
-                        </span>
-                      )}
-
-                      {cameraDir.easing && (
-                        <span className="px-2 py-0.5 rounded-md bg-slate-900 border border-slate-700 text-slate-400 font-mono text-[10px]">
-                          شتاب: {cameraDir.easing}
-                        </span>
-                      )}
+                    {/* AI-Determined Motion Type Badge */}
+                    <div className="flex items-center justify-between gap-2 flex-wrap">
+                      <div className={`px-2.5 py-1 rounded-lg text-xs font-bold border flex items-center gap-1.5 ${motionConfig.color}`}>
+                        <Compass className="w-3.5 h-3.5 flex-shrink-0" />
+                        <span>{motionConfig.label}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-[10px] text-slate-400 font-mono">
+                        {cameraDir.zoom_intensity && (
+                          <span className="bg-slate-900 px-2 py-0.5 rounded border border-slate-800">
+                            Zoom: {cameraDir.zoom_intensity}x
+                          </span>
+                        )}
+                        {cameraDir.easing && (
+                          <span className="bg-slate-900 px-2 py-0.5 rounded border border-slate-800">
+                            Ease: {cameraDir.easing}
+                          </span>
+                        )}
+                      </div>
                     </div>
 
                     {/* Focus Regions Flow */}
@@ -774,35 +833,19 @@ ${visualPrompt}
                     </p>
                   </div>
                 ) : (
-                  /* MODE B: AI VIDEO (VIDU / GOOGLE FLOW ~2s) */
-                  <div className="p-3.5 rounded-xl bg-indigo-950/30 border border-indigo-500/30 space-y-3">
-                    
-                    {/* Header */}
-                    <div className="flex items-center justify-between flex-wrap gap-2">
-                      <div className="flex items-center gap-2">
-                        <span className="w-5 h-5 rounded-md bg-indigo-500 text-white text-[11px] font-black flex items-center justify-center">
+                  /* MODE B: AI VIDEO CLIP SECTION */
+                  <div className="p-3.5 rounded-xl bg-slate-950/60 border border-purple-500/20 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-5 h-5 rounded-md bg-purple-500 text-slate-950 text-[11px] font-black flex items-center justify-center">
                           ۲
                         </span>
-                        <span className="text-xs font-bold text-indigo-300">
-                          کلیپ متحرک Vidu / Google Flow
+                        <span className="text-xs font-bold text-purple-300">
+                          پرامپت حرکت ویدیو (Google Flow / Runway)
                         </span>
                       </div>
-
-                      <div className="flex items-center gap-2">
-                        <span className="text-[10px] font-black font-mono px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">
-                          هایلایت: ~{duration}s
-                        </span>
-
-                        {motionPrompt && (
-                          <button
-                            onClick={() => copyText(sceneId, motionPrompt, 'motion')}
-                            className="flex items-center gap-1 text-[11px] font-bold text-indigo-300 hover:text-white bg-indigo-600 hover:bg-indigo-500 px-2.5 py-1 rounded-md transition-all shadow-sm shadow-indigo-600/30"
-                          >
-                            {copiedMotionId === sceneId ? <Check className="w-3 h-3 text-emerald-300" /> : <Copy className="w-3 h-3" />}
-                            <span>{copiedMotionId === sceneId ? 'کپی شد!' : 'کپی پرامپت حرکت'}</span>
-                          </button>
-                        )}
-
+                      
+                      <div className="flex items-center gap-1">
                         {motionPrompt && (
                           <button
                             onClick={() => handleSaveMotionPrompt(sceneId, motionPrompt)}
@@ -813,97 +856,96 @@ ${visualPrompt}
                             <Save className={`w-3.5 h-3.5 ${savingMotionId === sceneId ? 'animate-spin' : ''}`} />
                           </button>
                         )}
+                        <button
+                          onClick={() => copyText(sceneId, motionPrompt, 'motion')}
+                          disabled={!motionPrompt}
+                          className="flex items-center gap-1 text-[11px] font-bold text-slate-300 hover:text-white bg-slate-800 border border-slate-700 px-2 py-0.5 rounded-md transition-colors disabled:opacity-40"
+                          title="کپی پرامپت حرکت ویدیو"
+                        >
+                          {copiedMotionId === sceneId ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                          <span>{copiedMotionId === sceneId ? 'کپی شد!' : 'حرکت'}</span>
+                        </button>
                       </div>
                     </div>
 
-                    {/* Motion Prompt Textarea */}
-                    <div className="space-y-1">
-                      <label className="text-[10px] text-slate-400 font-medium block">
-                        پرامپت حرکت (بازیگری بی‌صدا، بدون فلگ زمانی در متن):
-                      </label>
+                    {/* Editable Motion Prompt Area */}
+                    <div className="relative">
                       <textarea
-                        rows={2}
+                        rows={3}
                         value={motionPrompt}
                         onChange={(e) => setEditedMotionPrompts({ ...editedMotionPrompts, [sceneId]: e.target.value })}
-                        placeholder="پرامپت حرکت ۲ ثانیه‌ای برای Google Flow / Vidu..."
-                        className="w-full p-2.5 rounded-lg bg-slate-950 border border-indigo-900/60 text-[11px] font-mono text-indigo-100 focus:border-indigo-400 focus:outline-none ltr-content leading-relaxed resize-y"
+                        placeholder="پرامپت حرکت عروسک (اکشن فیزیکی و ری‌اکشن‌ها)..."
+                        className="w-full p-2.5 rounded-lg bg-slate-950 border border-slate-800 text-[11px] font-mono text-purple-200/90 focus:border-purple-400 focus:outline-none ltr-content leading-relaxed resize-y"
                       />
                     </div>
 
-                    {/* Inline Video Player OR Upload Dropzone */}
-                    <div className="space-y-2">
-                      {videoUrl ? (
+                    {/* Video Upload & Preview Dropzone */}
+                    <div className="pt-1">
+                      {hasVideo ? (
                         <div className="space-y-2">
-                          {/* Video Display (Vertical 9:16) */}
-                          <div className="relative aspect-[9/16] w-full max-h-[380px] mx-auto rounded-xl overflow-hidden border border-indigo-500/40 bg-black flex items-center justify-center shadow-lg">
-                            <video
-                              src={videoUrl}
-                              controls
-                              className="w-full h-full object-contain"
-                            />
-                          </div>
-
-                          {/* Replace Video Button */}
+                          <video 
+                            src={scene.video_path} 
+                            controls 
+                            className="w-full max-h-48 rounded-lg bg-black border border-slate-800"
+                          />
                           <div className="flex items-center justify-between text-[11px]">
-                            <span className="text-emerald-400 font-bold flex items-center gap-1 font-mono">
+                            <span className="text-emerald-400 font-bold flex items-center gap-1">
                               <CheckCircle2 className="w-3.5 h-3.5" />
-                              کلیپ متحرک بارگذاری شده
+                              ویدیوی نهایی متصل شد
                             </span>
-
-                            <label className="flex items-center gap-1 text-[11px] font-bold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 px-2 py-0.5 rounded cursor-pointer transition-colors">
-                              <Video className="w-3 h-3 text-indigo-400" />
-                              <span>تغییر فایل MP4</span>
-                              <input
-                                type="file"
-                                accept="video/mp4,video/*"
-                                className="hidden"
-                                onChange={(e) => handleVideoUpload(sceneId, e.target.files?.[0])}
+                            <label className="cursor-pointer text-slate-400 hover:text-slate-200 underline text-[10px]">
+                              جایگزینی ویدیو
+                              <input 
+                                type="file" 
+                                accept="video/*" 
+                                className="hidden" 
+                                onChange={(e) => handleVideoUpload(sceneId, e.target.files[0])}
                               />
                             </label>
                           </div>
                         </div>
                       ) : (
-                        <div className="p-3 rounded-xl border border-dashed border-indigo-500/40 bg-indigo-950/20 text-center space-y-1.5">
-                          <Video className="w-6 h-6 text-indigo-400 mx-auto" />
-                          <div>
-                            <span className="text-xs font-bold text-slate-200 block">
-                              آپلود کلیپ متحرک ۹:۱۶ (.mp4)
-                            </span>
-                            <p className="text-[10px] text-slate-400">
-                              کلیپ دانلودی از Google Flow / Vidu را اینجا قرار دهید.
-                            </p>
-                          </div>
-
-                          <label className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs cursor-pointer shadow-md shadow-indigo-600/20 transition-all hover:scale-102">
-                            <Upload className="w-3.5 h-3.5" />
-                            <span>انتخاب فایل MP4</span>
-                            <input
-                              type="file"
-                              accept="video/mp4,video/*"
-                              className="hidden"
-                              onChange={(e) => handleVideoUpload(sceneId, e.target.files?.[0])}
-                            />
-                          </label>
-
-                          {uploadingVideoId === sceneId && (
-                            <div className="text-xs font-bold text-amber-400 pt-1">
-                              در حال آپلود و پردازش ویدیو...
-                            </div>
-                          )}
-                        </div>
+                        <label className="flex flex-col items-center justify-center p-3 rounded-lg border border-dashed border-slate-800 hover:border-purple-500/50 hover:bg-purple-500/5 cursor-pointer transition-colors text-center group">
+                          <Upload className="w-4 h-4 text-slate-500 group-hover:text-purple-400 mb-1" />
+                          <span className="text-[11px] font-bold text-slate-300 group-hover:text-purple-200">
+                            {uploadingVideoId === sceneId ? 'در حال بارگذاری ویدیو...' : 'آپلود فایل ویدیوی تولیدشده (MP4)'}
+                          </span>
+                          <span className="text-[9px] text-slate-500">
+                            کلیپ رندرشده از Google Flow یا Runway را اینجا بکشید
+                          </span>
+                          <input 
+                            type="file" 
+                            accept="video/*" 
+                            className="hidden" 
+                            disabled={uploadingVideoId === sceneId}
+                            onChange={(e) => handleVideoUpload(sceneId, e.target.files[0])}
+                          />
+                        </label>
                       )}
                     </div>
-
                   </div>
                 )}
 
-              </div>
+                {/* Upload Manual Image Replacement Option */}
+                <div className="flex items-center justify-between pt-1 text-[11px] text-slate-500 border-t border-slate-800/60">
+                  <span>جایگزینی دستی تصویر:</span>
+                  <label className="cursor-pointer text-indigo-400 hover:text-indigo-300 font-bold flex items-center gap-1">
+                    <Upload className="w-3 h-3" />
+                    <span>آپلود PNG/JPG</span>
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      className="hidden" 
+                      onChange={(e) => handleImageUpload(sceneId, e.target.files[0])}
+                    />
+                  </label>
+                </div>
 
+              </div>
             </div>
           );
         })}
       </div>
-
     </div>
   );
 }
