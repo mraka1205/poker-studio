@@ -34,3 +34,13 @@ def test_normalize_sets_ids_and_strips_flags():
     assert n["scene_id"] == "scene_03" and n["id"] == "scene_03"
     assert "--ar" not in n["motion_prompt_en"]
     assert strip_flags("a --v 6.1 b") == "a b"
+
+
+def test_scene_spec_path_requires_built_prompt():
+    s = make_scene(1)
+    s["scene_spec"] = {"shot_type": "wide_master"}
+    errs = validate_scenes([normalize_scene(s, 0, "ep99")])
+    assert any("build_scene_prompts" in e for e in errs)
+    s["image_prompt_en"] = " ".join(["word"] * 130)
+    assert not any("image_prompt_en" in e for e in validate_scenes([normalize_scene(s, 0, "ep99")]))
+

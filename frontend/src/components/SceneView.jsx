@@ -39,9 +39,14 @@ import {
   triggerImagesGeneration,
   triggerSceneRegeneration,
   fetchTaskStatus,
-  cancelTask
+  cancelTask,
+  buildImagePrompts
 } from '../api';
 import { copyText as writeClipboard } from '../utils/clipboard';
+
+const SHOT_TYPES = ['wide_master', 'closeup_seat', 'medium_seat', 'low_angle_hero', 'reaction_insert', 'chips_macro', 'topdown_pot', 'ots_duel'];
+const EMOTIONS = ['neutral', 'thinking', 'shock', 'triumph', 'bet'];
+const MOODS = ['neutral', 'tension', 'triumph', 'tilt'];
 
 const MOTION_TYPE_CONFIG = {
   slow_zoom_in: { label: '🔍 زوم آرام به داخل (Slow Push-In)', color: 'text-amber-400 bg-amber-500/10 border-amber-500/30' },
@@ -342,6 +347,16 @@ export default function SceneView({
 
   const handleCancelTask = async () => {
     try { await cancelTask(episodeId); } catch (err) { alert('خطا در توقف عملیات: ' + err.message); }
+  };
+
+  const handleSpecChange = async (sceneId, spec, patch) => {
+    try {
+      await updateSceneDetails(episodeId, sceneId, { scene_spec: { ...(spec || {}), ...patch } });
+      await buildImagePrompts(episodeId, sceneId);
+      if (onRefresh) await onRefresh();
+    } catch (err) {
+      alert('خطا در بازسازی پرامپت: ' + err.message);
+    }
   };
 
   const isRunning = taskState.status === 'running';
@@ -786,6 +801,27 @@ export default function SceneView({
                           </span>
                         </div>
                       )}
+                    </div>
+                  )}
+
+                  {scene.scene_spec && (
+                    <div className="grid grid-cols-3 gap-1.5 text-[10px]">
+                      {[['shot_type', SHOT_TYPES], ['emotion', EMOTIONS], ['mood', MOODS]].map(([field, options]) => (
+                        <select key={field} value={scene.scene_spec[field] || ''}
+                          onChange={(e) => handleSpecChange(sceneId, scene.scene_spec, { [field]: e.target.value || undefined })}
+                          className="bg-slate-950 border border-slate-800 rounded-lg px-1.5 py-1 font-mono text-amber-200 ltr-content">
+                          {field !== 'shot_type' && <option value="">{field}: auto</option>}
+                          {options.map(o => <option key={o} value={o}>{o}</option>)}
+                        </select>
+                      ))}
+                    </div>
+                  )}
+                  {(scene.prompt_warnings || []).length > 0 && (
+                    <div className="text-[10px] text-amber-300 font-mono ltr-content">⚠ {scene.prompt_warnings.join(' | ')}</div>
+                  )}
+                  {(scene.image_references || []).length > 0 && (
+                    <div className="text-[10px] text-slate-400 font-mono ltr-content">
+                      refs: {scene.image_references.map((r, n) => `${n + 1}:${r.role}`).join('  ')}
                     </div>
                   )}
 

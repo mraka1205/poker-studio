@@ -15,3 +15,5 @@ projects/*/state.json.rejected
 projects/*/state.json.pre_*.bak
 projects/*/task_status.json
 projects/universe.json.bak
+*.bak
+pic/

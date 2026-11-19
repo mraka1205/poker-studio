@@ -1,6 +1,8 @@
 import re
 from typing import Any, Dict, List
 
+from backend.services.prompt_lint import lint_prompt
+
 ALLOWED_MEDIA_TYPES = {"static_image", "ai_video"}
 MOTION_TYPES = {
     "slow_zoom_in", "fast_punch_in", "slow_zoom_out", "pan_left_to_right", "pan_right_to_left",
@@ -48,14 +50,20 @@ def validate_scenes(scenes: List[Dict[str, Any]]) -> List[str]:
         elif sid in seen:
             errors.append(f"{tag} duplicate scene_id")
         seen.add(sid)
-        prompt = s.get("visual_prompt_en") or ""
-        words = len(prompt.split())
-        if words < MIN_WORDS or words > MAX_WORDS:
-            errors.append(f"{tag} visual_prompt_en has {words} words (need {MIN_WORDS}-{MAX_WORDS})")
-        if "9:16" not in prompt:
-            errors.append(f"{tag} visual_prompt_en must mention 9:16")
-        if i > 0 and "maintain exact visual continuity" not in prompt.lower():
-            errors.append(f"{tag} visual_prompt_en must start the continuity lock (scene 2+)")
+        if isinstance(s.get("scene_spec"), dict):
+            if not s.get("image_prompt_en"):
+                errors.append(f"{tag} has scene_spec but no image_prompt_en; run: python scripts/build_scene_prompts.py <episode_id>")
+            else:
+                errors.extend(f"{tag} {m}" for m in lint_prompt(s["image_prompt_en"]))
+        else:
+            prompt = s.get("visual_prompt_en") or ""
+            words = len(prompt.split())
+            if words < MIN_WORDS or words > MAX_WORDS:
+                errors.append(f"{tag} visual_prompt_en has {words} words (need {MIN_WORDS}-{MAX_WORDS})")
+            if "9:16" not in prompt:
+                errors.append(f"{tag} visual_prompt_en must mention 9:16")
+            if i > 0 and "maintain exact visual continuity" not in prompt.lower():
+                errors.append(f"{tag} visual_prompt_en must start the continuity lock (scene 2+)")
         dur = s.get("duration_sec")
         if not isinstance(dur, (int, float)) or not 0.5 <= dur <= 8:
             errors.append(f"{tag} duration_sec must be a number in [0.5, 8]")

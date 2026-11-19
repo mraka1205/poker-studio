@@ -318,3 +318,14 @@ export async function cancelTask(episodeId) {
   }
   return res.json();
 }
+
+export async function buildImagePrompts(episodeId, sceneId = null) {
+  const qs = sceneId ? `?scene_id=${encodeURIComponent(sceneId)}` : '';
+  const res = await fetch(`${API_BASE}/episodes/${episodeId}/build-image-prompts${qs}`, { method: 'POST' });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || 'Failed to build image prompts');
+  }
+  return res.json();
+}
+

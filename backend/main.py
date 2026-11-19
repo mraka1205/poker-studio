@@ -1096,6 +1096,7 @@ def import_ai_studio_json(episode_id: str, stage: str, req: ImportJsonRequest):
                 "target_video_sec": float(sc.get("target_video_sec") or dur or 2.0),
                 "poker_table_state": hud,
                 "sfx_cue": sc.get("sfx_cue", "chip_splash"),
+                "scene_spec": sc.get("scene_spec") or old_sc.get("scene_spec"),
                 "visual_asset": img_asset,
                 "image_path": img_asset,
                 "video_path": old_sc.get("video_path") or sc.get("video_path"),
@@ -1104,6 +1105,8 @@ def import_ai_studio_json(episode_id: str, stage: str, req: ImportJsonRequest):
             })
             
         state["scenes"] = enriched_scenes
+        if isinstance(parsed, dict) and "hand_timeline" in parsed:
+            state["hand_timeline"] = parsed["hand_timeline"]
         approve_stage_num(6, "بیت‌های بصری استوری‌بورد و حرکت ذخیره شد")
 
     else:
@@ -1134,6 +1137,7 @@ class UpdateSceneDetailsRequest(BaseModel):
     table_state_en: Optional[str] = None
     adjacent_players: Optional[List[str]] = None
     visual_prompt_en: Optional[str] = None
+    scene_spec: Optional[Dict[str, Any]] = None
 
 
 @app.post("/api/projects/{episode_id}/scenes/{scene_id}/update")
@@ -1173,6 +1177,8 @@ def update_scene_details(episode_id: str, scene_id: str, req: UpdateSceneDetails
     if req.visual_prompt_en is not None:
         found_scene["visual_prompt_en"] = req.visual_prompt_en
         found_scene["visual_prompt"] = req.visual_prompt_en
+    if req.scene_spec is not None:
+        found_scene["scene_spec"] = req.scene_spec
         
     save_state(episode_id, state)
     return {"status": "success", "scene": found_scene}
@@ -1324,6 +1330,16 @@ def get_ffmpeg_render_command(episode_id: str):
         "rtl_shaping_engine": "libass with HarfBuzz enabled",
         "output_expected": output_path
     }
+
+
+@app.post("/api/episodes/{episode_id}/build-image-prompts")
+@app.post("/api/projects/{episode_id}/build-image-prompts")
+def build_image_prompts(episode_id: str, scene_id: Optional[str] = None):
+    from backend.services.scene_prompt_builder import build_episode_prompts
+    result = build_episode_prompts(episode_id, scene_id=scene_id, write=True)
+    if result["errors"]:
+        raise HTTPException(status_code=422, detail="\n".join(result["errors"][:10]))
+    return {"status": "success", "built": result["built"], "warnings": result["warnings"]}
 
 
 # ---------------------------------------------------------
