@@ -1,18 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-  Users, 
-  Sparkles, 
   Copy, 
   Check, 
-  Upload, 
   CheckCircle2, 
   AlertCircle, 
-  ShieldCheck, 
-  ExternalLink,
-  Camera,
-  Layers,
-  RefreshCw,
-  UserCheck
+  Camera, 
+  RefreshCw 
 } from 'lucide-react';
 import AiStudioBridge from './AiStudioBridge';
 import { uploadAsset, fetchUniverse, syncUniverseCharacters, updateCharacterSeat } from '../api';
@@ -32,9 +25,25 @@ export default function CharacterView({
   const [copiedPromptId, setCopiedPromptId] = useState(null);
   const [uploadingId, setUploadingId] = useState(null);
   const [universeChars, setUniverseChars] = useState([]);
+  const [universeAngles, setUniverseAngles] = useState([]);
   const [selectedUniverseIds, setSelectedUniverseIds] = useState([]);
   const [syncing, setSyncing] = useState(false);
   const [syncSuccessMsg, setSyncSuccessMsg] = useState('');
+
+  const rawSeatAngles = (universeAngles || []).filter(a => a.id?.startsWith('seat_'));
+  const seatOptions = rawSeatAngles.length > 0 ? rawSeatAngles : [
+    { id: 'seat_1', label_fa: 'صندلی ۱' },
+    { id: 'seat_2', label_fa: 'صندلی ۲' },
+    { id: 'seat_3', label_fa: 'صندلی ۳' },
+    { id: 'seat_4', label_fa: 'صندلی ۴' },
+    { id: 'seat_5', label_fa: 'صندلی ۵' },
+    { id: 'seat_6', label_fa: 'صندلی ۶' }
+  ];
+
+  const seatLabelMap = (universeAngles || []).reduce((acc, a) => {
+    if (a.id) acc[a.id] = a.label_fa || a.id;
+    return acc;
+  }, {});
 
   const handleSeatChange = async (charId, newSeat) => {
     try {
@@ -65,6 +74,7 @@ export default function CharacterView({
     try {
       const data = await fetchUniverse();
       setUniverseChars(data.characters || []);
+      setUniverseAngles(data?.environment?.camera_angles || []);
     } catch (err) {
       console.error('Error fetching universe characters:', err);
     }
@@ -173,7 +183,6 @@ export default function CharacterView({
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 pt-1">
           {universeChars.map((uc) => {
             const isSelected = selectedUniverseIds.includes(uc.id);
-            const isAlreadyInEp = characters.some(c => c.id === uc.id || c.flow_tag === uc.flow_tag);
 
             return (
               <div
@@ -205,12 +214,7 @@ export default function CharacterView({
                       {uc.flow_tag}
                     </span>
                     <span className="text-[10px] text-slate-400 bg-slate-900 px-1.5 py-0.5 rounded border border-slate-800 font-mono">
-                      {uc.default_seat === 'seat_1' ? 'صندلی ۱' :
-                       uc.default_seat === 'seat_2' ? 'صندلی ۲' :
-                       uc.default_seat === 'seat_3' ? 'صندلی ۳' :
-                       uc.default_seat === 'seat_4' ? 'صندلی ۴' :
-                       uc.default_seat === 'seat_5' ? 'صندلی ۵' :
-                       uc.default_seat === 'seat_6' ? 'صندلی ۶' : (uc.default_seat || 'صندلی ۱')}
+                      {seatLabelMap[uc.default_seat] || uc.default_seat || 'seat_1'}
                     </span>
                     {uc.is_style_anchor && (
                       <span className="text-[10px] text-amber-300" title="لنگر استایل">⭐</span>
@@ -275,14 +279,14 @@ export default function CharacterView({
           <div>
             <h4 className="text-xs font-bold text-white">قانون لنگر استایل (Root Style Anchor)</h4>
             <p className="text-xs text-slate-300">
-              کاراکتر <strong className="text-amber-400">{characters.find(c => c.is_style_anchor)?.name_fa || 'آرش (@Arash)'}</strong> به عنوان لنگر گرافیکی تعریف شده و همه صحنه‌ها از پالت و آرت ۲ بعدی او الهام می‌گیرند.
+              کاراکتر <strong className="text-amber-400">{characters.find(c => c.is_style_anchor)?.name_fa || 'آرش (@Arash)'}</strong> به عنوان لنگر گرافیکی تعریف شده و همه صحنه‌ها از استایل استاپموشن عروسکی نمدی دستساز او الهام می‌گیرند.
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
           <span className="text-[11px] font-mono text-indigo-300 bg-indigo-950 px-3 py-1.5 rounded-lg border border-indigo-800">
-            Midjourney: --cref [Anchor_URL] --cw 80
+            Style Anchor: @Arash (Needle-Felted 9:16)
           </span>
         </div>
       </div>
@@ -368,12 +372,11 @@ export default function CharacterView({
                     onChange={(e) => handleSeatChange(char.id, e.target.value)}
                     className="bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1 text-xs font-bold text-amber-300 focus:outline-none focus:border-amber-500 cursor-pointer"
                   >
-                    <option value="seat_1">صندلی ۱ (@Seat_1 - قفسه کتاب)</option>
-                    <option value="seat_2">صندلی ۲ (@Seat_2 - قاب هنری)</option>
-                    <option value="seat_3">صندلی ۳ (@Seat_3 - پرده ضخیم)</option>
-                    <option value="seat_4">صندلی ۴ (@Seat_4 - تخته‌نرد و گیاه)</option>
-                    <option value="seat_5">صندلی ۵ (@Seat_5 - چای ایرانی و پسته)</option>
-                    <option value="seat_6">صندلی ۶ (@Seat_6 - عمق اتاق و نئون)</option>
+                    {seatOptions.map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.label_fa || s.id}
+                      </option>
+                    ))}
                   </select>
                 </div>
 

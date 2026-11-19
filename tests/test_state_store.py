@@ -35,3 +35,25 @@ def test_snapshot_and_restore():
     ss.restore_state_from(ep, snap, keep_rejected_as="state.json.rejected")
     assert "broken" not in ss.read_state(ep)
     assert (projects_dir() / ep / "state.json.rejected").exists()
+
+
+def test_universe_canonical_persistence():
+    assert ss.universe_path() == projects_dir() / "universe.json"
+
+    # Reading non-existent without default_factory raises FileNotFoundError
+    if ss.universe_path().exists():
+        ss.universe_path().unlink()
+    with pytest.raises(FileNotFoundError):
+        ss.read_universe()
+
+    # Reading non-existent with default_factory creates file
+    default = {"version": "1.0.0", "characters": []}
+    data = ss.read_universe(default_factory=lambda: default)
+    assert data["version"] == "1.0.0"
+    assert ss.universe_path().exists()
+
+    # write_universe updates atomically
+    data["version"] = "2.0.0"
+    ss.write_universe(data)
+    assert ss.read_universe()["version"] == "2.0.0"
+    assert not list(projects_dir().glob("*.tmp"))

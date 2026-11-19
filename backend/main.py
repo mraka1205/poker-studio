@@ -1,11 +1,11 @@
-import os
 import json
 import shutil
 import re
-from datetime import datetime
+import shlex
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, Any, Optional, List, Union
-from fastapi import FastAPI, HTTPException, UploadFile, File, Form, Query, Body
+from fastapi import FastAPI, HTTPException, UploadFile, File, Form, Body
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
@@ -20,6 +20,7 @@ from backend.antigravity_cli import (
 from backend.services.paths import (
     get_project_dir,
     InvalidIdError,
+    projects_dir,
     validate_scene_id,
     validate_episode_id,
 )
@@ -28,12 +29,19 @@ from backend.services.state_store import (
     compute_etag,
     EtagConflict,
     read_state,
+    read_universe,
+    update_state,
     write_state,
+    write_universe,
 )
 from backend.services.tts_validator import validate_segments
+from backend.services.scene_schema import normalize_scene, validate_scenes
+from backend.services.scene_prompt_builder import build_episode_prompts
+from backend.services.seat_geometry import merge_roster, format_seating_summary, RosterError
+from backend.services.visual_canon import SEED_ENV_CANON
+from backend.services.camera_ffmpeg import build_scene_clip_command
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-PROJECTS_DIR = BASE_DIR / "projects"
 SKILLS_DIR = BASE_DIR / ".agent" / "skills"
 
 app = FastAPI(title="Poker Studio API", version="2.0.0")
@@ -53,11 +61,11 @@ app.add_middleware(
 )
 
 # Ensure core directories exist
-PROJECTS_DIR.mkdir(parents=True, exist_ok=True)
+projects_dir().mkdir(parents=True, exist_ok=True)
 SKILLS_DIR.mkdir(parents=True, exist_ok=True)
 
 # Mount media directory for images, audio, exports
-app.mount("/media", StaticFiles(directory=str(PROJECTS_DIR)), name="media")
+app.mount("/media", StaticFiles(directory=str(projects_dir())), name="media")
 
 
 def get_project_path(episode_id: str) -> Path:
@@ -65,6 +73,20 @@ def get_project_path(episode_id: str) -> Path:
     if not proj_path.exists() or not proj_path.is_dir():
         raise HTTPException(status_code=404, detail=f"Episode '{episode_id}' not found")
     return proj_path
+
+
+def _sanitize_token(value: Optional[str]) -> str:
+    if value is None or value == "":
+        return ""
+    if not isinstance(value, str):
+        value = str(value)
+    stripped = value.strip()
+    if not stripped:
+        raise HTTPException(status_code=400, detail="Invalid identifier")
+    cleaned = re.sub(r"[^A-Za-z0-9_-]", "", stripped)
+    if not cleaned or cleaned != stripped:
+        raise HTTPException(status_code=400, detail="Invalid identifier")
+    return cleaned
 
 
 def load_state(episode_id: str) -> Dict[str, Any]:
@@ -79,36 +101,44 @@ def load_state(episode_id: str) -> Dict[str, Any]:
     scenes_dir = proj_dir / "scenes"
 
     scenes = data.get("scenes", [])
-    updated = False
     for scene in scenes:
         s_id = scene.get("id") or scene.get("scene_id")
         if not s_id:
             continue
-        found_path = None
-        # Check assets/images first
-        for ext in [".png", ".jpg", ".jpeg", ".webp"]:
-            p = assets_img_dir / f"{s_id}{ext}"
-            if p.exists():
-                found_path = f"/media/{episode_id}/assets/images/{s_id}{ext}"
-                break
-        # Fallback to scenes directory
-        if not found_path:
-            for ext in [".png", ".jpg", ".jpeg", ".webp", ".svg"]:
-                p = scenes_dir / f"{s_id}{ext}"
+
+        existing_img = scene.get("image_path")
+        exists_on_disk = False
+        if existing_img:
+            img_str = str(existing_img)
+            if img_str.startswith(f"/media/{episode_id}/"):
+                rel = img_str[len(f"/media/{episode_id}/"):]
+                exists_on_disk = (proj_dir / rel).is_file()
+            elif img_str.startswith("/media/"):
+                rel = img_str[len("/media/"):]
+                exists_on_disk = (projects_dir() / rel).is_file()
+            else:
+                p = Path(img_str)
+                exists_on_disk = p.is_file() or (proj_dir / img_str).is_file()
+
+        if not exists_on_disk:
+            found_path = None
+            # Check assets/images first
+            for ext in [".png", ".jpg", ".jpeg", ".webp"]:
+                p = assets_img_dir / f"{s_id}{ext}"
                 if p.exists():
-                    found_path = f"/media/{episode_id}/scenes/{s_id}{ext}"
+                    found_path = f"/media/{episode_id}/assets/images/{s_id}{ext}"
                     break
+            # Fallback to scenes directory
+            if not found_path:
+                for ext in [".png", ".jpg", ".jpeg", ".webp", ".svg"]:
+                    p = scenes_dir / f"{s_id}{ext}"
+                    if p.exists():
+                        found_path = f"/media/{episode_id}/scenes/{s_id}{ext}"
+                        break
 
-        if found_path and (scene.get("image_path") != found_path or scene.get("visual_asset") != found_path):
-            scene["image_path"] = found_path
-            scene["visual_asset"] = found_path
-            updated = True
-
-    if updated:
-        try:
-            write_state(episode_id, data)
-        except Exception:
-            pass
+            if found_path:
+                scene["image_path"] = found_path
+                scene["visual_asset"] = found_path
 
     return data
 
@@ -122,37 +152,31 @@ def save_state(episode_id: str, data: Dict[str, Any]):
 # CHANNEL UNIVERSE (Fixed Poker Room & Global Cast)
 # ==========================================
 
-UNIVERSE_FILE = PROJECTS_DIR / "universe.json"
-UNIVERSE_MEDIA_DIR = PROJECTS_DIR / "universe"
-UNIVERSE_MEDIA_DIR.mkdir(parents=True, exist_ok=True)
+def _default_universe() -> Dict[str, Any]:
+    return {
+        "version": "1.2.0",
+        "visual_canon_version": "1.0",
+        "environment": {
+            "id": "env_poker_room",
+            "flow_tag": "@PokerRoom",
+            "name": "میز زیرزمینی پوکر (The Underground Poker Room)",
+            "description_fa": "اتاق اختصاصی پوکر زیرزمینی در تهران. میز بیضی ۶ نفره با نمد سبز تیره، صندلی‌های چرمی قهوه‌ای، دیوار آجری تیره با قفسه کتاب چوبی و تابلوهای هنری مدرن.",
+            "visual_prompt_en": "Handcrafted needle-felted stop-motion animation style, miniature underground poker room, 6-max oval poker table with rich emerald green wool felt, dark mahogany wood trim, plush brown leather armrests. In background, dark needle-felted exposed brick walls with warm LED-lit wooden bookshelves holding antique trophies and old books, dark velvet curtains. Warm focused overhead brass chandelier casting soft glow on felt, subtle volumetric dust motes, rich tactile textures, vertical 9:16 composition --ar 9:16",
+            "reference_image_path": "",
+            "camera_angles": [],
+            "canon_en": dict(SEED_ENV_CANON)
+        },
+        "characters": []
+    }
 
 
 def load_universe() -> Dict[str, Any]:
-    if not UNIVERSE_FILE.exists():
-        default_universe = {
-            "version": "1.0.0",
-            "environment": {
-                "id": "env_poker_room",
-                "flow_tag": "@PokerRoom",
-                "name": "میز زیرزمینی پوکر (The Underground Poker Room)",
-                "description_fa": "اتاق اختصاصی پوکر زیرزمینی در تهران. میز بیضی ۶ نفره با نمد سبز تیره، صندلی‌های چرمی قهوه‌ای، دیوار آجری تیره با قفسه کتاب چوبی و تابلوهای هنری مدرن.",
-                "visual_prompt_en": "Handcrafted needle-felted stop-motion animation style, miniature underground poker room, 6-max oval poker table with rich emerald green wool felt, dark mahogany wood trim, plush brown leather armrests. In background, dark needle-felted exposed brick walls with warm LED-lit wooden bookshelves holding antique trophies and old books, dark velvet curtains. Warm focused overhead brass chandelier casting soft glow on felt, subtle volumetric dust motes, rich tactile textures, vertical 9:16 composition --ar 9:16",
-                "reference_image_path": ""
-            },
-            "camera_angles": {},
-            "characters": []
-        }
-        with open(UNIVERSE_FILE, "w", encoding="utf-8") as f:
-            json.dump(default_universe, f, ensure_ascii=False, indent=2)
-        return default_universe
-
-    with open(UNIVERSE_FILE, "r", encoding="utf-8") as f:
-        return json.load(f)
+    (projects_dir() / "universe").mkdir(parents=True, exist_ok=True)
+    return read_universe(default_factory=_default_universe)
 
 
 def save_universe(data: Dict[str, Any]):
-    with open(UNIVERSE_FILE, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+    write_universe(data)
 
 
 def clean_and_parse_json(raw_input: Union[str, Dict[str, Any]]) -> Dict[str, Any]:
@@ -219,20 +243,29 @@ async def upload_universe_asset(
     if suffix not in {".png", ".jpg", ".jpeg", ".webp"}:
         raise HTTPException(status_code=400, detail="Unsupported file type")
 
+    safe_char_id = _sanitize_token(character_id)
+    safe_angle_id = _sanitize_token(angle_id)
+    safe_sheet_type = _sanitize_token(sheet_type)
+
     safe_filename = raw_name.replace(" ", "_")
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
     
     if asset_type == "environment":
         dest_filename = f"environment_{safe_filename}"
-    elif asset_type == "angle" and angle_id:
-        dest_filename = f"angle_{angle_id}_{safe_filename}"
-    elif asset_type == "character" and character_id:
-        st = f"_{sheet_type}" if sheet_type else ""
-        dest_filename = f"char_{character_id}{st}_{safe_filename}"
+    elif asset_type == "angle" and safe_angle_id:
+        dest_filename = f"angle_{safe_angle_id}_{safe_filename}"
+    elif asset_type == "character" and safe_char_id:
+        st = f"_{safe_sheet_type}" if safe_sheet_type else ""
+        dest_filename = f"char_{safe_char_id}{st}_{safe_filename}"
     else:
         dest_filename = f"{asset_type}_{timestamp}_{safe_filename}"
 
-    file_path = UNIVERSE_MEDIA_DIR / dest_filename
+    universe_media_dir = projects_dir() / "universe"
+    universe_media_dir.mkdir(parents=True, exist_ok=True)
+    dest_path = (universe_media_dir / dest_filename).resolve()
+    if dest_path.parent != universe_media_dir.resolve():
+        raise HTTPException(status_code=400, detail="Invalid file path")
+    file_path = dest_path
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
@@ -242,32 +275,23 @@ async def upload_universe_asset(
     if asset_type == "environment":
         universe["environment"]["reference_image_path"] = relative_url
         save_universe(universe)
-    elif asset_type == "angle" and angle_id:
+    elif asset_type == "angle" and safe_angle_id:
         updated = False
-        env_angles = universe.get("environment", {}).get("camera_angles", [])
-        if isinstance(env_angles, list):
-            for ang in env_angles:
-                if ang.get("id") == angle_id:
-                    ang["reference_image_path"] = relative_url
-                    updated = True
-                    break
-        elif isinstance(env_angles, dict) and angle_id in env_angles:
-            env_angles[angle_id]["reference_image_path"] = relative_url
-            updated = True
-        
-        if "camera_angles" in universe and isinstance(universe["camera_angles"], dict) and angle_id in universe["camera_angles"]:
-            universe["camera_angles"][angle_id]["reference_image_path"] = relative_url
-            updated = True
+        for ang in universe.get("environment", {}).get("camera_angles", []):
+            if isinstance(ang, dict) and ang.get("id") == safe_angle_id:
+                ang["reference_image_path"] = relative_url
+                updated = True
+                break
         if updated:
             save_universe(universe)
-    elif asset_type == "character" and character_id:
+    elif asset_type == "character" and safe_char_id:
         for c in universe.get("characters", []):
-            if c.get("id") == character_id:
-                if sheet_type == "face":
+            if c.get("id") == safe_char_id:
+                if safe_sheet_type == "face":
                     c["face_sheet_image_path"] = relative_url
                     if not c.get("reference_image_path"):
                         c["reference_image_path"] = relative_url
-                elif sheet_type == "body":
+                elif safe_sheet_type == "body":
                     c["body_sheet_image_path"] = relative_url
                     c["reference_image_path"] = relative_url
                 else:
@@ -304,7 +328,7 @@ def sync_universe_characters(episode_id: str, req: SyncUniverseCharactersRequest
             default_seat = u_c.get("default_seat", "seat_1")
             existing_seat = ep_chars_dict.get(cid, {}).get("assigned_seat", default_seat)
             
-            ref_img = u_c.get("body_sheet_image_path") or u_c.get("reference_image_path") or u_c.get("face_sheet_image_path") or f"/media/{episode_id}/characters/kambiz.svg"
+            ref_img = u_c.get("body_sheet_image_path") or u_c.get("reference_image_path") or u_c.get("face_sheet_image_path") or ""
             face_img = u_c.get("face_sheet_image_path") or ref_img
             body_p = u_c.get("full_body_prompt_en") or u_c.get("visual_prompt_en", "")
             face_p = u_c.get("face_expressions_prompt_en", "")
@@ -328,6 +352,10 @@ def sync_universe_characters(episode_id: str, req: SyncUniverseCharactersRequest
                 "face_expressions_prompt_en": face_p,
                 "full_body_prompt_en": body_p,
                 "persona_behavior_prompt": persona_p,
+                "voice_description_fa": u_c.get("voice_description_fa", ""),
+                "dna_block_en": u_c.get("dna_block_en", ""),
+                "short_look_en": u_c.get("short_look_en", ""),
+                "acting_beats_en": u_c.get("acting_beats_en", ""),
                 "style_prompt": body_p,
                 "character_sheet_prompt_en": body_p,
                 "consistency_tags": u_c.get("flow_tag", ""),
@@ -380,7 +408,7 @@ def update_character_seat(episode_id: str, char_id: str, req: UpdateSeatRequest)
 @app.get("/api/projects")
 def list_projects():
     projects = []
-    for item in PROJECTS_DIR.iterdir():
+    for item in projects_dir().iterdir():
         if item.is_dir() and item.name != "universe":
             state_file = item / "state.json"
             if state_file.exists():
@@ -472,7 +500,7 @@ def update_stage_status(episode_id: str, req: StageActionRequest):
         if s.get("stage_number") == req.stage_number:
             s["status"] = req.status
             if req.status == "approved":
-                s["approved_at"] = datetime.utcnow().isoformat() + "Z"
+                s["approved_at"] = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
             if req.notes:
                 s["notes"] = req.notes
             found = True
@@ -491,18 +519,6 @@ def update_stage_status(episode_id: str, req: StageActionRequest):
 
     save_state(episode_id, state)
     return {"status": "success", "current_stage": state.get("current_stage"), "stages": stages}
-
-
-class SetCurrentStageRequest(BaseModel):
-    current_stage: int
-
-
-@app.post("/api/projects/{episode_id}/set_stage")
-def set_current_stage(episode_id: str, req: SetCurrentStageRequest):
-    state = load_state(episode_id)
-    state["current_stage"] = req.current_stage
-    save_state(episode_id, state)
-    return {"status": "success", "current_stage": req.current_stage}
 
 
 class NewProjectRequest(BaseModel):
@@ -542,8 +558,12 @@ def save_episode_idea(episode_id: str, req: SaveIdeaRequest):
 @app.post("/api/projects")
 def create_project(req: NewProjectRequest):
     if not req.episode_id or not req.episode_id.strip():
-        existing = [d.name for d in PROJECTS_DIR.iterdir() if d.is_dir()]
-        ep_count = len([d for d in existing if d.startswith("ep")]) + 1
+        nums = [
+            int(m.group(1))
+            for d in projects_dir().iterdir()
+            if d.is_dir() and (m := re.match(r"^ep(\d+)", d.name))
+        ]
+        ep_count = (max(nums) if nums else 0) + 1
         slug = req.english_title or req.title or ""
         ascii_slug = re.sub(r"[^a-z0-9]+", "-", slug.lower()).strip("-")
         if not ascii_slug:
@@ -618,12 +638,107 @@ def create_project(req: NewProjectRequest):
 # ASSET UPLOADS (Characters, Scenes, Audio)
 # ==========================================
 
+@app.post("/api/projects/{episode_id}/upload/scene_image")
+async def upload_scene_image(
+    episode_id: str,
+    scene_id: str = Form(...),
+    file: UploadFile = File(...)
+):
+    validate_scene_id(scene_id)
+    raw_name = Path(file.filename or "upload.bin").name
+    suffix = Path(raw_name).suffix.lower()
+    if suffix not in {".png", ".jpg", ".jpeg", ".webp"}:
+        raise HTTPException(status_code=400, detail="Unsupported file type")
+
+    project_path = get_project_path(episode_id)
+    target_dir = project_path / "assets" / "images"
+    target_dir.mkdir(parents=True, exist_ok=True)
+
+    dest_path = (target_dir / f"{scene_id}{suffix}").resolve()
+    if dest_path.parent != target_dir.resolve():
+        raise HTTPException(status_code=400, detail="Invalid file path")
+    file_path = dest_path
+
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    image_url = f"/media/{episode_id}/assets/images/{scene_id}{suffix}"
+    ver = int(file_path.stat().st_mtime)
+
+    def _mutate_scene_image(st: dict):
+        for sc in st.get("scenes", []):
+            if sc.get("scene_id") == scene_id or sc.get("id") == scene_id:
+                sc["image_path"] = image_url
+                sc["visual_asset"] = image_url
+                sc["image_version"] = ver
+                break
+
+    update_state(episode_id, _mutate_scene_image)
+
+    return {
+        "status": "success",
+        "scene_id": scene_id,
+        "image_url": image_url,
+        "image_path": image_url,
+        "image_version": ver,
+        "absolute_path": str(file_path)
+    }
+
+
+@app.post("/api/projects/{episode_id}/upload/scene_video")
+async def upload_scene_video(
+    episode_id: str,
+    scene_id: str = Form(...),
+    file: UploadFile = File(...)
+):
+    validate_scene_id(scene_id)
+    raw_name = Path(file.filename or "upload.bin").name
+    suffix = Path(raw_name).suffix.lower()
+    if suffix not in {".mp4", ".mov", ".webm"}:
+        raise HTTPException(status_code=400, detail="Unsupported file type")
+
+    project_path = get_project_path(episode_id)
+    target_dir = project_path / "scenes"
+    target_dir.mkdir(parents=True, exist_ok=True)
+    
+    safe_filename = f"{scene_id}_motion_{raw_name.replace(' ', '_')}"
+    dest_path = (target_dir / safe_filename).resolve()
+    if dest_path.parent != target_dir.resolve():
+        raise HTTPException(status_code=400, detail="Invalid file path")
+    file_path = dest_path
+    
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+        
+    video_url = f"/media/{episode_id}/scenes/{safe_filename}"
+    
+    def _mutate_video(st: dict):
+        for sc in st.get("scenes", []):
+            if sc.get("id") == scene_id or sc.get("scene_id") == scene_id:
+                sc["video_path"] = video_url
+                sc["video_asset"] = video_url
+                sc["shot_mode"] = "ai_video"
+                sc["media_type"] = "ai_video"
+                break
+
+    update_state(episode_id, _mutate_video)
+
+    return {
+        "status": "success",
+        "scene_id": scene_id,
+        "video_url": video_url,
+        "video_path": video_url,
+        "absolute_path": str(file_path)
+    }
+
+
 @app.post("/api/projects/{episode_id}/upload/{asset_type}")
 @app.post("/api/projects/{episode_id}/upload")
 async def upload_asset(
     episode_id: str,
     asset_type: Optional[str] = None,
     target_type: Optional[str] = Form(None),
+    segment_id: Optional[str] = Form(None),
     file: UploadFile = File(...)
 ):
     chosen_type = asset_type or target_type
@@ -647,7 +762,14 @@ async def upload_asset(
     target_dir.mkdir(parents=True, exist_ok=True)
     
     safe_filename = raw_name.replace(" ", "_")
-    file_path = target_dir / safe_filename
+    if chosen_type == "audio" and segment_id:
+        safe_seg = _sanitize_token(segment_id)
+        safe_filename = f"{safe_seg}_{safe_filename}"
+
+    dest_path = (target_dir / safe_filename).resolve()
+    if dest_path.parent != target_dir.resolve():
+        raise HTTPException(status_code=400, detail="Invalid file path")
+    file_path = dest_path
     
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
@@ -671,59 +793,6 @@ def read_skill_file(filename: str) -> str:
         with open(path, "r", encoding="utf-8") as f:
             return f.read()
     return ""
-
-
-def compute_seated_neighbors_context(characters: List[Dict[str, Any]], camera_angles_map: Dict[str, Any]):
-    seat_order = ["seat_1", "seat_2", "seat_3", "seat_4", "seat_5", "seat_6"]
-    seat_to_char = {}
-    for c in characters:
-        s_id = c.get("assigned_seat") or c.get("default_seat")
-        if s_id in seat_order:
-            seat_to_char[s_id] = c
-
-    neighbors_map = {}
-    lines = []
-    for idx, s_id in enumerate(seat_order):
-        c = seat_to_char.get(s_id)
-        left_seat = seat_order[(idx - 1) % 6]
-        right_seat = seat_order[(idx + 1) % 6]
-        
-        left_char = seat_to_char.get(left_seat)
-        right_char = seat_to_char.get(right_seat)
-        
-        left_desc = f"{left_char.get('name_en', left_char.get('id'))} ({left_char.get('flow_tag', '')})" if left_char else "Empty Chair"
-        right_desc = f"{right_char.get('name_en', right_char.get('id'))} ({right_char.get('flow_tag', '')})" if right_char else "Empty Chair"
-        
-        ang = camera_angles_map.get(s_id, {})
-        ang_tag = ang.get("flow_tag", f"@{s_id.title()}")
-        landmarks = ang.get("background_landmarks_en", "distinct room background")
-        
-        neighbors_map[s_id] = {
-            "current_seat": s_id,
-            "occupant": c.get("name_en") if c else None,
-            "occupant_tag": c.get("flow_tag") if c else None,
-            "left_seat": left_seat,
-            "left_player": left_char.get("name_en") if left_char else None,
-            "left_tag": left_char.get("flow_tag") if left_char else None,
-            "right_seat": right_seat,
-            "right_player": right_char.get("name_en") if right_char else None,
-            "right_tag": right_char.get("flow_tag") if right_char else None,
-            "landmarks": landmarks,
-        }
-        
-        if c:
-            c_tag = c.get("flow_tag", "")
-            lines.append(
-                f"- Seat {s_id} ({ang_tag}): {c.get('name_en', c.get('id'))} ({c_tag}) | "
-                f"Left neighbor: {left_desc} ({left_seat}) | "
-                f"Right neighbor: {right_desc} ({right_seat}) | "
-                f"Background behind: {landmarks}"
-            )
-        else:
-            lines.append(f"- Seat {s_id} ({ang_tag}): [Empty Chair] | Left: {left_desc} | Right: {right_desc} | Background behind: {landmarks}")
-            
-    summary_text = "\n".join(lines)
-    return neighbors_map, summary_text
 
 
 @app.post("/api/projects/{episode_id}/build-prompt/{stage}")
@@ -855,23 +924,19 @@ Return ONLY a valid JSON object with key `"characters"` containing character def
         
         script_segments = state.get("script", {}).get("segments", [])
         ep_characters = state.get("characters", [])
-        chars_for_seating = ep_characters if ep_characters else universe.get("characters", [])
         
-        _raw_angles = universe.get("environment", {}).get("camera_angles", [])
-        if not _raw_angles and "camera_angles" in universe:
-            _raw_angles = universe["camera_angles"]
-        if isinstance(_raw_angles, list):
-            camera_angles_map = {item["id"]: item for item in _raw_angles if isinstance(item, dict) and "id" in item}
-        elif isinstance(_raw_angles, dict):
-            camera_angles_map = _raw_angles
-        else:
-            camera_angles_map = {}
+        try:
+            roster = merge_roster(ep_characters, universe.get("characters", []))
+        except RosterError:
+            roster = {}
         
-        neighbors_map, seating_summary = compute_seated_neighbors_context(chars_for_seating, camera_angles_map)
+        camera_angles = universe.get("environment", {}).get("camera_angles", [])
+        seating_summary = format_seating_summary(roster, camera_angles)
 
         # Build Character DNA blocks summary
         dna_summary_lines = []
-        for c in (ep_characters if ep_characters else universe.get("characters", [])):
+        source_chars = list(roster.values()) if roster else (ep_characters if ep_characters else universe.get("characters", []))
+        for c in source_chars:
             c_tag = c.get("flow_tag") or c.get("name_en") or c.get("id")
             dna = c.get("dna_block_en", "")
             if not dna:
@@ -881,8 +946,10 @@ Return ONLY a valid JSON object with key `"characters"` containing character def
                 dna_summary_lines.append(f"- {c_tag}: \"{dna}\"")
         character_dna_summary = "\n".join(dna_summary_lines)
         
-        prompt = f"""You are the Lead Storyboard, Motion & Continuity Director for an Iranian animated poker comedy series.
-Follow {skill_filename} to generate the complete, exhaustive storyboard array (`scenes`) in STRICT JSON format.
+        hand_details = state.get("bible", {}).get("hand_details", {})
+        
+        prompt = f"""You are the Lead Storyboard Director for an Iranian animated poker comedy series.
+Follow {skill_filename} to generate the complete storyboard in STRICT JSON format with top-level keys `"hand_timeline"` and `"scenes"`.
 
 ---
 ### RECURRING UNIVERSE & SPATIAL ENVIRONMENT:
@@ -892,8 +959,12 @@ Follow {skill_filename} to generate the complete, exhaustive storyboard array (`
 {seating_summary}
 
 ---
-### CHARACTER VISUAL DNA BLOCKS (MANDATORY INJECTION):
+### CHARACTER VISUAL DNA BLOCKS:
 {character_dna_summary}
+
+---
+### BIBLE HAND DETAILS (FOR BUILDING HAND TIMELINE):
+{json.dumps(hand_details, ensure_ascii=False, indent=2)}
 
 ---
 ### EPISODE SCRIPT SEGMENTS (Total {len(script_segments)} segments):
@@ -905,11 +976,17 @@ Follow {skill_filename} to generate the complete, exhaustive storyboard array (`
 
 ---
 ### OUTPUT REQUIREMENT:
-Return ONLY a valid JSON object with key `"scenes"` containing:
-1. Every scene must have `table_blueprint` (exact community cards, pot size/composition in BB, per-seat player zones, persistent props).
-2. Every scene must follow the 8-part visual_prompt_en formula (Continuity lock, Style lock, Camera angle, Focal character DNA block & acting, Adjacent characters at edges, Table blueprint state, Persistent props/landmarks, Lighting & 9:16 composition lock - minimum 80-120 words).
-3. Automated `camera_direction` for static_image shots, and `motion_prompt_en` for ai_video shots.
-4. Scene 1 master continuity lock for all scenes from scene_02 onward.
+Return ONLY a valid JSON object with top-level keys `"hand_timeline"` and `"scenes"` matching the schema in {skill_filename}:
+1. `"hand_timeline"`: Convert Bible hand details into ordered chronological betting/dealing steps in big blinds (BB).
+2. `"scenes"`: Array of scene objects. Every scene MUST define:
+   - `"scene_id"`, `"beat_index"`, `"segment_ids"`, `"duration_sec"`, `"scene_title_fa"`, `"media_type"`
+   - `"scene_spec"`: defines `"shot_type"`, `"focal"` (required except for wide_master, isometric_overview, topdown_pot), `"emotion"`, `"mood"`, `"timeline_step"`, `"extra_action_en"`
+   - `"sfx_cue"`: sound effect identifier
+   - `"camera_direction"`: required for `"static_image"` (motion_type, camera_prompt_en, zoom_intensity)
+   - `"motion_prompt_en"`: required for `"ai_video"` (must include 'mouth closed' for silent acting)
+3. Scene 1 (`scene_01`) MUST have shot_type `"wide_master"`.
+4. FORBIDDEN keys (assembled deterministically by code; NEVER write them):
+   DO NOT write `visual_prompt_en`, `image_prompt_en`, `table_blueprint`, `table_state_en`, `adjacent_players`, `poker_table_state`, `poker_hud_overlay`, `image_references`, `camera_angle`, `focal_character`, or `characters_present`.
 """
         return {
             "episode_id": episode_id,
@@ -934,16 +1011,15 @@ def import_ai_studio_json(episode_id: str, stage: str, req: ImportJsonRequest):
     stage_key = stage.lower().strip()
     
     stages = state.get("stages", [])
+    validation_issues: List[Any] = []
     
-    def approve_stage_num(num: int, notes: str = ""):
+    def mark_stage_waiting_approval(num: int, notes: str = ""):
         for s in stages:
             if s.get("stage_number") == num:
-                s["status"] = "approved"
-                s["approved_at"] = datetime.utcnow().isoformat() + "Z"
+                if s.get("status") != "approved":
+                    s["status"] = "waiting_approval"
                 if notes:
                     s["notes"] = notes
-        if state.get("current_stage") == num and num < 9:
-            state["current_stage"] = num + 1
 
     if stage_key in ["1", "2", "bible", "idea"]:
         state["bible"] = state.get("bible", {})
@@ -964,8 +1040,8 @@ def import_ai_studio_json(episode_id: str, stage: str, req: ImportJsonRequest):
         if "comedy_beats" in parsed:
             state["bible"]["comedy_beats"] = parsed["comedy_beats"]
 
-        approve_stage_num(1, "ایده و دست با موفقیت ذخیره شد")
-        approve_stage_num(2, "کتابچه استراتژی و جوک‌ها ذخیره شد")
+        mark_stage_waiting_approval(1, "ایده و دست با موفقیت ذخیره شد")
+        mark_stage_waiting_approval(2, "کتابچه استراتژی و جوک‌ها ذخیره شد")
 
     elif stage_key in ["3", "script"]:
         segments = parsed.get("segments", [])
@@ -981,21 +1057,29 @@ def import_ai_studio_json(episode_id: str, stage: str, req: ImportJsonRequest):
         state["script"]["segments"] = segments
         
         tracks = []
+        audio_dir = get_project_path(episode_id) / "audio"
         for s in segments:
             seg_id = s.get("id") or f"seg_{len(tracks)+1:02d}"
+            wav_file = audio_dir / f"{seg_id}.wav"
+            if wav_file.exists():
+                audio_file = f"/media/{episode_id}/audio/{seg_id}.wav"
+                track_status = "ready"
+            else:
+                audio_file = ""
+                track_status = "pending_audio"
             tracks.append({
                 "segment_id": seg_id,
-                "speaker": s.get("speaker", "Narration"),
+                "speaker": s.get("speaker") or "NARRATOR",
                 "tts_text": s.get("tts_fa", s.get("subtitle_fa", "")),
                 "subtitle_text": s.get("subtitle_fa", ""),
-                "audio_file": f"/media/{episode_id}/audio/{seg_id}.wav",
-                "status": "ready",
+                "audio_file": audio_file,
+                "status": track_status,
                 "duration_sec": float(s.get("estimated_duration_sec", 5.0))
             })
         state["audio"] = state.get("audio", {})
         state["audio"]["tracks"] = tracks
 
-        approve_stage_num(3, "سناریوی دو متنی با اعراب TTS ذخیره شد")
+        mark_stage_waiting_approval(3, "سناریوی دو متنی با اعراب TTS ذخیره شد")
 
     elif stage_key in ["4", "characters"]:
         char_list = parsed.get("characters", [])
@@ -1004,34 +1088,58 @@ def import_ai_studio_json(episode_id: str, stage: str, req: ImportJsonRequest):
             
         if not char_list:
             raise HTTPException(status_code=400, detail="ورودی حاوی آرایه characters نیست")
+
+        if isinstance(parsed, dict) and parsed.get("style_bible_en"):
+            state.setdefault("bible", {})["visual_style"] = parsed["style_bible_en"]
             
         enriched = []
         for idx, c in enumerate(char_list, 1):
             char_id = c.get("id") or f"char_{idx:02d}"
             c_name_fa = c.get("name_fa", f"کاراکتر {idx}")
             is_anchor = c.get("is_style_anchor", idx == 1)
+            clean_name_en = (c.get("flow_tag") or "").replace("@", "").strip() or c.get("name_en", "Character")
+            flow_tag = c.get("flow_tag") or f"@{clean_name_en}"
+            default_seat = c.get("default_seat", "seat_1")
+            assigned_seat = c.get("assigned_seat") or default_seat or "seat_1"
             
-            avatar_url = c.get("avatar_url") or f"/media/{episode_id}/characters/kambiz.svg"
-            turnaround_sheet = c.get("turnaround_sheet") or f"/media/{episode_id}/characters/kambiz_sheet.svg"
+            avatar_url = c.get("avatar_url") or c.get("face_sheet_image_path") or ""
+            turnaround_sheet = c.get("turnaround_sheet") or c.get("body_sheet_image_path") or c.get("reference_image_path") or ""
+            
+            face_p = c.get("face_expressions_prompt_en", "")
+            body_p = c.get("full_body_prompt_en") or c.get("character_sheet_prompt_en", "")
+            persona_p = c.get("persona_behavior_prompt", "")
             
             enriched.append({
                 "id": char_id,
                 "name_fa": c_name_fa,
-                "name_en": c.get("name_en", "Character"),
+                "name_en": c.get("name_en", clean_name_en),
                 "role": c.get("role", "Poker Player"),
+                "flow_tag": flow_tag,
+                "default_seat": default_seat,
+                "assigned_seat": assigned_seat,
                 "is_style_anchor": is_anchor,
-                "status": "approved",
+                "status": "waiting_approval",
                 "avatar_url": avatar_url,
                 "turnaround_sheet": turnaround_sheet,
-                "style_prompt": c.get("character_sheet_prompt_en", c.get("style_prompt", "")),
-                "character_sheet_prompt_en": c.get("character_sheet_prompt_en", ""),
-                "consistency_tags": c.get("consistency_tags", ""),
+                "reference_image_path": turnaround_sheet,
+                "face_sheet_image_path": c.get("face_sheet_image_path", avatar_url),
+                "body_sheet_image_path": c.get("body_sheet_image_path", turnaround_sheet),
+                "face_expressions_prompt_en": face_p,
+                "full_body_prompt_en": body_p,
+                "persona_behavior_prompt": persona_p,
+                "voice_description_fa": c.get("voice_description_fa", ""),
+                "dna_block_en": c.get("dna_block_en", ""),
+                "short_look_en": c.get("short_look_en", ""),
+                "acting_beats_en": c.get("acting_beats_en", ""),
+                "style_prompt": c.get("character_sheet_prompt_en") or body_p,
+                "character_sheet_prompt_en": c.get("character_sheet_prompt_en") or body_p,
+                "consistency_tags": c.get("consistency_tags", flow_tag),
                 "voice_id": c.get("voice_id", "eleven_persian_narrator"),
-                "tagline": c.get("tagline", "")
+                "tagline": c.get("tagline", persona_p)
             })
             
         state["characters"] = enriched
-        approve_stage_num(4, "مدل شیت و لنگر استایل کاراکترها تایید شد")
+        mark_stage_waiting_approval(4, "مدل شیت و لنگر استایل کاراکترها ذخیره شد")
 
     elif stage_key in ["6", "scenes"]:
         scene_list = parsed.get("scenes", [])
@@ -1041,79 +1149,56 @@ def import_ai_studio_json(episode_id: str, stage: str, req: ImportJsonRequest):
         if not scene_list:
             raise HTTPException(status_code=400, detail="ورودی حاوی آرایه scenes نیست")
             
-        existing_scenes_map = {s.get("id"): s for s in state.get("scenes", [])}
-        enriched_scenes = []
-        for idx, sc in enumerate(scene_list, 1):
-            sc_id = sc.get("scene_id") or sc.get("id") or f"scene_{idx:02d}"
-            old_sc = existing_scenes_map.get(sc_id, {})
-            
-            hud = sc.get("poker_hud_overlay", {})
-            if isinstance(hud, str):
-                hud = {"action_badge": hud}
-                
-            motion_p = sc.get("motion_prompt_en") or old_sc.get("motion_prompt_en", "")
-            media_type = sc.get("media_type") or ("ai_video" if motion_p.strip() or sc.get("shot_mode") == "ai_video" else "static_image")
-            mode = "ai_video" if media_type == "ai_video" else "static_zoom"
-            effect = sc.get("camera_effect") or old_sc.get("camera_effect", "zoom_in")
-            dur = float(sc.get("duration_sec") or old_sc.get("duration_sec") or 2.0)
-            table_state_text = sc.get("table_state_en") or old_sc.get("table_state_en", "")
-            adjacent = sc.get("adjacent_players") or old_sc.get("adjacent_players", [])
-
-            # Automated FFmpeg Camera Direction for static_image
-            cam_direction = sc.get("camera_direction") or old_sc.get("camera_direction")
-            if not cam_direction and media_type == "static_image":
-                cam_direction = {
-                    "motion_type": "slow_zoom_in",
-                    "start_focus_region": f"chest-up framing on {(sc.get('characters_present') or ['Hero'])[0]}",
-                    "end_focus_region": f"tight macro push towards {(sc.get('characters_present') or ['Hero'])[0]} and table felt",
-                    "zoom_intensity": 1.15,
-                    "easing": "smooth",
-                    "camera_prompt_en": "Cinematic slow zoom in focusing on the character's reaction and the table chips"
-                }
-
-            # Determine best image asset URL
-            img_asset = old_sc.get("visual_asset") or old_sc.get("image_path") or sc.get("visual_asset") or sc.get("image_path") or f"/media/{episode_id}/assets/images/{sc_id}.png"
-
-            enriched_scenes.append({
-                "id": sc_id,
-                "beat_index": idx,
-                "time_range": f"00:{(idx-1)*2:02d} - 00:{idx*2:02d}",
-                "title": sc.get("scene_title_fa", f"صحنه #{idx}"),
-                "duration_sec": dur,
-                "segment_ids": sc.get("segment_ids", []),
-                "characters_present": sc.get("characters_present", []),
-                "adjacent_players": adjacent,
-                "table_state_en": table_state_text,
-                "table_blueprint": sc.get("table_blueprint") or old_sc.get("table_blueprint", {}),
-                "camera": sc.get("camera_angle", "Medium Shot"),
-                "media_type": media_type,
-                "shot_mode": mode,
-                "camera_effect": effect,
-                "camera_direction": cam_direction,
-                "visual_prompt": sc.get("visual_prompt_en", sc.get("visual_prompt", old_sc.get("visual_prompt", ""))),
-                "visual_prompt_en": sc.get("visual_prompt_en", sc.get("visual_prompt", old_sc.get("visual_prompt", ""))),
-                "motion_prompt_en": motion_p,
-                "target_video_sec": float(sc.get("target_video_sec") or dur or 2.0),
-                "poker_table_state": hud,
-                "sfx_cue": sc.get("sfx_cue", "chip_splash"),
-                "scene_spec": sc.get("scene_spec") or old_sc.get("scene_spec"),
-                "visual_asset": img_asset,
-                "image_path": img_asset,
-                "video_path": old_sc.get("video_path") or sc.get("video_path"),
-                "video_asset": old_sc.get("video_asset") or sc.get("video_asset"),
-                "status": "approved"
-            })
-            
-        state["scenes"] = enriched_scenes
         if isinstance(parsed, dict) and "hand_timeline" in parsed:
             state["hand_timeline"] = parsed["hand_timeline"]
-        approve_stage_num(6, "بیت‌های بصری استوری‌بورد و حرکت ذخیره شد")
+
+        existing_scenes_map = {s.get("id") or s.get("scene_id"): s for s in state.get("scenes", [])}
+        enriched_scenes = []
+        for idx, sc in enumerate(scene_list, 1):
+            norm = normalize_scene(sc, idx - 1, episode_id)
+            sc_id = norm["id"]
+            old_sc = existing_scenes_map.get(sc_id, {})
+            
+            # Preserve existing uploaded video_path/image_path from existing_scenes_map
+            if old_sc.get("video_path"):
+                norm["video_path"] = old_sc["video_path"]
+            if old_sc.get("video_asset"):
+                norm["video_asset"] = old_sc["video_asset"]
+            if old_sc.get("image_path"):
+                norm["image_path"] = old_sc["image_path"]
+                norm["visual_asset"] = old_sc.get("visual_asset", old_sc["image_path"])
+
+            # Map title and scene_title_fa
+            if not norm.get("title") and norm.get("scene_title_fa"):
+                norm["title"] = norm["scene_title_fa"]
+            elif not norm.get("title"):
+                norm["title"] = f"صحنه #{idx}"
+            norm.setdefault("scene_title_fa", norm["title"])
+
+            norm["status"] = "ready_for_review"
+            enriched_scenes.append(norm)
+
+        state["scenes"] = enriched_scenes
+        mark_stage_waiting_approval(6, "بیت‌های بصری استوری‌بورد و حرکت ذخیره شد")
+        save_state(episode_id, state)
+
+        has_specs = any(isinstance(sc.get("scene_spec"), dict) for sc in enriched_scenes)
+        if has_specs:
+            build_res = build_episode_prompts(episode_id, write=True)
+            if build_res.get("errors"):
+                raise HTTPException(status_code=422, detail="\n".join(build_res["errors"][:10]))
+            state = load_state(episode_id)
+
+        scene_errors = validate_scenes(state.get("scenes", []))
+        hard_errors = [e for e in scene_errors if "must match scene_NN" in e or "duplicate scene_id" in e or "non-empty list" in e]
+        if hard_errors:
+            raise HTTPException(status_code=422, detail="\n".join(hard_errors))
+        validation_issues = [{"scene_id": "", "field": "scenes", "severity": "warning", "message": e} for e in scene_errors]
 
     else:
         raise HTTPException(status_code=400, detail=f"Unsupported stage '{stage}' for JSON import")
 
     save_state(episode_id, state)
-    validation_issues = []
     if stage_key in ["3", "script"]:
         validation_issues = validate_segments(state.get("script", {}).get("segments", []))
 
@@ -1184,47 +1269,6 @@ def update_scene_details(episode_id: str, scene_id: str, req: UpdateSceneDetails
     return {"status": "success", "scene": found_scene}
 
 
-@app.post("/api/projects/{episode_id}/upload/scene_video")
-async def upload_scene_video(
-    episode_id: str,
-    scene_id: str = Form(...),
-    file: UploadFile = File(...)
-):
-    validate_scene_id(scene_id)
-    raw_name = Path(file.filename or "upload.bin").name
-    suffix = Path(raw_name).suffix.lower()
-    if suffix not in {".mp4", ".mov", ".webm"}:
-        raise HTTPException(status_code=400, detail="Unsupported file type")
-
-    project_path = get_project_path(episode_id)
-    target_dir = project_path / "scenes"
-    target_dir.mkdir(parents=True, exist_ok=True)
-    
-    safe_filename = f"{scene_id}_motion_{raw_name.replace(' ', '_')}"
-    file_path = target_dir / safe_filename
-    
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-        
-    video_url = f"/media/{episode_id}/scenes/{safe_filename}"
-    
-    state = load_state(episode_id)
-    for sc in state.get("scenes", []):
-        if sc.get("id") == scene_id or sc.get("scene_id") == scene_id:
-            sc["video_path"] = video_url
-            sc["video_asset"] = video_url
-            sc["shot_mode"] = "ai_video"
-            break
-            
-    save_state(episode_id, state)
-    return {
-        "status": "success",
-        "scene_id": scene_id,
-        "video_url": video_url,
-        "absolute_path": str(file_path)
-    }
-
-
 @app.get("/api/skills")
 def list_skills():
     skills = []
@@ -1241,9 +1285,13 @@ def list_skills():
 
 @app.get("/api/skills/{skill_name}")
 def get_skill_content(skill_name: str):
+    if "/" in skill_name or "\\" in skill_name or ".." in skill_name:
+        raise HTTPException(status_code=400, detail="Invalid skill name")
     if not skill_name.endswith(".md"):
         skill_name = f"{skill_name}.md"
-    skill_path = SKILLS_DIR / skill_name
+    skill_path = (SKILLS_DIR / skill_name).resolve()
+    if skill_path.parent != SKILLS_DIR.resolve():
+        raise HTTPException(status_code=400, detail="Invalid skill path")
     if not skill_path.exists():
         raise HTTPException(status_code=404, detail="Skill file not found")
     with open(skill_path, "r", encoding="utf-8") as f:
@@ -1323,12 +1371,30 @@ def get_ffmpeg_render_command(episode_id: str):
         f'-c:v libx264 -preset fast -crf 20 -c:a aac -b:a 192k "{output_path}"'
     )
     
+    scene_clip_commands = []
+    for sc in state.get("scenes", []):
+        if sc.get("media_type", "static_image") == "static_image":
+            sid = sc.get("scene_id") or sc.get("id") or "scene_01"
+            img_in = f"projects/{episode_id}/assets/images/{sid}.png"
+            clip_out = f"projects/{episode_id}/exports/clips/{sid}.mp4"
+            cmd_list = build_scene_clip_command(
+                img_in,
+                clip_out,
+                sc.get("camera_direction"),
+                sc.get("duration_sec", 2.0),
+            )
+            scene_clip_commands.append({
+                "scene_id": sid,
+                "command": shlex.join(cmd_list)
+            })
+
     return {
         "status": "ready",
         "ffmpeg_command": cmd,
         "font": font_name,
         "rtl_shaping_engine": "libass with HarfBuzz enabled",
-        "output_expected": output_path
+        "output_expected": output_path,
+        "scene_clip_commands": scene_clip_commands
     }
 
 
@@ -1376,10 +1442,6 @@ async def api_regenerate_scene_image(episode_id: str, scene_id: str):
 def api_get_task_status(episode_id: str):
     get_project_path(episode_id)
     task = get_task_for_episode(episode_id)
-    try:
-        load_state(episode_id)
-    except Exception:
-        pass
     return task.to_dict()
 
 

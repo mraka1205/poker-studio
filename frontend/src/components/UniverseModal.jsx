@@ -1,19 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { 
   X, 
-  Sparkles, 
   Globe, 
   Users, 
   Copy, 
   Check, 
-  Upload, 
   Plus, 
   Trash2, 
   Save, 
-  AlertCircle, 
-  Camera,
-  Layers,
-  CheckCircle2
+  Camera, 
+  CheckCircle2 
 } from 'lucide-react';
 import { fetchUniverse, saveUniverse, uploadUniverseAsset } from '../api';
 import { copyText as writeClipboard } from '../utils/clipboard';
@@ -26,6 +22,16 @@ export default function UniverseModal({ isOpen, onClose, onUniverseUpdated }) {
   const [copiedId, setCopiedId] = useState(null);
   const [uploadingTarget, setUploadingTarget] = useState(null); // 'env' or `${charId}_face` or `${charId}_body` or `angle_${angleId}`
   const [saveSuccess, setSaveSuccess] = useState(false);
+
+  const rawSeatAngles = (universe?.environment?.camera_angles || []).filter(a => a.id?.startsWith('seat_'));
+  const seatOptions = rawSeatAngles.length > 0 ? rawSeatAngles : [
+    { id: 'seat_1', label_fa: 'صندلی ۱' },
+    { id: 'seat_2', label_fa: 'صندلی ۲' },
+    { id: 'seat_3', label_fa: 'صندلی ۳' },
+    { id: 'seat_4', label_fa: 'صندلی ۴' },
+    { id: 'seat_5', label_fa: 'صندلی ۵' },
+    { id: 'seat_6', label_fa: 'صندلی ۶' }
+  ];
 
   useEffect(() => {
     if (isOpen) {
@@ -166,7 +172,7 @@ export default function UniverseModal({ isOpen, onClose, onUniverseUpdated }) {
     if (!file) return;
     setUploadingTarget(`angle_${angleId}`);
     try {
-      const res = await uploadUniverseAsset('camera_angle', file, null, angleId);
+      const res = await uploadUniverseAsset('angle', file, null, angleId);
       setUniverse(prev => ({
         ...prev,
         environment: {
@@ -622,12 +628,11 @@ export default function UniverseModal({ isOpen, onClose, onUniverseUpdated }) {
                                   onChange={(e) => updateCharField(char.id, 'default_seat', e.target.value)}
                                   className="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-1.5 text-xs text-amber-300 focus:outline-none focus:border-amber-500 font-bold"
                                 >
-                                  <option value="seat_1">صندلی ۱ (قفسه کتاب)</option>
-                                  <option value="seat_2">صندلی ۲ (قاب هنری)</option>
-                                  <option value="seat_3">صندلی ۳ (پرده ضخیم)</option>
-                                  <option value="seat_4">صندلی ۴ (تخته‌نرد و گیاه)</option>
-                                  <option value="seat_5">صندلی ۵ (چای ایرانی و پسته)</option>
-                                  <option value="seat_6">صندلی ۶ (عمق اتاق)</option>
+                                  {seatOptions.map((s) => (
+                                    <option key={s.id} value={s.id}>
+                                      {s.label_fa || s.id}
+                                    </option>
+                                  ))}
                                 </select>
                               </div>
                             </div>

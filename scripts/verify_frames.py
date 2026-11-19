@@ -1,5 +1,4 @@
 """Usage: python scripts/verify_frames.py <episode_id>   (exit 1 when any ERROR)"""
-import json
 import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional

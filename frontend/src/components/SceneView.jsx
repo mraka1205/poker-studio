@@ -1,38 +1,30 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-  Film, 
   Copy, 
   Check, 
   Upload, 
   CheckCircle2, 
   Clock, 
   Volume2, 
-  Camera, 
-  ExternalLink,
-  Video,
-  Save,
-  Image as ImageIcon,
-  MoveHorizontal,
-  ZoomIn,
-  ZoomOut,
-  Zap,
-  RefreshCw,
-  Sparkles,
-  Bot,
-  Play,
-  Sliders,
-  Compass,
-  FileText,
-  Palette,
-  Loader2,
-  AlertCircle,
-  Terminal,
-  ChevronDown,
-  ChevronUp,
-  XCircle
+  ExternalLink, 
+  Video, 
+  Save, 
+  Image as ImageIcon, 
+  RefreshCw, 
+  Bot, 
+  Compass, 
+  FileText, 
+  Palette, 
+  Loader2, 
+  AlertCircle, 
+  Terminal, 
+  ChevronDown, 
+  ChevronUp, 
+  XCircle 
 } from 'lucide-react';
 import { 
   uploadAsset, 
+  uploadSceneImage,
   uploadSceneVideo, 
   updateSceneDetails,
   triggerStoryboardGeneration,
@@ -44,7 +36,7 @@ import {
 } from '../api';
 import { copyText as writeClipboard } from '../utils/clipboard';
 
-const SHOT_TYPES = ['wide_master', 'closeup_seat', 'medium_seat', 'low_angle_hero', 'reaction_insert', 'chips_macro', 'topdown_pot', 'ots_duel'];
+const SHOT_TYPES = ['wide_master', 'isometric_overview', 'closeup_seat', 'medium_seat', 'low_angle_hero', 'reaction_insert', 'chips_macro', 'topdown_pot', 'ots_duel'];
 const EMOTIONS = ['neutral', 'thinking', 'shock', 'triumph', 'bet'];
 const MOODS = ['neutral', 'tension', 'triumph', 'tilt'];
 
@@ -273,11 +265,7 @@ export default function SceneView({
     if (!file) return;
     try {
       setUploadingImageId(sceneId);
-      const res = await uploadAsset(episodeId, 'scene_image', file);
-      const updatedPath = res.image_path || res.asset_path || res.url;
-      if (onSceneAssetUpdated) {
-        onSceneAssetUpdated(sceneId, 'image_path', updatedPath);
-      }
+      await uploadSceneImage(episodeId, sceneId, file);
       setImgErrorMap(prev => ({ ...prev, [sceneId]: false }));
       if (onRefresh) {
         await onRefresh();
@@ -293,10 +281,7 @@ export default function SceneView({
     if (!file) return;
     try {
       setUploadingVideoId(sceneId);
-      const res = await uploadSceneVideo(episodeId, sceneId, file);
-      if (onSceneAssetUpdated) {
-        onSceneAssetUpdated(sceneId, 'video_path', res.video_path || res.asset_path);
-      }
+      await uploadSceneVideo(episodeId, sceneId, file);
       if (onRefresh) {
         await onRefresh();
       }
@@ -602,7 +587,7 @@ export default function SceneView({
         {scenes.map((scene, idx) => {
           const sceneId = scene.scene_id || scene.id || `scene_${String(idx + 1).padStart(2, '0')}`;
           const isAiVideo = scene.media_type === 'ai_video' || scene.shot_mode === 'ai_video';
-          const visualPrompt = scene.visual_prompt_en || scene.visual_prompt || '';
+          const visualPrompt = scene.image_prompt_en || scene.visual_prompt_en || scene.visual_prompt || '';
           
           // Motion Prompt State (for ai_video)
           const motionPrompt = editedMotionPrompts[sceneId] !== undefined 
@@ -656,8 +641,23 @@ export default function SceneView({
                   </div>
                 </div>
 
-                {/* Media Type Badge */}
+                {/* Media Type Badge & Approval Toggle */}
                 <div className="flex items-center gap-1.5">
+                  {onUpdateSceneStatus && (
+                    <button
+                      type="button"
+                      onClick={() => onUpdateSceneStatus(sceneId, scene.status === 'approved' ? 'ready_for_review' : 'approved')}
+                      title={scene.status === 'approved' ? 'تایید شده (کلیک برای لغو تایید)' : 'در انتظار بررسی (کلیک برای تایید)'}
+                      className={`text-[10px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1 border transition-all ${
+                        scene.status === 'approved'
+                          ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300 hover:bg-emerald-500/30'
+                          : 'bg-slate-800/80 border-slate-700 text-slate-400 hover:text-slate-200 hover:border-slate-600'
+                      }`}
+                    >
+                      <CheckCircle2 className={`w-3 h-3 ${scene.status === 'approved' ? 'text-emerald-400' : 'text-slate-500'}`} />
+                      {scene.status === 'approved' ? 'تایید شد' : 'تایید'}
+                    </button>
+                  )}
                   <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1 border ${
                     isAiVideo 
                       ? 'bg-purple-500/15 border-purple-500/40 text-purple-300'

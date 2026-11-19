@@ -396,7 +396,7 @@
         "action_badge": "Asghar Check-Raises 22BB"
       },
       "sfx_cue": "sfx_tilt_alarm",
-      "visual_asset": "/projects/ep01-sample/scenes/scene_04.png",
+      "visual_asset": "/media/ep01-sample/scenes/scene_04.png",
       "status": "pending_generation"
     },
     {
@@ -421,7 +421,7 @@
         "action_badge": "Hero Shoves ALL-IN (Tilt)"
       },
       "sfx_cue": "sfx_glass_shatter",
-      "visual_asset": "/projects/ep01-sample/scenes/scene_05.png",
+      "visual_asset": "/media/ep01-sample/scenes/scene_05.png",
       "status": "pending_generation"
     },
     {
@@ -447,7 +447,7 @@
         "action_badge": "Asghar Wins 200 BB Pot"
       },
       "sfx_cue": "sfx_cash_register_ding",
-      "visual_asset": "/projects/ep01-sample/scenes/scene_06.png",
+      "visual_asset": "/media/ep01-sample/scenes/scene_06.png",
       "status": "pending_generation"
     },
     {
@@ -472,7 +472,7 @@
         "action_badge": "Golden Rule: Fold to Fish Check-Raise on Dry Boards"
       },
       "sfx_cue": "sfx_record_scratch",
-      "visual_asset": "/projects/ep01-sample/scenes/scene_07.png",
+      "visual_asset": "/media/ep01-sample/scenes/scene_07.png",
       "status": "pending_generation"
     }
   ],
@@ -493,6 +493,60 @@
         "audio_file": "/media/ep01-sample/audio/seg_01.wav",
         "status": "ready",
         "duration_sec": 4.5
+      },
+      {
+        "segment_id": "seg_02",
+        "speaker": "NARRATOR",
+        "tts_text": "صَد بیگی عَمیقی، تو باتِن با آس و شاه آفِرین تِریبِت زَدی، اَصْغَر فیش هَم از بیگ بْلایْند با لَبْخَندِ ژوکوند کال می‌کُنِه.",
+        "subtitle_text": "صد بیگی عمیقی، تو باتن با آس و شاه آفرین ۳-بِت زدی، اصغر فیش هم از بیگ بلایند با لبخند ژکوند کال می‌کنه.",
+        "audio_file": "/media/ep01-sample/audio/seg_02.wav",
+        "status": "ready",
+        "duration_sec": 7.5
+      },
+      {
+        "segment_id": "seg_03",
+        "speaker": "Kambiz",
+        "tts_text": "فِلاپ میاد: هَشْتِ پیک، چَهارِ خِشْت، دویِ گِشْنیز! هیچ لَعْنَتی به هیچی وَصْل نیست، وَلی سولوِرِ مَن می‌گِه سی‌بِت بِزَن!",
+        "subtitle_text": "فلاپ میاد: ۸ پیک، ۴ خشت، ۲ گشنیز! هیچ لعنتی به هیچی وصل نیست، ولی سولور من می‌گه سی‌بِت بزن!",
+        "audio_file": "/media/ep01-sample/audio/seg_03.wav",
+        "status": "ready",
+        "duration_sec": 6.8
+      },
+      {
+        "segment_id": "seg_04",
+        "speaker": "Asghar",
+        "tts_text": "کامبیز سی‌بِت می‌زَنِه، اَصْغَر تَسْبیح رو می‌ذارِه زَمین، یهو میگِه: چِک‌رِیز، چِهِل تا بیگی بیار وَسَط داداش!",
+        "subtitle_text": "کامبیز سی‌بت می‌زنه، اصغر تسبیح رو می‌ذاره زمین، یهو میگه: چِک‌رِیز، ۴۰ تا بیگی بیار وسط داداش!",
+        "audio_file": "/media/ep01-sample/audio/seg_04.wav",
+        "status": "ready",
+        "duration_sec": 7.0
+      },
+      {
+        "segment_id": "seg_05",
+        "speaker": "Kambiz",
+        "tts_text": "مَغْزِ هیرو داد می‌زَنِه: نَکُنِه دارِه بْلَفَم می‌زَنِه؟ مَن آس دارَم! مَن بْلاکِر دارَم! آل‌آین می‌زَنَم بِفَهمِه رَئیس کیِه!",
+        "subtitle_text": "مغز هیرو داد می‌زنه: نکنه داره بلفم می‌زنه؟ من آس دارم! من بلاکر دارم! آل‌آین می‌زنم بفهمه رئیس کیه!",
+        "audio_file": "/media/ep01-sample/audio/seg_05.wav",
+        "status": "ready",
+        "duration_sec": 7.5
+      },
+      {
+        "segment_id": "seg_06",
+        "speaker": "NARRATOR",
+        "tts_text": "اَصْغَر با دَسْتِ هَشْت و هَفْتِ سوتِد یِه پیر دارِه و کال می‌کُنِه! کُلِّ اِستَک پَر! یادِت نَرِه: دَسْتِ اِی‌کِی فَقَط یک آس‌هایِ سادَسْت!",
+        "subtitle_text": "اصغر با دست ۸ و ۷ سویتد یه پیر داره و کال می‌کنه! کل استک پر! یادت نره: دست AK فقط یک آس‌های (Ace-High) سادست!",
+        "audio_file": "/media/ep01-sample/audio/seg_06.wav",
+        "status": "ready",
+        "duration_sec": 8.0
+      },
+      {
+        "segment_id": "seg_07",
+        "speaker": "NARRATOR",
+        "tts_text": "قانونِ طَلایی: رویِ بوردِ خُشْک، با دَسْتِ پیر نَشُدِه سایزِ بِت رو کُنْتُرُل کُن و جِلویِ چِک‌رِیزِ فیش‌هایِ مَحَلِّه، راحَت فولد بِدِه. چَنِل رو سابْسْکرایْب کُن تا اِسْتَکِت دود نَشِه!",
+        "subtitle_text": "قانون طلایی: روی بورد خشک، با دست پیرنشده سایز بت رو کنترل کن و جلوی چک‌ریز فیش‌های محله، راحت فولد بده. چنل رو سابسکرایب کن تا استکت دود نشه!",
+        "audio_file": "/media/ep01-sample/audio/seg_07.wav",
+        "status": "ready",
+        "duration_sec": 9.0
       }
     ]
   },

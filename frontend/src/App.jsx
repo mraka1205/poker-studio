@@ -174,7 +174,6 @@ export default function App() {
           currentStage={projectState.current_stage || 1}
           activeViewStage={activeStageNumber}
           onSelectStage={(stageNum) => handleNavigateToStage(stageNum)}
-          onApproveCurrentStage={() => handleApproveStage(projectState.current_stage)}
         />
       )}
 

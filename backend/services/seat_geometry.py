@@ -38,3 +38,55 @@ def merge_roster(state_characters: Optional[List[Dict[str, Any]]],
     if not roster:
         raise RosterError("No episode characters could be matched to universe.json")
     return roster
+
+
+def format_seating_summary(
+    roster: Dict[str, Dict[str, Any]],
+    camera_angles: Optional[List[Dict[str, Any]]] = None,
+) -> str:
+    angles_by_id: Dict[str, Dict[str, Any]] = {}
+    if camera_angles:
+        if isinstance(camera_angles, list):
+            angles_by_id = {a.get("id"): a for a in camera_angles if isinstance(a, dict) and "id" in a}
+        elif isinstance(camera_angles, dict):
+            angles_by_id = camera_angles
+
+    lines: List[str] = []
+    for seat_id in SEAT_ORDER:
+        c = roster.get(seat_id)
+        fn = frame_neighbors(seat_id)
+        left_seat = fn["left"]
+        right_seat = fn["right"]
+        left_char = roster.get(left_seat)
+        right_char = roster.get(right_seat)
+
+        left_desc = (
+            f"{left_char.get('name_en') or left_char.get('id', 'Player')} ({left_char.get('flow_tag', '')})"
+            if left_char else "Empty Chair"
+        )
+        right_desc = (
+            f"{right_char.get('name_en') or right_char.get('id', 'Player')} ({right_char.get('flow_tag', '')})"
+            if right_char else "Empty Chair"
+        )
+
+        ang = angles_by_id.get(seat_id, {})
+        ang_tag = ang.get("flow_tag", f"@{seat_id.title()}")
+        landmarks = ang.get("background_landmarks_en", "distinct room background")
+
+        if c:
+            c_tag = c.get("flow_tag", "")
+            c_name = c.get("name_en") or c.get("id", "Player")
+            lines.append(
+                f"- Seat {seat_id} ({ang_tag}): {c_name} ({c_tag}) | "
+                f"Left neighbor: {left_desc} ({left_seat}) | "
+                f"Right neighbor: {right_desc} ({right_seat}) | "
+                f"Background behind: {landmarks}"
+            )
+        else:
+            lines.append(
+                f"- Seat {seat_id} ({ang_tag}): [Empty Chair] | "
+                f"Left: {left_desc} | Right: {right_desc} | "
+                f"Background behind: {landmarks}"
+            )
+
+    return "\n".join(lines)

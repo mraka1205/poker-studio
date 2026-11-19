@@ -47,8 +47,8 @@ Each scene object has ONLY these keys:
   "sfx_cue": "sfx_chip_riffle"
 }
 ```
-- `scene_spec.shot_type` is one of: `wide_master`, `closeup_seat`, `medium_seat`, `low_angle_hero`, `reaction_insert`, `chips_macro`, `topdown_pot`, `ots_duel`.
-- `scene_spec.focal`: a `flow_tag` seated in this episode. Required for every shot_type except `wide_master` and `topdown_pot`. `ots_duel` also needs `ots_from` (the foreground character).
+- `scene_spec.shot_type` is one of: `wide_master`, `isometric_overview`, `closeup_seat`, `medium_seat`, `low_angle_hero`, `reaction_insert`, `chips_macro`, `topdown_pot`, `ots_duel`.
+- `scene_spec.focal`: a `flow_tag` seated in this episode. Required for every shot_type except `wide_master`, `isometric_overview` and `topdown_pot`. `ots_duel` also needs `ots_from` (the foreground character).
 - `scene_spec.emotion`: one of `neutral|thinking|shock|triumph|bet`. `mood` (optional): one of `neutral|tension|triumph|tilt`.
 - `scene_spec.timeline_step`: index of the `hand_timeline` step that is true during this shot.
 - `scene_spec.extra_action_en` (optional): one short English clause, no tags, no flags.

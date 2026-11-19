@@ -1,14 +1,15 @@
 """Idempotent repair of projects/universe.json.  Usage: python scripts/repair_universe.py [--dry-run]"""
 import argparse
 import json
-import os
 import shutil
 import sys
-import tempfile
 from pathlib import Path
+from typing import Optional
 
-ROOT = Path(__file__).resolve().parent.parent
-UNIVERSE = ROOT / "projects" / "universe.json"
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from backend.services.paths import projects_dir
+from backend.services.state_store import write_json_atomic
+
 TABLET = "Holding a tiny miniature electronic tablet prop with poker ranges in one felted hand."
 NOTEBOOK = "Holding a small crumpled pocket notebook and a chewed pen in one hand (no tablets or high-tech gadgets)."
 MEDIA_KEYS = ("reference_image_path", "face_sheet_image_path", "body_sheet_image_path")
@@ -40,7 +41,9 @@ def repair(universe: dict):
     return universe, notes
 
 
-def audit(universe: dict, root: Path) -> list:
+def audit(universe: dict, root: Optional[Path] = None) -> list:
+    if root is None:
+        root = projects_dir()
     problems = []
     tags = [c.get("flow_tag") for c in universe.get("characters", [])]
     for t in set(tags):
@@ -60,7 +63,8 @@ def audit(universe: dict, root: Path) -> list:
         rel = p.replace("/media/universe/", "")
         if "…" in rel:
             problems.append(f"{owner}: filename contains '…' (rename file): {rel}")
-        if not (root / "projects" / "universe" / rel).exists():
+        target = root / "universe" / rel if (root.name == "projects" or (root / "universe").exists()) else root / "projects" / "universe" / rel
+        if not target.exists():
             problems.append(f"{owner}: missing file projects/universe/{rel}")
     return problems
 
@@ -69,22 +73,20 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
-    data = json.loads(UNIVERSE.read_text(encoding="utf-8-sig"))
+    path = projects_dir() / "universe.json"
+    data = json.loads(path.read_text(encoding="utf-8-sig"))
     data, notes = repair(data)
     for n in notes:
         print("FIX  ", n)
-    problems = audit(data, ROOT)
+    problems = audit(data, projects_dir())
     for p in problems:
         print("AUDIT", p)
     if not args.dry_run and notes:
-        bak = UNIVERSE.with_name("universe.json.bak")
+        bak = path.with_name("universe.json.bak")
         if not bak.exists():
-            shutil.copy2(UNIVERSE, bak)
-        fd, tmp = tempfile.mkstemp(dir=str(UNIVERSE.parent), suffix=".tmp")
-        with os.fdopen(fd, "w", encoding="utf-8") as fh:
-            json.dump(data, fh, ensure_ascii=False, indent=2)
-        os.replace(tmp, UNIVERSE)
-        print(f"Wrote {UNIVERSE}")
+            shutil.copy2(path, bak)
+        write_json_atomic(path, data)
+        print(f"Wrote {path}")
     return 2 if any("duplicate flow_tag" in p for p in problems) else 0
 
 

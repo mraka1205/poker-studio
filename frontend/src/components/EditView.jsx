@@ -1,16 +1,12 @@
 import React, { useState } from 'react';
 import { 
-  Scissors, 
   Terminal, 
   Check, 
   Copy, 
   FileText, 
-  Sparkles, 
   CheckCircle2, 
-  Download, 
-  Code2, 
-  Video,
-  Type
+  Video, 
+  Type 
 } from 'lucide-react';
 import { generateSubtitles, fetchFfmpegCommand } from '../api';
 import { copyText as writeClipboard } from '../utils/clipboard';
@@ -23,6 +19,8 @@ export default function EditView({
 }) {
   const [srtOutput, setSrtOutput] = useState(null);
   const [ffmpegCmd, setFfmpegCmd] = useState(null);
+  const [sceneClipCmds, setSceneClipCmds] = useState([]);
+  const [copiedClipId, setCopiedClipId] = useState(null);
   const [loadingSrt, setLoadingSrt] = useState(false);
   const [loadingFfmpeg, setLoadingFfmpeg] = useState(false);
   const [copiedCmd, setCopiedCmd] = useState(false);
@@ -52,6 +50,7 @@ export default function EditView({
     try {
       const res = await fetchFfmpegCommand(episodeId);
       setFfmpegCmd(res.ffmpeg_command);
+      setSceneClipCmds(res.scene_clip_commands || []);
     } catch (err) {
       alert('خطا در دریافت دستور FFmpeg: ' + err.message);
     } finally {
@@ -187,6 +186,47 @@ export default function EditView({
           <pre className="p-3.5 rounded-lg bg-black text-xs font-mono text-emerald-300 ltr-content overflow-x-auto whitespace-pre-wrap leading-relaxed select-all">
             {ffmpegCmd}
           </pre>
+        </div>
+      )}
+
+      {/* Per-Scene Ken Burns Commands */}
+      {sceneClipCmds.length > 0 && (
+        <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-amber-400 flex items-center gap-1.5">
+              <Video className="w-3.5 h-3.5" />
+              دستورات رندر کلیپ‌های حرکتی صحنه‌ها (Ken Burns Clips):
+            </span>
+            <span className="text-[11px] text-slate-400 font-mono">
+              {sceneClipCmds.length} صحنه
+            </span>
+          </div>
+
+          <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
+            {sceneClipCmds.map((clip) => (
+              <div key={clip.scene_id} className="p-2.5 rounded-lg bg-black/60 border border-slate-800 space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-mono font-bold text-slate-300">
+                    {clip.scene_id}
+                  </span>
+                  <button
+                    onClick={() => {
+                      copyToClipboard(clip.command, () => {});
+                      setCopiedClipId(clip.scene_id);
+                      setTimeout(() => setCopiedClipId(null), 2000);
+                    }}
+                    className="flex items-center gap-1 text-[11px] font-bold text-amber-400 hover:text-amber-300"
+                  >
+                    {copiedClipId === clip.scene_id ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                    {copiedClipId === clip.scene_id ? 'کپی شد!' : 'کپی'}
+                  </button>
+                </div>
+                <pre className="text-[10px] font-mono text-slate-300 ltr-content overflow-x-auto whitespace-pre-wrap select-all">
+                  {clip.command}
+                </pre>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 

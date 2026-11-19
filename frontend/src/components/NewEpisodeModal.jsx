@@ -73,7 +73,7 @@ export default function NewEpisodeModal({ isOpen, onClose, onCreated }) {
             </label>
             <input
               type="text"
-              placeholder="مثال: تراژدی پاکت شاه در برابر تک‌خال اصغر فیش"
+              placeholder="مثال: تراژدی پاکت شاه در برابر تک‌خال بیژن (@Bijan)"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-slate-100 text-sm focus:border-amber-500 focus:outline-none"
@@ -90,7 +90,7 @@ export default function NewEpisodeModal({ isOpen, onClose, onCreated }) {
             </label>
             <textarea
               rows={5}
-              placeholder="شرح دست، اشتباه خنده‌دار بازیکنان، پوزیشن‌ها یا استراتژی مورد نظر را بنویسید...&#10;مثال: هیرو در پوزیشن کات‌آف با پاکت شاه (KK) سه-بت می‌زنه. اصغر فیش با A-3 آف‌سوت از بلایند کال می‌کنه. روی فلاپ آس میاد و کامبیز از خشم نمیتونه فولد بده و با آل‌آین استکش پودر میشه..."
+              placeholder="شرح دست، اشتباه خنده‌دار بازیکنان، پوزیشن‌ها یا استراتژی مورد نظر را بنویسید...&#10;مثال: هیرو در پوزیشن کات‌آف با پاکت شاه (KK) سه-بت می‌زنه. بیژن (@Bijan) با A-3 آف‌سوت از بلایند کال می‌کنه. روی فلاپ آس میاد و آرش (@Arash) از خشم نمیتونه فولد بده و با آل‌آین استکش پودر میشه..."
               value={rawIdea}
               onChange={(e) => setRawIdea(e.target.value)}
               className="w-full p-3.5 rounded-xl bg-slate-950 border border-slate-700 text-slate-100 text-xs leading-relaxed focus:border-amber-500 focus:outline-none resize-y"

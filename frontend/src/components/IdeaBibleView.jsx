@@ -65,7 +65,7 @@ export default function IdeaBibleView({
             </span>
           </div>
           <h2 className="text-xl font-black text-white">
-            {isIdea ? 'تعریف دست، تضاد کمدی و پیام آموزشی' : 'جهان داستان، زبان گرافیکی و پالت رنگ نئون'}
+            {isIdea ? 'تعریف دست، تضاد کمدی و پیام آموزشی' : 'جهان داستان، استایل استاپموشن نمدی و جزئیات دست'}
           </h2>
         </div>
 
@@ -171,7 +171,7 @@ export default function IdeaBibleView({
               استایل بصری (Visual Style)
             </h3>
             <p className="text-xs text-slate-300 leading-relaxed">
-              {bibleData.visual_style || 'انیمیشن دو بعدی مدرن'}
+              {bibleData.visual_style || 'استاپموشن عروسکی نمدی دستساز (9:16)'}
             </p>
             <div className="text-xs text-slate-400 font-mono">
               نسبت تصویر: {bibleData.frame_aspect_ratio || '9:16'}

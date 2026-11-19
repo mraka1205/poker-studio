@@ -5,12 +5,7 @@ import {
   Pause, 
   Upload, 
   Check, 
-  CheckCircle2, 
-  Volume2, 
-  Sparkles, 
-  Sliders, 
-  Music, 
-  FileAudio 
+  CheckCircle2 
 } from 'lucide-react';
 import { uploadAsset } from '../api';
 
@@ -165,10 +160,14 @@ export default function AudioView({
                     <span className="text-slate-500 font-normal ml-1">زیرنویس:</span>
                     {track.subtitle_text}
                   </p>
-                  <p className="text-xs text-amber-200/90 font-medium leading-relaxed">
-                    <span className="text-amber-500/70 font-normal ml-1">متن TTS اعراب‌دار:</span>
+                  <div className={`text-xs font-medium leading-relaxed p-2 rounded-lg transition-all ${
+                    activeEngine === 'elevenlabs'
+                      ? 'bg-amber-950/40 border border-amber-500/40 text-amber-200 shadow-sm'
+                      : 'text-amber-200/90'
+                  }`}>
+                    <span className="text-amber-500/80 font-bold ml-1">متن TTS اعراب‌دار:</span>
                     {track.tts_text}
-                  </p>
+                  </div>
                 </div>
               </div>
 
@@ -198,8 +197,12 @@ export default function AudioView({
                 </button>
 
                 {/* Upload Own Voiceover Button */}
-                <label className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 border border-slate-700 text-xs font-semibold text-slate-200 cursor-pointer transition-colors">
-                  <Upload className="w-3.5 h-3.5 text-amber-400" />
+                <label className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer transition-all border ${
+                  activeEngine === 'custom_voiceover'
+                    ? 'bg-amber-500 hover:bg-amber-400 text-slate-950 border-amber-400 shadow-lg shadow-amber-500/20'
+                    : 'bg-slate-800/80 hover:bg-slate-700 border-slate-700 text-slate-200'
+                }`}>
+                  <Upload className={`w-3.5 h-3.5 ${activeEngine === 'custom_voiceover' ? 'text-slate-950' : 'text-amber-400'}`} />
                   <span>{uploadingSegmentId === trackId ? 'در حال آپلود...' : 'آپلود ویس'}</span>
                   <input
                     type="file"

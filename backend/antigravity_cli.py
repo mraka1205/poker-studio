@@ -6,7 +6,6 @@ monitoring progress through conversation transcript and disk assets.
 """
 
 import os
-import sys
 import json
 import time
 import shutil
@@ -37,7 +36,6 @@ logger.setLevel(logging.INFO)
 
 # Base directories
 BASE_DIR = Path(__file__).resolve().parent.parent
-PROJECTS_DIR = BASE_DIR / "projects"
 _HOME = Path(os.environ.get("USERPROFILE") or Path.home())
 GEMINI_DIR = _HOME / ".gemini"
 BRAIN_DIR = Path(os.environ.get("ANTIGRAVITY_BRAIN_DIR") or (GEMINI_DIR / "antigravity" / "brain"))
@@ -452,10 +450,11 @@ async def _monitor_task_inner(task: EpisodeTask) -> None:
                 entry = json.loads(line)
             except json.JSONDecodeError:
                 continue
-            idx = entry.get("step_index", 0)
-            if idx <= last_step:
-                continue
-            last_step = idx
+            idx = entry.get("step_index")
+            if isinstance(idx, int):
+                if idx <= last_step:
+                    continue
+                last_step = idx
             finished = _process_transcript_entry(task, entry)
         stable = stable + 1 if finished else 0
         if stable >= 2:

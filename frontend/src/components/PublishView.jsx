@@ -1,15 +1,10 @@
 import React, { useState } from 'react';
 import { 
-  Share2, 
-  BarChart3, 
   Copy, 
   Check, 
   CheckCircle2, 
   Instagram, 
-  Youtube, 
-  TrendingUp, 
-  Eye, 
-  Clock 
+  Youtube 
 } from 'lucide-react';
 import { copyText as writeClipboard } from '../utils/clipboard';
 

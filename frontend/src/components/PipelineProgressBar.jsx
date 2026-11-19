@@ -30,8 +30,7 @@ export default function PipelineProgressBar({
   stages = [], 
   currentStage = 1, 
   activeViewStage = 1, 
-  onSelectStage,
-  onApproveCurrentStage
+  onSelectStage
 }) {
   const defaultStages = [
     { stage_number: 1, name_fa: "ایده", name_en: "Idea", status: "approved" },

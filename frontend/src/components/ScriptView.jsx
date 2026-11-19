@@ -4,17 +4,8 @@ import {
   Check, 
   CheckCircle2, 
   Copy, 
-  MessageSquare, 
-  Sparkles, 
-  Layers, 
   Volume2, 
-  Play, 
-  Clock, 
-  Edit3, 
-  Save, 
-  RefreshCw,
-  Plus,
-  Trash2
+  Clock 
 } from 'lucide-react';
 import AiStudioBridge from './AiStudioBridge';
 import { copyText as writeClipboard } from '../utils/clipboard';
@@ -53,8 +44,6 @@ export default function ScriptView({
   const [copiedIndex, setCopiedIndex] = useState(null);
   const [copiedAll, setCopiedAll] = useState(false);
   const [activeTab, setActiveTab] = useState('dual'); // 'dual', 'subtitle_only', 'tts_only'
-  const [editingSegId, setEditingSegId] = useState(null);
-  const [regeneratingId, setRegeneratingId] = useState(null);
 
   const [draft, setDraft] = useState(scriptData?.segments || []);
   const [saveState, setSaveState] = useState('idle'); // idle | dirty | saving | saved | error
@@ -202,7 +191,6 @@ export default function ScriptView({
       <div className="space-y-4">
         {segments.map((seg, idx) => {
           const spk = getSpeakerStyle(seg.speaker);
-          const isRegenerating = regeneratingId === (seg.id || idx);
 
           return (
             <div

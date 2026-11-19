@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import { 
-  Sparkles, 
   Copy, 
   Check, 
   ArrowDownToLine, 
   Code2, 
   ChevronDown, 
   ChevronUp, 
-  Bot,
-  CheckCircle2
+  Bot, 
+  CheckCircle2 
 } from 'lucide-react';
 import { buildAiStudioPrompt, importAiStudioJson } from '../api';
 import { copyText } from '../utils/clipboard';

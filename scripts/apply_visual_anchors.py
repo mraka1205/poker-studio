@@ -2,14 +2,13 @@
 import argparse
 import copy
 import json
-import os
 import shutil
 import sys
-import tempfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from backend.services.paths import projects_dir
+from backend.services.state_store import write_json_atomic
 from backend.services.visual_canon import SEED_CHARACTERS, SEED_ENV_CANON
 
 VERSION = "1.0"
@@ -51,10 +50,7 @@ def main() -> int:
         bak = path.with_name("universe.json.visual.bak")
         if not bak.exists():
             shutil.copy2(path, bak)
-        fd, tmp = tempfile.mkstemp(dir=str(path.parent), suffix=".tmp")
-        with os.fdopen(fd, "w", encoding="utf-8") as fh:
-            json.dump(data, fh, ensure_ascii=False, indent=2)
-        os.replace(tmp, path)
+        write_json_atomic(path, data)
         print("Wrote", path)
     return 0
 

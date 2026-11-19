@@ -8,7 +8,7 @@ import threading
 from pathlib import Path
 from typing import Any, Callable, Dict, Optional
 
-from backend.services.paths import get_project_dir
+from backend.services.paths import get_project_dir, projects_dir
 
 
 class EtagConflict(Exception):
@@ -17,6 +17,7 @@ class EtagConflict(Exception):
 
 _LOCKS: Dict[str, threading.RLock] = {}
 _GUARD = threading.Lock()
+_UNIVERSE_LOCK = threading.RLock()
 
 
 def _lock(episode_id: str) -> threading.RLock:
@@ -26,6 +27,10 @@ def _lock(episode_id: str) -> threading.RLock:
 
 def state_path(episode_id: str) -> Path:
     return get_project_dir(episode_id) / "state.json"
+
+
+def universe_path() -> Path:
+    return projects_dir() / "universe.json"
 
 
 def write_json_atomic(path: Path, data: Any) -> None:
@@ -64,6 +69,23 @@ def write_state(episode_id: str, state: dict) -> None:
         if path.exists():
             shutil.copy2(path, path.with_name("state.json.bak"))
         write_json_atomic(path, clean)
+
+
+def read_universe(default_factory: Optional[Callable[[], Dict[str, Any]]] = None) -> Dict[str, Any]:
+    with _UNIVERSE_LOCK:
+        path = universe_path()
+        if not path.exists():
+            if default_factory is not None:
+                default_data = default_factory()
+                write_json_atomic(path, default_data)
+                return default_data
+            raise FileNotFoundError(f"Universe file not found: {path}")
+        return json.loads(path.read_text(encoding="utf-8-sig"))
+
+
+def write_universe(data: Dict[str, Any]) -> None:
+    with _UNIVERSE_LOCK:
+        write_json_atomic(universe_path(), data)
 
 
 def update_state(episode_id: str, mutator: Callable[[dict], None]) -> dict:

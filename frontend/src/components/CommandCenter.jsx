@@ -5,18 +5,13 @@ import {
   Copy, 
   Check, 
   ArrowLeft, 
-  AlertTriangle, 
   UserCheck, 
   FileText, 
   Film, 
-  Sliders, 
-  ExternalLink,
   Bot,
-  User,
-  ShieldCheck,
-  Zap
+  User
 } from 'lucide-react';
-import { fetchAgentPrompt } from '../api';
+import { buildAiStudioPrompt } from '../api';
 import { copyText as writeClipboard } from '../utils/clipboard';
 
 export default function CommandCenter({
@@ -44,7 +39,7 @@ export default function CommandCenter({
     }
     let cancelled = false;
     setLoadingPrompt(true);
-    fetchAgentPrompt(epId, stage)
+    buildAiStudioPrompt(epId, stage)
       .then(d => { if (!cancelled) setAgentPromptData(d); })
       .catch(e => { if (!cancelled) { setAgentPromptData(null); setPromptError('خطا در دریافت پرامپت: ' + e.message); } })
       .finally(() => { if (!cancelled) setLoadingPrompt(false); });
@@ -375,7 +370,7 @@ export default function CommandCenter({
                 <Film className="w-4 h-4 text-emerald-400" />
                 <span className="text-[10px] text-slate-500 font-mono">مرحله ۶</span>
               </div>
-              <div className="text-xs font-bold text-slate-200 group-hover:text-emerald-400 transition-colors">بیت‌های ۳ تا ۶ ثانیه‌ای</div>
+              <div className="text-xs font-bold text-slate-200 group-hover:text-emerald-400 transition-colors">بیت‌های ۱.۵ تا ۲.۵ ثانیه‌ای (استوری‌بورد)</div>
               <div className="text-[10px] text-slate-400 mt-0.5">{`${projectState?.scenes?.length ?? 0} صحنه با وضعیت میز و SFX`}</div>
             </button>
           </div>

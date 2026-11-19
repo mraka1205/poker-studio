@@ -12,16 +12,6 @@ export async function fetchProjectState(episodeId) {
   return res.json();
 }
 
-export async function saveProjectState(episodeId, state) {
-  const res = await fetch(`${API_BASE}/projects/${episodeId}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(state)
-  });
-  if (!res.ok) throw new Error('Failed to save project state');
-  return res.json();
-}
-
 export async function patchProjectState(episodeId, updates, baseEtag = null) {
   const res = await fetch(`${API_BASE}/projects/${episodeId}`, {
     method: 'PATCH',
@@ -47,16 +37,6 @@ export async function updateStageStatus(episodeId, stageNumber, status, notes = 
     body: JSON.stringify({ stage_number: stageNumber, status, notes })
   });
   if (!res.ok) throw new Error('Failed to update stage status');
-  return res.json();
-}
-
-export async function setEpisodeCurrentStage(episodeId, currentStage) {
-  const res = await fetch(`${API_BASE}/projects/${episodeId}/set_stage`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ current_stage: currentStage })
-  });
-  if (!res.ok) throw new Error('Failed to set current stage');
   return res.json();
 }
 
@@ -120,10 +100,6 @@ export async function createNewEpisode(episodeData) {
   return res.json();
 }
 
-export async function fetchAgentPrompt(episodeId, stage = 'script') {
-  return buildAiStudioPrompt(episodeId, stage);
-}
-
 export async function fetchSkills() {
   const res = await fetch(`${API_BASE}/skills`);
   if (!res.ok) throw new Error('Failed to fetch skills');
@@ -161,6 +137,21 @@ export async function importAiStudioJson(episodeId, stage, jsonContent) {
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.detail || 'Failed to import JSON');
+  }
+  return res.json();
+}
+
+export async function uploadSceneImage(episodeId, sceneId, file) {
+  const formData = new FormData();
+  formData.append('scene_id', sceneId);
+  formData.append('file', file);
+  const res = await fetch(`${API_BASE}/projects/${episodeId}/upload/scene_image`, {
+    method: 'POST',
+    body: formData
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || 'Failed to upload scene image');
   }
   return res.json();
 }
