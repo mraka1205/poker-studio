@@ -23,7 +23,6 @@ import {
   XCircle 
 } from 'lucide-react';
 import { 
-  uploadAsset, 
   uploadSceneImage,
   uploadSceneVideo, 
   updateSceneDetails,
@@ -58,7 +57,6 @@ export default function SceneView({
   stageStatus,
   onApproveStage,
   onUpdateSceneStatus,
-  onSceneAssetUpdated,
   onRefresh
 }) {
   // Live Antigravity Task State

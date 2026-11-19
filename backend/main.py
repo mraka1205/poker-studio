@@ -30,6 +30,8 @@ from backend.services.state_store import (
     EtagConflict,
     read_state,
     read_universe,
+    restore_state_from,
+    snapshot_state,
     update_state,
     write_state,
     write_universe,
@@ -355,7 +357,7 @@ def sync_universe_characters(episode_id: str, req: SyncUniverseCharactersRequest
                 "voice_description_fa": u_c.get("voice_description_fa", ""),
                 "dna_block_en": u_c.get("dna_block_en", ""),
                 "short_look_en": u_c.get("short_look_en", ""),
-                "acting_beats_en": u_c.get("acting_beats_en", ""),
+                "acting_beats_en": u_c.get("acting_beats_en", {}),
                 "style_prompt": body_p,
                 "character_sheet_prompt_en": body_p,
                 "consistency_tags": u_c.get("flow_tag", ""),
@@ -803,7 +805,7 @@ def build_ai_studio_prompt(episode_id: str, stage: str):
     u_env = universe.get("environment", {})
     u_chars = universe.get("characters", [])
     u_chars_summary = "\n".join([
-        f"  - {c.get('flow_tag', '')} ({c.get('name_fa', '')} - {c.get('archetype', '')}):\n    Behavioral & Physical Profile: {c.get('persona_behavior_prompt') or c.get('personality_and_catchphrases_fa', '')}"
+        f"  - {c.get('flow_tag', '')} ({c.get('name_en') or c.get('name_fa', '')} - {c.get('archetype', '')}):\n    Behavioral & Physical Profile: {c.get('persona_behavior_prompt') or c.get('personality_and_catchphrases_fa', '')}"
         for c in u_chars
     ])
     
@@ -818,8 +820,8 @@ Follow the comprehensive instructions in the Skill Guidelines below to generate 
 
 ---
 ### PERSISTENT CHANNEL UNIVERSE (RECURRING CAST & FIXED ENVIRONMENT):
-- Fixed Poker Room: {u_env.get('flow_tag', '@PokerRoom')} - {u_env.get('name', 'میز زیرزمینی پوکر')}
-  Description: {u_env.get('description_fa', '')}
+- Fixed Poker Room: {u_env.get('flow_tag', '@PokerRoom')}
+  Visual Environment: {u_env.get('visual_prompt_en') or u_env.get('description_fa', '')}
 - Recurring Characters Roster:
 {u_chars_summary}
 NOTE: You can cast any of the channel's 5 recurring stars (@Arash, @Bijan, @Rahim, @Farzad, @Keyvan) for the episode hand depending on the comedy scenario (or by default use @Arash and @Bijan).
@@ -829,7 +831,7 @@ NOTE: You can cast any of the channel's 5 recurring stars (@Arash, @Bijan, @Rahi
 - Episode ID: {state.get('episode_id')}
 - Title (FA): {state.get('title')}
 - English Title: {state.get('english_title', 'Persian Poker Comedy')}
-- Raw Poker Hand / Idea Description (ایده خام و شرح دست پوکر):
+- Raw Poker Hand / Idea Description:
 {raw_idea}
 - Concept / Theme: {idea_data.get('theme', raw_idea or 'Poker strategy and comical mistakes')}
 - Core Lesson: {idea_data.get('core_lesson', '')}
@@ -954,7 +956,7 @@ Follow {skill_filename} to generate the complete storyboard in STRICT JSON forma
 ---
 ### RECURRING UNIVERSE & SPATIAL ENVIRONMENT:
 - Fixed Poker Room: {u_env.get('flow_tag', '@PokerRoom')}
-- Description: {u_env.get('description_fa', '')}
+- Visual Environment: {u_env.get('visual_prompt_en') or u_env.get('description_fa', '')}
 - 6-Max Table Seating & Neighbors:
 {seating_summary}
 
@@ -1130,7 +1132,7 @@ def import_ai_studio_json(episode_id: str, stage: str, req: ImportJsonRequest):
                 "voice_description_fa": c.get("voice_description_fa", ""),
                 "dna_block_en": c.get("dna_block_en", ""),
                 "short_look_en": c.get("short_look_en", ""),
-                "acting_beats_en": c.get("acting_beats_en", ""),
+                "acting_beats_en": c.get("acting_beats_en", {}),
                 "style_prompt": c.get("character_sheet_prompt_en") or body_p,
                 "character_sheet_prompt_en": c.get("character_sheet_prompt_en") or body_p,
                 "consistency_tags": c.get("consistency_tags", flow_tag),
@@ -1180,25 +1182,42 @@ def import_ai_studio_json(episode_id: str, stage: str, req: ImportJsonRequest):
 
         state["scenes"] = enriched_scenes
         mark_stage_waiting_approval(6, "بیت‌های بصری استوری‌بورد و حرکت ذخیره شد")
+        snap_path = snapshot_state(episode_id, "state.json.pre_import.bak")
         save_state(episode_id, state)
 
-        has_specs = any(isinstance(sc.get("scene_spec"), dict) for sc in enriched_scenes)
-        if has_specs:
-            build_res = build_episode_prompts(episode_id, write=True)
-            if build_res.get("errors"):
-                raise HTTPException(status_code=422, detail="\n".join(build_res["errors"][:10]))
-            state = load_state(episode_id)
+        try:
+            has_specs = any(isinstance(sc.get("scene_spec"), dict) for sc in enriched_scenes)
+            if has_specs:
+                build_res = build_episode_prompts(episode_id, write=True)
+                if build_res.get("errors"):
+                    raise HTTPException(status_code=422, detail="\n".join(build_res["errors"][:10]))
+                state = load_state(episode_id)
 
-        scene_errors = validate_scenes(state.get("scenes", []))
-        hard_errors = [e for e in scene_errors if "must match scene_NN" in e or "duplicate scene_id" in e or "non-empty list" in e]
-        if hard_errors:
-            raise HTTPException(status_code=422, detail="\n".join(hard_errors))
-        validation_issues = [{"scene_id": "", "field": "scenes", "severity": "warning", "message": e} for e in scene_errors]
+            scene_errors = validate_scenes(state.get("scenes", []))
+            hard_errors = [e for e in scene_errors if "must match scene_NN" in e or "duplicate scene_id" in e or "non-empty list" in e]
+            if hard_errors:
+                raise HTTPException(status_code=422, detail="\n".join(hard_errors))
+            validation_issues = [{"scene_id": "", "field": "scenes", "severity": "warning", "message": e} for e in scene_errors]
+        except Exception:
+            restore_state_from(episode_id, snap_path)
+            try:
+                if snap_path.exists():
+                    snap_path.unlink()
+            except OSError:
+                pass
+            raise
+
+        try:
+            if snap_path.exists():
+                snap_path.unlink()
+        except OSError:
+            pass
 
     else:
         raise HTTPException(status_code=400, detail=f"Unsupported stage '{stage}' for JSON import")
 
-    save_state(episode_id, state)
+    if stage_key not in ["6", "scenes"]:
+        save_state(episode_id, state)
     if stage_key in ["3", "script"]:
         validation_issues = validate_segments(state.get("script", {}).get("segments", []))
 
@@ -1401,7 +1420,6 @@ def get_ffmpeg_render_command(episode_id: str):
 @app.post("/api/episodes/{episode_id}/build-image-prompts")
 @app.post("/api/projects/{episode_id}/build-image-prompts")
 def build_image_prompts(episode_id: str, scene_id: Optional[str] = None):
-    from backend.services.scene_prompt_builder import build_episode_prompts
     result = build_episode_prompts(episode_id, scene_id=scene_id, write=True)
     if result["errors"]:
         raise HTTPException(status_code=422, detail="\n".join(result["errors"][:10]))

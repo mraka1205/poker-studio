@@ -1,23 +1,23 @@
 @echo off
-chcp 65001 >nul
 title Poker Studio Launcher
-echo ======================================================
-echo   در حال راه‌اندازی استودیو کمدی و آموزش پوکر...
-echo ======================================================
 
-echo [1/2] در حال اجرای سرور بک‌اند (FastAPI - Port 8000)...
-start "Poker Studio - Backend" cmd /k "python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000 --reload"
+echo Starting Poker Studio Backend (FastAPI on Port 8000)...
+start "Poker Studio - Backend" cmd /k "cd /d "%~dp0" && python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000 --reload"
 
-echo [2/2] در حال اجرای فرانت‌اند (Vite - Port 5173)...
+echo Starting Poker Studio Frontend (Vite on Port 5173)...
 start "Poker Studio - Frontend" cmd /k "cd /d "%~dp0frontend" && npm run dev"
 
-echo در حال باز کردن مرورگر...
-timeout /t 3 >nul
+echo Waiting for services to initialize...
+ping 127.0.0.1 -n 4 >nul
+
+echo Opening browser at http://127.0.0.1:5173...
 start http://127.0.0.1:5173
 
 echo.
 echo ======================================================
-echo   استودیو با موفقیت اجرا شد!
-echo   برای خاموش کردن کافیست پنجره‌های ترمینال باز شده را ببندید.
+echo   Poker Studio is running!
+echo   Backend:  http://127.0.0.1:8000
+echo   Frontend: http://127.0.0.1:5173
+echo   Close the opened terminal windows to stop.
 echo ======================================================
 pause

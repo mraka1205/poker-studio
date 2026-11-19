@@ -18,9 +18,13 @@ def _small(img: Image.Image) -> Image.Image:
     return img.convert("RGB").resize((64, 112))
 
 
+def _pixels(img: Image.Image):
+    return img.get_flattened_data() if hasattr(img, "get_flattened_data") else img.getdata()
+
+
 def histogram(img: Image.Image) -> List[float]:
     h = [0] * 512
-    for r, g, b in _small(img).getdata():
+    for r, g, b in _pixels(_small(img)):
         h[(r >> 5) * 64 + (g >> 5) * 8 + (b >> 5)] += 1
     n = float(sum(h))
     return [x / n for x in h]
@@ -31,7 +35,7 @@ def intersection(a: List[float], b: List[float]) -> float:
 
 
 def felt_fraction(img: Image.Image) -> float:
-    px = list(_small(img).getdata())
+    px = list(_pixels(_small(img)))
     return sum(1 for r, g, b in px if g > 60 and g > r * 1.2 and g > b * 1.1) / len(px)
 
 

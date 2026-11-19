@@ -126,16 +126,6 @@ export default function App() {
     await persistUpdates({ characters: projectState.characters.map(c =>
       c.id === charId ? { ...c, status: newStatus } : c) });
   };
-  const handleSceneAssetUpdated = async (sceneId, field, value) => {
-    if (!projectState || (field !== 'image_path' && field !== 'video_path')) return;
-    const scenes = projectState.scenes.map(s => {
-      if (sceneKey(s) !== sceneId) return s;
-      return field === 'image_path'
-        ? { ...s, image_path: value, visual_asset: value, image_version: Date.now() }
-        : { ...s, video_path: value };
-    });
-    await persistUpdates({ scenes }, { withEtag: true });
-  };
   const handleUpdateSceneStatus = async (sceneId, newStatus) => {
     if (!projectState) return;
     await persistUpdates({ scenes: projectState.scenes.map(s =>
@@ -266,7 +256,6 @@ export default function App() {
                     stageStatus={getStageStatus(6)}
                     onApproveStage={() => handleApproveStage(6)}
                     onUpdateSceneStatus={handleUpdateSceneStatus}
-                    onSceneAssetUpdated={handleSceneAssetUpdated}
                     onRefresh={() => loadEpisodeState(currentEpisodeId, { silent: true })}
                   />
                 )}

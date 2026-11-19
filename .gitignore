@@ -17,3 +17,4 @@ projects/*/task_status.json
 projects/universe.json.bak
 *.bak
 pic/
+verify_*.txt

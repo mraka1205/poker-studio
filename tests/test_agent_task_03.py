@@ -241,6 +241,46 @@ def test_sync_universe_characters_v2_fields_and_no_kambiz(client):
     assert c["turnaround_sheet"] == ""
 
 
+def test_acting_beats_en_dict_default(client):
+    ep_id, _ = _init_episode("ep05b-beats-default-test")
+    # Character without acting_beats_en in import
+    payload = {
+        "json_content": {
+            "characters": [
+                {
+                    "id": "char_nodefault",
+                    "name_fa": "تست",
+                    "flow_tag": "@Test",
+                }
+            ]
+        }
+    }
+    res = client.post(f"/api/projects/{ep_id}/import-json/characters", json=payload)
+    assert res.status_code == 200
+    saved = read_state(ep_id)
+    assert saved["characters"][0]["acting_beats_en"] == {}
+
+    # Sync from universe without acting_beats_en
+    write_universe({
+        "characters": [
+            {
+                "id": "char_u_nodefault",
+                "name_fa": "تست جهان",
+                "flow_tag": "@UTest",
+            }
+        ],
+        "environment": {}
+    })
+    res_sync = client.post(
+        f"/api/projects/{ep_id}/sync-universe-characters",
+        json={"character_ids": ["char_u_nodefault"]},
+    )
+    assert res_sync.status_code == 200
+    saved_sync = read_state(ep_id)
+    u_char = next(c for c in saved_sync["characters"] if c["id"] == "char_u_nodefault")
+    assert u_char["acting_beats_en"] == {}
+
+
 def test_import_scenes_preserves_uploaded_assets_and_normalizes(client):
     ep_id, _ = _init_episode("ep06-scenes-test")
 
@@ -296,7 +336,11 @@ def test_import_scenes_preserves_uploaded_assets_and_normalizes(client):
 
 
 def test_import_scenes_hard_validation_error(client):
-    ep_id, _ = _init_episode("ep07-scenes-invalid-test")
+    ep_id, ep_dir = _init_episode("ep07-scenes-invalid-test")
+    orig_scenes = [{"id": "scene_01", "scene_id": "scene_01", "title": "Original Scene"}]
+    state = read_state(ep_id)
+    state["scenes"] = orig_scenes
+    write_state(ep_id, state)
 
     # Invalid scene ID format fails hard validation
     payload = {
@@ -313,6 +357,11 @@ def test_import_scenes_hard_validation_error(client):
     res = client.post(f"/api/projects/{ep_id}/import-json/scenes", json=payload)
     assert res.status_code == 422
     assert "must match scene_NN" in res.json()["detail"]
+
+    # Verify rollback: state must remain unchanged and no pre_import.bak left behind
+    after_state = read_state(ep_id)
+    assert after_state["scenes"] == orig_scenes
+    assert not (ep_dir / "state.json.pre_import.bak").exists()
 
 
 def test_manual_stage_approval_advancement(client):
