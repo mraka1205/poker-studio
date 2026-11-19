@@ -3,7 +3,7 @@
   "title": "«وقتی آقا رحیم بعد از دو ساعت ریز میده!»",
   "english_title": "",
   "version": "1.1.0",
-  "current_stage": 5,
+  "current_stage": 6,
   "stages": [
     {
       "id": "stage_1",
@@ -46,8 +46,8 @@
       "stage_number": 5,
       "name_fa": "صدا و میکس",
       "name_en": "Audio & Mix",
-      "status": "in_progress",
-      "approved_at": null,
+      "status": "approved",
+      "approved_at": "2026-11-19T22:07:53.386519Z",
       "notes": ""
     },
     {
@@ -55,7 +55,7 @@
       "stage_number": 6,
       "name_fa": "صحنه‌ها",
       "name_en": "Scenes",
-      "status": "pending",
+      "status": "in_progress",
       "approved_at": null,
       "notes": ""
     },
