@@ -67,7 +67,7 @@ export default function AudioView({
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="text-xs font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2.5 py-0.5 rounded-full">
-              مرحله ۵: صداگذاری و میکس (Audio & Mix)
+              مرحله ۴: صداگذاری و میکس (Audio & Mix)
             </span>
             <span className="text-xs text-slate-400 font-mono">
               تعداد تراک‌ها: {tracks.length} قطعه

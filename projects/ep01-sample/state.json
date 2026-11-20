@@ -3,29 +3,20 @@
   "title": "چرا با AK روی فلاپ خشک نباید خودکشی کنیم؟",
   "english_title": "Why Not To Commit Suicide with AK on a Dry Flop",
   "version": "1.0.0",
-  "current_stage": 5,
+  "current_stage": 4,
   "stages": [
     {
       "id": "stage_1",
       "stage_number": 1,
-      "name_fa": "ایده",
-      "name_en": "Idea",
+      "name_fa": "ایده و کتابچه",
+      "name_en": "Idea & Bible",
       "status": "approved",
-      "approved_at": "2026-11-17T10:51:28.574443Z",
-      "notes": "ایده و دست با موفقیت از هوش مصنوعی ثبت شد"
+      "approved_at": "2026-11-17T10:51:28.594983Z",
+      "notes": "ایده و کتابچه استراتژی و جوک‌ها تایید شد"
     },
     {
       "id": "stage_2",
       "stage_number": 2,
-      "name_fa": "Bible",
-      "name_en": "Bible",
-      "status": "approved",
-      "approved_at": "2026-11-17T10:51:28.594983Z",
-      "notes": "کتابچه استراتژی و جوک‌ها ذخیره شد"
-    },
-    {
-      "id": "stage_3",
-      "stage_number": 3,
       "name_fa": "سناریو",
       "name_en": "Script",
       "status": "approved",
@@ -33,8 +24,8 @@
       "notes": "سناریوی دو متنی با اعراب TTS تایید و ذخیره شد"
     },
     {
-      "id": "stage_4",
-      "stage_number": 4,
+      "id": "stage_3",
+      "stage_number": 3,
       "name_fa": "کاراکترها",
       "name_en": "Characters",
       "status": "approved",
@@ -42,8 +33,8 @@
       "notes": "مدل شیت و لنگر استایل کاراکترها تایید شد"
     },
     {
-      "id": "stage_5",
-      "stage_number": 5,
+      "id": "stage_4",
+      "stage_number": 4,
       "name_fa": "صدا و میکس",
       "name_en": "Audio & Mix",
       "status": "in_progress",
@@ -51,8 +42,8 @@
       "notes": "تراک‌های صوتی آماده تست تلفظ و رندر موتور ElevenLabs هستند"
     },
     {
-      "id": "stage_6",
-      "stage_number": 6,
+      "id": "stage_5",
+      "stage_number": 5,
       "name_fa": "صحنه‌ها",
       "name_en": "Scenes",
       "status": "in_progress",
@@ -60,8 +51,8 @@
       "notes": "۶ بیت بصری با پرامپت‌ها و وضعیت میز مشخص شده است"
     },
     {
-      "id": "stage_7",
-      "stage_number": 7,
+      "id": "stage_6",
+      "stage_number": 6,
       "name_fa": "تدوین",
       "name_en": "Edit",
       "status": "pending",
@@ -69,8 +60,8 @@
       "notes": "آماده‌سازی پایپ‌لاین FFmpeg با فونت وزیرمتن و لیب‌اس"
     },
     {
-      "id": "stage_8",
-      "stage_number": 8,
+      "id": "stage_7",
+      "stage_number": 7,
       "name_fa": "انتشار",
       "name_en": "Publish",
       "status": "pending",
@@ -78,8 +69,8 @@
       "notes": "تنظیم کپشن، هشتگ‌ها و تامبنیل یوتیوب شورتس و اینستاگرام"
     },
     {
-      "id": "stage_9",
-      "stage_number": 9,
+      "id": "stage_8",
+      "stage_number": 8,
       "name_fa": "عددها",
       "name_en": "Analytics",
       "status": "pending",

@@ -1,7 +1,6 @@
 import React from 'react';
 import { 
   Lightbulb, 
-  BookTemplate, 
   FileText, 
   Users, 
   Mic, 
@@ -16,14 +15,13 @@ import {
 
 const STAGE_ICONS = {
   1: Lightbulb,
-  2: BookTemplate,
-  3: FileText,
-  4: Users,
-  5: Mic,
-  6: Film,
-  7: Scissors,
-  8: Share2,
-  9: BarChart3
+  2: FileText,
+  3: Users,
+  4: Mic,
+  5: Film,
+  6: Scissors,
+  7: Share2,
+  8: BarChart3
 };
 
 export default function PipelineProgressBar({ 
@@ -33,15 +31,14 @@ export default function PipelineProgressBar({
   onSelectStage
 }) {
   const defaultStages = [
-    { stage_number: 1, name_fa: "ایده", name_en: "Idea", status: "approved" },
-    { stage_number: 2, name_fa: "Bible", name_en: "Bible", status: "approved" },
-    { stage_number: 3, name_fa: "سناریو", name_en: "Script", status: "approved" },
-    { stage_number: 4, name_fa: "کاراکترها", name_en: "Characters", status: "waiting_approval" },
-    { stage_number: 5, name_fa: "صدا و میکس", name_en: "Audio & Mix", status: "in_progress" },
-    { stage_number: 6, name_fa: "صحنه‌ها", name_en: "Scenes", status: "in_progress" },
-    { stage_number: 7, name_fa: "تدوین", name_en: "Edit", status: "pending" },
-    { stage_number: 8, name_fa: "انتشار", name_en: "Publish", status: "pending" },
-    { stage_number: 9, name_fa: "عددها", name_en: "Analytics", status: "pending" },
+    { stage_number: 1, name_fa: "ایده و کتابچه", name_en: "Idea & Bible", status: "pending" },
+    { stage_number: 2, name_fa: "سناریو", name_en: "Script", status: "pending" },
+    { stage_number: 3, name_fa: "کاراکترها", name_en: "Characters", status: "pending" },
+    { stage_number: 4, name_fa: "صدا و میکس", name_en: "Audio & Mix", status: "pending" },
+    { stage_number: 5, name_fa: "صحنه‌ها", name_en: "Scenes", status: "pending" },
+    { stage_number: 6, name_fa: "تدوین", name_en: "Edit", status: "pending" },
+    { stage_number: 7, name_fa: "انتشار", name_en: "Publish", status: "pending" },
+    { stage_number: 8, name_fa: "عددها", name_en: "Analytics", status: "pending" },
   ];
 
   const displayStages = stages.length > 0 ? stages : defaultStages;
@@ -55,7 +52,7 @@ export default function PipelineProgressBar({
         {/* Top Mini Info */}
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-slate-300">مسیر تولید ۹ مرحله‌ای اپیزود:</span>
+            <span className="text-xs font-bold text-slate-300">مسیر تولید ۸ مرحله‌ای اپیزود:</span>
             <span className="text-xs font-semibold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20">
               مرحله فعال: {displayStages.find(s => s.stage_number === currentStage)?.name_fa || `مرحله ${currentStage}`}
             </span>
@@ -75,8 +72,8 @@ export default function PipelineProgressBar({
           </div>
         </div>
 
-        {/* Horizontal 9-Stage Progress Stepper */}
-        <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-9 gap-1.5 sm:gap-2">
+        {/* Horizontal 8-Stage Progress Stepper */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-1.5 sm:gap-2">
           {displayStages.map((stage) => {
             const Icon = STAGE_ICONS[stage.stage_number] || Lightbulb;
             const isCurrent = stage.stage_number === currentStage;

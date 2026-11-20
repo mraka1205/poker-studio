@@ -26,7 +26,7 @@ def _init_episode(ep_id="ep01-hitl-test"):
         "current_stage": 1,
         "stages": [
             {"id": f"stage_{i}", "stage_number": i, "name_fa": f"مرحله {i}", "name_en": f"Stage {i}", "status": "pending", "approved_at": None, "notes": ""}
-            for i in range(1, 10)
+            for i in range(1, 9)
         ],
         "idea": {"theme": "", "raw_hand_or_concept": "", "core_lesson": ""},
         "bible": {"visual_style": "default_style"},
@@ -65,13 +65,10 @@ def test_import_bible_hitl_and_propagation(client):
     assert saved["idea"]["core_lesson"] == "Know your fold equity"
     assert saved["bible"]["hand_details"]["pot"] == "4500"
 
-    # Stage 1 and 2 must be waiting_approval, NOT approved
+    # Stage 1 must be waiting_approval, NOT approved
     stage_1 = next(s for s in saved["stages"] if s["stage_number"] == 1)
-    stage_2 = next(s for s in saved["stages"] if s["stage_number"] == 2)
     assert stage_1["status"] == "waiting_approval"
     assert stage_1["approved_at"] is None
-    assert stage_2["status"] == "waiting_approval"
-    assert stage_2["approved_at"] is None
 
 
 def test_import_preserves_already_approved_stage(client):
@@ -127,9 +124,9 @@ def test_import_script_speaker_and_audio_status(client):
     assert res.status_code == 200, res.text
     saved = read_state(ep_id)
 
-    stage_3 = next(s for s in saved["stages"] if s["stage_number"] == 3)
-    assert stage_3["status"] == "waiting_approval"
-    assert stage_3["approved_at"] is None
+    stage_2 = next(s for s in saved["stages"] if s["stage_number"] == 2)
+    assert stage_2["status"] == "waiting_approval"
+    assert stage_2["approved_at"] is None
     assert saved["current_stage"] == 1
 
     tracks = saved["audio"]["tracks"]
@@ -177,9 +174,9 @@ def test_import_characters_preserves_v2_and_no_kambiz(client):
     # Style bible updated
     assert saved["bible"]["visual_style"] == "Custom stop motion needle-felt style with rich felt textures"
 
-    # Stage 4 waiting_approval, current_stage not incremented
-    stage_4 = next(s for s in saved["stages"] if s["stage_number"] == 4)
-    assert stage_4["status"] == "waiting_approval"
+    # Stage 3 waiting_approval, current_stage not incremented
+    stage_3 = next(s for s in saved["stages"] if s["stage_number"] == 3)
+    assert stage_3["status"] == "waiting_approval"
     assert saved["current_stage"] == 1
 
     chars = saved["characters"]
@@ -329,9 +326,9 @@ def test_import_scenes_preserves_uploaded_assets_and_normalizes(client):
     assert sc["image_path"] == f"/media/{ep_id}/assets/images/scene_01.png"
     assert sc["video_path"] == f"/media/{ep_id}/scenes/scene_01_motion.mp4"
 
-    # Stage 6 waiting_approval
-    stage_6 = next(s for s in saved["stages"] if s["stage_number"] == 6)
-    assert stage_6["status"] == "waiting_approval"
+    # Stage 5 waiting_approval
+    stage_5 = next(s for s in saved["stages"] if s["stage_number"] == 5)
+    assert stage_5["status"] == "waiting_approval"
     assert saved["current_stage"] == 1
 
 

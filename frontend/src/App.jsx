@@ -29,7 +29,7 @@ export default function App() {
 
   // Nav state
   const [currentTab, setCurrentTab] = useState('dashboard'); // 'dashboard' or 'stages'
-  const [activeStageNumber, setActiveStageNumber] = useState(6); // Default stage to view
+  const [activeStageNumber, setActiveStageNumber] = useState(5); // Default stage to view
 
   // Modals
   const [isSkillsModalOpen, setIsSkillsModalOpen] = useState(false);
@@ -196,82 +196,81 @@ export default function App() {
               />
             )}
 
-            {/* Stages View (9 Distinct Stage Panels) */}
+            {/* Stages View (8 Distinct Stage Panels) */}
             {currentTab === 'stages' && (
               <div>
-                {/* Stage 1 & 2: Idea & Bible */}
-                {(activeStageNumber === 1 || activeStageNumber === 2) && (
+                {/* Stage 1: Idea & Bible */}
+                {activeStageNumber === 1 && (
                   <IdeaBibleView
-                    stageNumber={activeStageNumber}
                     ideaData={projectState?.idea}
                     bibleData={projectState?.bible}
                     episodeId={currentEpisodeId}
-                    stageStatus={getStageStatus(activeStageNumber)}
-                    onApproveStage={() => handleApproveStage(activeStageNumber)}
+                    stageStatus={getStageStatus(1)}
+                    onApproveStage={() => handleApproveStage(1)}
                     onRefresh={() => loadEpisodeState(currentEpisodeId, { silent: true })}
                   />
                 )}
 
-                {/* Stage 3: Script View */}
-                {activeStageNumber === 3 && (
+                {/* Stage 2: Script View */}
+                {activeStageNumber === 2 && (
                   <ScriptView
                     scriptData={projectState?.script}
                     episodeId={currentEpisodeId}
-                    stageStatus={getStageStatus(3)}
-                    onApprove={() => handleApproveStage(3)}
+                    stageStatus={getStageStatus(2)}
+                    onApprove={() => handleApproveStage(2)}
                     onSaveScript={(updated) => persistUpdates({ script: updated })}
                     onRefresh={() => loadEpisodeState(currentEpisodeId, { silent: true })}
                   />
                 )}
 
-                {/* Stage 4: Character View */}
-                {activeStageNumber === 4 && (
+                {/* Stage 3: Character View */}
+                {activeStageNumber === 3 && (
                   <CharacterView
                     characters={projectState?.characters}
                     episodeId={currentEpisodeId}
-                    stageStatus={getStageStatus(4)}
-                    onApproveStage={() => handleApproveStage(4)}
+                    stageStatus={getStageStatus(3)}
+                    onApproveStage={() => handleApproveStage(3)}
                     onUpdateCharacterStatus={handleUpdateCharacterStatus}
                     onCharacterUpdated={handleCharacterUpdated}
                     onRefresh={() => loadEpisodeState(currentEpisodeId, { silent: true })}
                   />
                 )}
 
-                {/* Stage 5: Audio & Mix View */}
-                {activeStageNumber === 5 && (
+                {/* Stage 4: Audio & Mix View */}
+                {activeStageNumber === 4 && (
                   <AudioView
                     audioData={projectState?.audio}
                     episodeId={currentEpisodeId}
-                    stageStatus={getStageStatus(5)}
-                    onApproveStage={() => handleApproveStage(5)}
+                    stageStatus={getStageStatus(4)}
+                    onApproveStage={() => handleApproveStage(4)}
                     onAudioUpdated={handleAudioUpdated}
                   />
                 )}
 
-                {/* Stage 6: Scenes View */}
-                {activeStageNumber === 6 && (
+                {/* Stage 5: Scenes View */}
+                {activeStageNumber === 5 && (
                   <SceneView
                     scenes={projectState?.scenes}
                     episodeId={currentEpisodeId}
-                    stageStatus={getStageStatus(6)}
-                    onApproveStage={() => handleApproveStage(6)}
+                    stageStatus={getStageStatus(5)}
+                    onApproveStage={() => handleApproveStage(5)}
                     onUpdateSceneStatus={handleUpdateSceneStatus}
                     onRefresh={() => loadEpisodeState(currentEpisodeId, { silent: true })}
                   />
                 )}
 
-                {/* Stage 7: Edit View (FFmpeg & Subtitles) */}
-                {activeStageNumber === 7 && (
+                {/* Stage 6: Edit View (FFmpeg & Subtitles) */}
+                {activeStageNumber === 6 && (
                   <EditView
                     editData={projectState?.edit}
                     episodeId={currentEpisodeId}
-                    stageStatus={getStageStatus(7)}
-                    onApproveStage={() => handleApproveStage(7)}
+                    stageStatus={getStageStatus(6)}
+                    onApproveStage={() => handleApproveStage(6)}
                   />
                 )}
 
-                {/* Stage 8 & 9: Publish & Analytics */}
-                {(activeStageNumber === 8 || activeStageNumber === 9) && (
+                {/* Stage 7 & 8: Publish & Analytics */}
+                {(activeStageNumber === 7 || activeStageNumber === 8) && (
                   <PublishView
                     stageNumber={activeStageNumber}
                     publishData={projectState?.publish}

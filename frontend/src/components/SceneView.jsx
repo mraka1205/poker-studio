@@ -353,7 +353,7 @@ export default function SceneView({
           <div className="flex items-center gap-2 mb-1 flex-wrap">
             <span className="text-xs font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2.5 py-0.5 rounded-full flex items-center gap-1.5">
               <Bot className="w-3.5 h-3.5" />
-              مرحله ۶: کارگردانی یکپارچه و اجرای بومی آنتی‌گرویتی (Antigravity CLI)
+              مرحله ۵: کارگردانی یکپارچه و اجرای بومی آنتی‌گرویتی (Antigravity CLI)
             </span>
             <span className="text-xs text-slate-400 font-mono">
               تعداد نماها: {scenes.length} کات (~۲s)

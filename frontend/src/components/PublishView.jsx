@@ -11,7 +11,7 @@ import { copyText as writeClipboard } from '../utils/clipboard';
 export default function PublishView({
   publishData = {},
   analyticsData = {},
-  stageNumber = 8,
+  stageNumber = 7,
   stageStatus,
   onApproveStage
 }) {
@@ -24,7 +24,7 @@ export default function PublishView({
     setTimeout(() => setFlag(false), 2000);
   };
 
-  const isPublish = stageNumber === 8;
+  const isPublish = stageNumber === 7;
 
   return (
     <div className="space-y-6">

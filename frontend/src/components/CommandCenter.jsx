@@ -29,7 +29,7 @@ export default function CommandCenter({
   useEffect(() => {
     const epId = projectState?.episode_id;
     if (!epId) return;
-    const PROMPT_STAGES = { 1: 'bible', 2: 'bible', 3: 'script', 4: 'characters', 6: 'scenes' };
+    const PROMPT_STAGES = { 1: 'bible', 2: 'script', 3: 'characters', 5: 'scenes' };
     const stage = PROMPT_STAGES[projectState.current_stage];
     setPromptError('');
     if (!stage) {
@@ -97,7 +97,7 @@ export default function CommandCenter({
             <div className="text-center px-3 border-l border-slate-800">
               <div className="text-xs text-slate-400 font-medium">مرحله فعال</div>
               <div className="text-base font-bold text-amber-400">
-                {currentStageObj?.name_fa} ({currentStageNum}/۹)
+                {currentStageObj?.name_fa} ({currentStageNum}/۸)
               </div>
             </div>
             <div className="text-center px-3 border-l border-slate-800">
@@ -194,7 +194,7 @@ export default function CommandCenter({
                   </div>
 
                   <button
-                    onClick={() => onNavigateToStage(4)}
+                    onClick={() => onNavigateToStage(3)}
                     className="px-2.5 py-1 rounded-md bg-purple-600/30 hover:bg-purple-600/50 text-purple-200 border border-purple-500/40 text-xs font-semibold"
                   >
                     بررسی در کاراکترها
@@ -218,7 +218,7 @@ export default function CommandCenter({
                   </div>
 
                   <button
-                    onClick={() => onNavigateToStage(6)}
+                    onClick={() => onNavigateToStage(5)}
                     className="text-xs text-amber-400 hover:text-amber-300 font-medium"
                   >
                     مشاهده بیت بصری
@@ -339,36 +339,36 @@ export default function CommandCenter({
           {/* Quick Stage Shortcuts */}
           <div className="grid grid-cols-3 gap-3">
             <button
-              onClick={() => onNavigateToStage(3)}
+              onClick={() => onNavigateToStage(2)}
               className="p-3 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-slate-700 text-right group transition-all"
             >
               <div className="flex items-center justify-between mb-1">
                 <FileText className="w-4 h-4 text-amber-400" />
-                <span className="text-[10px] text-slate-500 font-mono">مرحله ۳</span>
+                <span className="text-[10px] text-slate-500 font-mono">مرحله ۲</span>
               </div>
               <div className="text-xs font-bold text-slate-200 group-hover:text-amber-400 transition-colors">نمایش سناریو ۲ زبانه</div>
               <div className="text-[10px] text-slate-400 mt-0.5">زیرنویس و آوانویسی TTS</div>
             </button>
 
             <button
-              onClick={() => onNavigateToStage(4)}
+              onClick={() => onNavigateToStage(3)}
               className="p-3 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-slate-700 text-right group transition-all"
             >
               <div className="flex items-center justify-between mb-1">
                 <UserCheck className="w-4 h-4 text-purple-400" />
-                <span className="text-[10px] text-slate-500 font-mono">مرحله ۴</span>
+                <span className="text-[10px] text-slate-500 font-mono">مرحله ۳</span>
               </div>
               <div className="text-xs font-bold text-slate-200 group-hover:text-purple-400 transition-colors">کاراکترها و لنگر استایل</div>
               <div className="text-[10px] text-slate-400 mt-0.5">{`${projectState?.characters?.length ?? 0} کاراکتر`}</div>
             </button>
 
             <button
-              onClick={() => onNavigateToStage(6)}
+              onClick={() => onNavigateToStage(5)}
               className="p-3 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-slate-700 text-right group transition-all"
             >
               <div className="flex items-center justify-between mb-1">
                 <Film className="w-4 h-4 text-emerald-400" />
-                <span className="text-[10px] text-slate-500 font-mono">مرحله ۶</span>
+                <span className="text-[10px] text-slate-500 font-mono">مرحله ۵</span>
               </div>
               <div className="text-xs font-bold text-slate-200 group-hover:text-emerald-400 transition-colors">بیت‌های ۱.۵ تا ۲.۵ ثانیه‌ای (استوری‌بورد)</div>
               <div className="text-[10px] text-slate-400 mt-0.5">{`${projectState?.scenes?.length ?? 0} صحنه با وضعیت میز و SFX`}</div>

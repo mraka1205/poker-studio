@@ -54,7 +54,7 @@ export default function Header({
             }`}
           >
             <Layers className="w-3.5 h-3.5" />
-            مراحل تولید (۹ مرحله)
+            مراحل تولید (۸ مرحله)
           </button>
         </nav>
 

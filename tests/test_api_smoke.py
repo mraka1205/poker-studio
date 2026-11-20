@@ -41,13 +41,13 @@ def test_api_smoke_pipeline(client):
     ep_id = res_create.json()["episode_id"]
     assert ep_id
 
-    # 5. Build prompt for stage 2 (bible)
+    # 5. Build prompt for stage 1 (bible / idea)
     res_prompt_bible = client.post(f"/api/projects/{ep_id}/build-prompt/bible")
     assert res_prompt_bible.status_code == 200
     data_prompt = res_prompt_bible.json()
     assert "prompt" in data_prompt and len(data_prompt["prompt"]) > 100
 
-    # 6. Import JSON for bible (HITL check: stages 1 & 2 must become waiting_approval, not approved)
+    # 6. Import JSON for bible (HITL check: stage 1 must become waiting_approval, not approved)
     import_payload = {
         "json_content": {
             "concept_summary": {
@@ -63,11 +63,8 @@ def test_api_smoke_pipeline(client):
     state_after_import = read_state(ep_id)
     assert state_after_import["current_stage"] == 1
     stage_1 = next(s for s in state_after_import["stages"] if s["stage_number"] == 1)
-    stage_2 = next(s for s in state_after_import["stages"] if s["stage_number"] == 2)
     assert stage_1["status"] == "waiting_approval"
     assert stage_1["approved_at"] is None
-    assert stage_2["status"] == "waiting_approval"
-    assert stage_2["approved_at"] is None
 
     # 7. Upload scene image via POST /api/projects/{ep_id}/upload/scene_image
     def _add_scene(st):
@@ -107,7 +104,7 @@ def test_api_smoke_pipeline(client):
     assert res_upload_angle.status_code == 200
     assert res_upload_angle.json()["status"] == "success"
 
-    # 9. Build prompt for scenes (stage 6)
+    # 9. Build prompt for scenes (stage 5)
     res_prompt_scenes = client.post(f"/api/projects/{ep_id}/build-prompt/scenes")
     assert res_prompt_scenes.status_code == 200
     prompt_scenes = res_prompt_scenes.json()["prompt"]
@@ -144,4 +141,61 @@ def test_episode_auto_numbering_collision(client, tmp_path, monkeypatch):
             created_dir = p_dir / new_ep_id
             if created_dir.exists():
                 shutil.rmtree(created_dir, ignore_errors=True)
+
+
+def test_legacy_9_stage_normalization_in_memory(client, tmp_path):
+    from backend.services.paths import projects_dir
+    p_dir = projects_dir()
+    ep_id = "ep99-legacy-test"
+    ep_dir = p_dir / ep_id
+    ep_dir.mkdir(parents=True, exist_ok=True)
+
+    legacy_stages = [
+        {"id": f"stage_{i}", "stage_number": i, "name_fa": f"فارسی {i}", "name_en": f"Stage {i}", "status": "pending", "approved_at": None, "notes": ""}
+        for i in range(1, 10)
+    ]
+    legacy_stages[0]["status"] = "approved"
+    legacy_stages[1]["status"] = "in_progress"
+
+    raw_state = {
+        "episode_id": ep_id,
+        "title": "Legacy 9-Stage Episode",
+        "english_title": "Legacy 9-Stage",
+        "version": "1.0.0",
+        "current_stage": 5,
+        "stages": legacy_stages,
+        "idea": {"theme": "Legacy Theme"},
+        "bible": {"visual_style": "Legacy Style"},
+        "characters": [],
+        "script": {"title": "Legacy Script", "segments": []},
+        "scenes": [],
+        "audio": {"tracks": []},
+    }
+
+    try:
+        write_state(ep_id, raw_state)
+
+        # GET request must return normalized 8-stage state
+        res = client.get(f"/api/projects/{ep_id}")
+        assert res.status_code == 200
+        resp_data = res.json()
+
+        assert len(resp_data["stages"]) == 8
+        assert resp_data["stages"][0]["id"] == "stage_1"
+        assert resp_data["stages"][0]["name_fa"] == "ایده و کتابچه"
+        assert resp_data["stages"][0]["name_en"] == "Idea & Bible"
+        assert resp_data["current_stage"] == 4
+        stage_nums = [s["stage_number"] for s in resp_data["stages"]]
+        assert stage_nums == list(range(1, 9))
+
+        # Strict SSOT Guardrail: File on disk MUST NOT have been mutated by GET!
+        disk_data = read_state(ep_id)
+        assert len(disk_data["stages"]) == 9
+        assert disk_data["current_stage"] == 5
+        assert disk_data["stages"][0]["name_fa"] == "فارسی 1"
+    finally:
+        import shutil
+        if ep_dir.exists():
+            shutil.rmtree(ep_dir, ignore_errors=True)
+
 

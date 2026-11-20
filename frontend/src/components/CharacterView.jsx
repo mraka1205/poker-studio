@@ -242,7 +242,7 @@ export default function CharacterView({
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="text-xs font-bold text-purple-400 bg-purple-500/10 border border-purple-500/20 px-2.5 py-0.5 rounded-full">
-              مرحله ۴: کاراکترها و لنگر استایل (Character Anchors)
+              مرحله ۳: کاراکترها و لنگر استایل (Character Anchors)
             </span>
             <span className="text-xs text-slate-400">
               یکدستی بصری (Visual Consistency) با مدل شیت و توکن‌های تصویری قفل‌شده

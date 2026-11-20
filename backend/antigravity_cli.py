@@ -12,6 +12,8 @@ import shutil
 import re
 import asyncio
 import logging
+import subprocess
+import urllib.request
 from pathlib import Path
 from typing import Dict, Any, Optional, List
 
@@ -47,6 +49,70 @@ PROMPT_DIR = BASE_DIR / ".agent_prompts"
 
 DEFAULT_AGENTAPI_BAT = GEMINI_DIR / "antigravity" / "bin" / "agentapi.bat"
 DEFAULT_ANTIGRAVITY_BAT = GEMINI_DIR / "antigravity" / "bin" / "antigravity.bat"
+
+
+def resolve_antigravity_env() -> Dict[str, str]:
+    """
+    Ensures ANTIGRAVITY_LS_ADDRESS and ANTIGRAVITY_CSRF_TOKEN are available.
+    If not in os.environ (e.g. backend launched from outside Antigravity),
+    auto-discovers the running Antigravity Language Server port and CSRF token.
+    """
+    ls_addr = os.environ.get("ANTIGRAVITY_LS_ADDRESS")
+    csrf_token = os.environ.get("ANTIGRAVITY_CSRF_TOKEN")
+    if ls_addr and csrf_token:
+        return {"ANTIGRAVITY_LS_ADDRESS": ls_addr, "ANTIGRAVITY_CSRF_TOKEN": csrf_token}
+
+    candidates: List[int] = []
+
+    # 1. Try reading port from main.log
+    appdata = Path(os.environ.get("APPDATA") or (_HOME / "AppData" / "Roaming"))
+    main_log = appdata / "Antigravity" / "logs" / "main.log"
+    if main_log.exists():
+        try:
+            with open(main_log, "r", encoding="utf-8", errors="ignore") as f:
+                f.seek(max(0, main_log.stat().st_size - 65536))
+                tail = f.read()
+            matches = re.findall(r"URL:\s*https?://127\.0\.0\.1:(\d+)/", tail)
+            if matches:
+                # Agent API is typically main HTTPS port + 1
+                candidates.append(int(matches[-1]) + 1)
+        except Exception as exc:
+            logger.debug("Could not read main.log for Antigravity port: %s", exc)
+
+    # 2. Try psutil to inspect language_server processes
+    try:
+        import psutil
+        for p in psutil.process_iter(["name"]):
+            if "language_server" in (p.info["name"] or "").lower():
+                for c in p.net_connections(kind="tcp"):
+                    if c.status == "LISTEN" and c.laddr.ip in ("127.0.0.1", "0.0.0.0"):
+                        if c.laddr.port not in candidates:
+                            candidates.append(c.laddr.port)
+    except Exception as exc:
+        logger.debug("psutil discovery skipped: %s", exc)
+
+    # 3. Probe candidate ports for Antigravity HTML containing csrfToken
+    for port in candidates:
+        try:
+            url = f"http://127.0.0.1:{port}/"
+            req = urllib.request.Request(url, headers={"User-Agent": "AntigravityCLI"})
+            with urllib.request.urlopen(req, timeout=1.0) as resp:
+                if resp.status == 200:
+                    html = resp.read(4096).decode("utf-8", errors="ignore")
+                    m = re.search(r'csrfToken["\':\s]+([a-f0-9\-]+)', html)
+                    if m:
+                        discovered = {
+                            "ANTIGRAVITY_LS_ADDRESS": f"localhost:{port}",
+                            "ANTIGRAVITY_CSRF_TOKEN": m.group(1),
+                        }
+                        os.environ.update(discovered)
+                        logger.info("Discovered Antigravity LS at localhost:%d", port)
+                        return discovered
+        except Exception:
+            continue
+
+    logger.warning("Could not auto-discover Antigravity Language Server address and token.")
+    return {}
 
 
 def get_cli_command() -> List[str]:
@@ -231,6 +297,8 @@ async def _run_antigravity_cli_process(prompt: str, title: str) -> Optional[str]
     """
     Executes the Antigravity CLI in non-interactive/headless mode,
     returning the conversationId.
+    Uses asyncio.to_thread with subprocess.run to support both SelectorEventLoop
+    and ProactorEventLoop on Windows (e.g. under Uvicorn reload).
     """
     cmd = get_cli_command()
     prompt_file = _stage_prompt_file(prompt, title)
@@ -246,27 +314,38 @@ async def _run_antigravity_cli_process(prompt: str, title: str) -> Optional[str]
 
     logger.info("Executing Antigravity CLI: %s", " ".join(full_cmd[:4]))
 
-    # Execute asynchronously in BASE_DIR
-    proc = await asyncio.create_subprocess_exec(
-        *full_cmd,
-        cwd=str(BASE_DIR),
-        stdout=asyncio.subprocess.PIPE,
-        stderr=asyncio.subprocess.PIPE,
-    )
+    env = dict(os.environ)
+    discovered_env = resolve_antigravity_env()
+    env.update(discovered_env)
 
-    try:
-        stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=120)
-    except asyncio.TimeoutError:
-        proc.kill()
-        await proc.wait()
-        raise RuntimeError("Antigravity CLI did not respond within 120 seconds.")
-    out_text = stdout.decode("utf-8", errors="replace").strip()
-    err_text = stderr.decode("utf-8", errors="replace").strip()
+    if _is_agentapi_cmd(cmd) and not env.get("ANTIGRAVITY_LS_ADDRESS"):
+        raise RuntimeError(
+            "نرم‌افزار Antigravity یا سرور محلی آن یافت نشد. لطفاً مطمئن شوید پنجره Antigravity باز است."
+        )
 
-    if proc.returncode != 0:
-        err_msg = err_text or out_text or f"Process failed with returncode {proc.returncode}"
-        logger.error("Antigravity CLI failed with code %d: %s", proc.returncode, err_msg)
-        raise RuntimeError(f"Antigravity CLI returned code {proc.returncode}: {err_msg}")
+    def _sync_run():
+        try:
+            return subprocess.run(
+                full_cmd,
+                cwd=str(BASE_DIR),
+                env=env,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+                timeout=120,
+            )
+        except subprocess.TimeoutExpired:
+            raise RuntimeError("Antigravity CLI did not respond within 120 seconds.")
+
+    res = await asyncio.to_thread(_sync_run)
+    out_text = res.stdout.strip()
+    err_text = res.stderr.strip()
+
+    if res.returncode != 0:
+        err_msg = err_text or out_text or f"Process failed with returncode {res.returncode}"
+        logger.error("Antigravity CLI failed with code %d: %s", res.returncode, err_msg)
+        raise RuntimeError(f"Antigravity CLI returned code {res.returncode}: {err_msg}")
 
     # Parse conversationId
     try:
@@ -377,22 +456,24 @@ def _finalize_images(task: EpisodeTask) -> List[str]:
             found[sid] = hit
         else:
             missing.append(str(sid))
+    if found:
+        def _mutate(state: dict) -> None:
+            for sc in state.get("scenes", []):
+                sid = sc.get("scene_id") or sc.get("id")
+                if sid in found:
+                    ext, ver = found[sid]
+                    path = f"/media/{ep}/assets/images/{sid}.{ext}"
+                    sc["image_path"] = path
+                    sc["visual_asset"] = path
+                    sc["image_version"] = ver
+                    if sc.get("status") != "approved":
+                        sc["status"] = "ready_for_review"
+
+        update_state(ep, _mutate)
+
     if missing:
         return [f"Missing or stale frames (<{MIN_IMAGE_BYTES // 1024}KB or not regenerated): {', '.join(missing)}"]
 
-    def _mutate(state: dict) -> None:
-        for sc in state.get("scenes", []):
-            sid = sc.get("scene_id") or sc.get("id")
-            if sid in found:
-                ext, ver = found[sid]
-                path = f"/media/{ep}/assets/images/{sid}.{ext}"
-                sc["image_path"] = path
-                sc["visual_asset"] = path
-                sc["image_version"] = ver
-                if sc.get("status") != "approved":
-                    sc["status"] = "ready_for_review"
-
-    update_state(ep, _mutate)
     return []
 
 
@@ -427,7 +508,9 @@ async def _monitor_task_inner(task: EpisodeTask) -> None:
     transcript = BRAIN_DIR / conv_id / ".system_generated" / "logs" / "transcript.jsonl" if conv_id else None
     offset, last_step, finished, stable = 0, -1, False, 0
     start = time.time()
-    max_wait = 1800
+    last_activity = time.time()
+    prev_completed = task.completed_scenes
+    max_wait = 2400  # up to 40 minutes for large sequential batches
     while time.time() - start < max_wait:
         await asyncio.sleep(2.0)
         if task.cancel_requested:
@@ -436,6 +519,10 @@ async def _monitor_task_inner(task: EpisodeTask) -> None:
             task.status = "cancelled"
             return
         await asyncio.to_thread(_refresh_image_status, task)
+        if task.completed_scenes != prev_completed:
+            last_activity = time.time()
+            prev_completed = task.completed_scenes
+
         if transcript is None:
             task.error_message = "No conversationId; cannot monitor."
             task.status = "error"
@@ -445,22 +532,47 @@ async def _monitor_task_inner(task: EpisodeTask) -> None:
             task.status = "error"
             return
         lines, offset = await asyncio.to_thread(_read_new_transcript_lines, transcript, offset)
-        for line in lines:
-            try:
-                entry = json.loads(line)
-            except json.JSONDecodeError:
-                continue
-            idx = entry.get("step_index")
-            if isinstance(idx, int):
-                if idx <= last_step:
+        if lines:
+            last_activity = time.time()
+            for line in lines:
+                try:
+                    entry = json.loads(line)
+                except json.JSONDecodeError:
                     continue
-                last_step = idx
-            finished = _process_transcript_entry(task, entry)
-        stable = stable + 1 if finished else 0
-        if stable >= 2:
-            await _finalize_task(task)
-            return
-        if task.task_type != "images":
+                idx = entry.get("step_index")
+                if isinstance(idx, int):
+                    if idx <= last_step:
+                        continue
+                    last_step = idx
+                finished = _process_transcript_entry(task, entry)
+        else:
+            finished = False
+
+        if task.task_type == "images":
+            # 1. Complete if all expected scenes have been generated
+            if task.total_scenes > 0 and task.completed_scenes >= task.total_scenes:
+                await _finalize_task(task)
+                return
+            # 2. Complete if agent ran verify_frames at the end of the batch
+            if finished and any("verify_frames" in str(log) for log in task.logs[-5:]):
+                await _finalize_task(task)
+                return
+            # 3. Timeout if no activity (no new lines and no new images) for 300s
+            if time.time() - last_activity > 300:
+                await _finalize_task(task)
+                return
+        elif task.task_type == "regenerate_scene":
+            if task.completed_scenes >= 1:
+                await _finalize_task(task)
+                return
+            if time.time() - last_activity > 180:
+                await _finalize_task(task)
+                return
+        else:  # storyboard
+            stable = stable + 1 if finished else 0
+            if stable >= 2:
+                await _finalize_task(task)
+                return
             task.progress = max(task.progress, min(90, int((time.time() - start) * 0.5)))
     task.error_message = "زمان اجرای عملیات ایجنت به پایان رسید (Timeout)."
     task.add_log("خطا: تایماوت در انتظار پایان وظیفه.")
@@ -511,8 +623,9 @@ RULES:
         # Launch background monitor
         _spawn(_monitor_task(task))
     except Exception as e:
-        task.error_message = str(e)
-        task.add_log(f"خطا در اجرای ایجنت: {e}")
+        logger.exception("Failed to start storyboard generation: %s", e)
+        task.error_message = f"{type(e).__name__}: {e}" if str(e) else type(e).__name__
+        task.add_log(f"خطا در اجرای ایجنت: {task.error_message}")
         task.status = "error"
 
     return task
@@ -559,8 +672,9 @@ RULES:
         # Launch background monitor
         _spawn(_monitor_task(task))
     except Exception as e:
-        task.error_message = str(e)
-        task.add_log(f"خطا در اجرای ایجنت: {e}")
+        logger.exception("Failed to start images generation: %s", e)
+        task.error_message = f"{type(e).__name__}: {e}" if str(e) else type(e).__name__
+        task.add_log(f"خطا در اجرای ایجنت: {task.error_message}")
         task.status = "error"
 
     return task
@@ -607,8 +721,9 @@ RULES:
         # Launch background monitor
         _spawn(_monitor_task(task))
     except Exception as e:
-        task.error_message = str(e)
-        task.add_log(f"خطا در اجرای ایجنت: {e}")
+        logger.exception("Failed to start scene regeneration: %s", e)
+        task.error_message = f"{type(e).__name__}: {e}" if str(e) else type(e).__name__
+        task.add_log(f"خطا در اجرای ایجنت: {task.error_message}")
         task.status = "error"
 
     return task

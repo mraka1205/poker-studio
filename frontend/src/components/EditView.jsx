@@ -72,7 +72,7 @@ export default function EditView({
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="text-xs font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2.5 py-0.5 rounded-full">
-              مرحله ۷: تدوین و زیرنویس فارسی (Edit & RTL Subtitles)
+              مرحله ۶: تدوین و زیرنویس فارسی (Edit & RTL Subtitles)
             </span>
             <span className="text-xs text-slate-400 font-mono">
               موتور رندر: FFmpeg + libass + HarfBuzz

@@ -16,6 +16,7 @@ from backend.antigravity_cli import (
     start_storyboard_generation,
     start_images_generation,
     start_scene_regeneration,
+    _refresh_image_status,
 )
 from backend.services.paths import (
     get_project_dir,
@@ -91,12 +92,64 @@ def _sanitize_token(value: Optional[str]) -> str:
     return cleaned
 
 
+def _normalize_stages_v8(data: Dict[str, Any]) -> Dict[str, Any]:
+    stages = data.get("stages")
+    if not isinstance(stages, list) or len(stages) != 9:
+        return data
+
+    s1 = stages[0]
+    s2 = stages[1]
+
+    s1_status = s1.get("status")
+    s2_status = s2.get("status")
+
+    if s1_status == "approved" and s2_status == "approved":
+        merged_status = "approved"
+    elif s1_status == "waiting_approval" or s2_status == "waiting_approval":
+        merged_status = "waiting_approval"
+    elif s1_status in ("in_progress", "approved") or s2_status in ("in_progress", "approved"):
+        merged_status = "in_progress"
+    else:
+        merged_status = "pending"
+
+    merged_approved_at = (s2.get("approved_at") or s1.get("approved_at")) if merged_status == "approved" else None
+    merged_notes = s2.get("notes") or s1.get("notes") or ""
+
+    merged_s1 = {
+        "id": "stage_1",
+        "stage_number": 1,
+        "name_fa": "ایده و کتابچه",
+        "name_en": "Idea & Bible",
+        "status": merged_status,
+        "approved_at": merged_approved_at,
+        "notes": merged_notes,
+    }
+
+    new_stages = [merged_s1]
+    for old_s in stages[2:]:
+        old_num = old_s.get("stage_number", len(new_stages) + 2)
+        new_num = old_num - 1
+        s_copy = dict(old_s)
+        s_copy["stage_number"] = new_num
+        s_copy["id"] = f"stage_{new_num}"
+        new_stages.append(s_copy)
+
+    data["stages"] = new_stages
+
+    cur = data.get("current_stage", 1)
+    if isinstance(cur, int):
+        data["current_stage"] = 1 if cur <= 2 else cur - 1
+
+    return data
+
+
 def load_state(episode_id: str) -> Dict[str, Any]:
     proj_dir = get_project_path(episode_id)
     state_file = proj_dir / "state.json"
     if not state_file.exists():
         raise HTTPException(status_code=404, detail="state.json not found in episode folder")
     data = read_state(episode_id)
+    data = _normalize_stages_v8(data)
 
     # Automatically resolve scene image paths if files exist on disk
     assets_img_dir = proj_dir / "assets" / "images"
@@ -417,10 +470,11 @@ def list_projects():
                 try:
                     with open(state_file, "r", encoding="utf-8") as f:
                         data = json.load(f)
+                    data = _normalize_stages_v8(data)
                     
                     stages = data.get("stages", [])
                     approved_count = sum(1 for s in stages if s.get("status") == "approved")
-                    total_stages = len(stages) or 9
+                    total_stages = len(stages) or 8
                     progress_pct = int((approved_count / total_stages) * 100)
                     
                     projects.append({
@@ -512,7 +566,7 @@ def update_stage_status(episode_id: str, req: StageActionRequest):
         raise HTTPException(status_code=400, detail=f"Stage number {req.stage_number} not found")
         
     if req.status == "approved" and state.get("current_stage") == req.stage_number:
-        if req.stage_number < 9:
+        if req.stage_number < 8:
             state["current_stage"] = req.stage_number + 1
             for next_s in stages:
                 if next_s.get("stage_number") == req.stage_number + 1:
@@ -594,7 +648,7 @@ def create_project(req: NewProjectRequest):
         "stages": [
             {"id": f"stage_{i}", "stage_number": i, "name_fa": name_fa, "name_en": name_en, "status": "pending", "approved_at": None, "notes": ""}
             for i, (name_fa, name_en) in enumerate([
-                ("ایده", "Idea"), ("Bible", "Bible"), ("سناریو", "Script"),
+                ("ایده و کتابچه", "Idea & Bible"), ("سناریو", "Script"),
                 ("کاراکترها", "Characters"), ("صدا و میکس", "Audio & Mix"),
                 ("صحنه‌ها", "Scenes"), ("تدوین", "Edit"),
                 ("انتشار", "Publish"), ("عددها", "Analytics")
@@ -809,7 +863,7 @@ def build_ai_studio_prompt(episode_id: str, stage: str):
         for c in u_chars
     ])
     
-    if stage_key in ["1", "2", "bible", "idea"]:
+    if stage_key in ["1", "bible", "idea"]:
         skill_filename = "01-bible-and-jokes.md"
         skill_content = read_skill_file(skill_filename)
         idea_data = state.get("idea", {})
@@ -852,7 +906,7 @@ Return ONLY a valid JSON object matching the schema in the skill guidelines.
             "prompt": prompt
         }
 
-    elif stage_key in ["3", "script"]:
+    elif stage_key in ["2", "script"]:
         skill_filename = "02-persian-script-writer.md"
         skill_content = read_skill_file(skill_filename)
         bible_data = state.get("bible", {})
@@ -890,7 +944,7 @@ Return ONLY a valid JSON object with `"script_title"` and `"segments"` array mat
             "prompt": prompt
         }
 
-    elif stage_key in ["4", "characters"]:
+    elif stage_key in ["3", "characters"]:
         skill_filename = "03-character-anchor.md"
         skill_content = read_skill_file(skill_filename)
         
@@ -920,7 +974,7 @@ Return ONLY a valid JSON object with key `"characters"` containing character def
             "prompt": prompt
         }
 
-    elif stage_key in ["6", "scenes"]:
+    elif stage_key in ["5", "scenes"]:
         skill_filename = "04-scene-director.md"
         skill_content = read_skill_file(skill_filename)
         
@@ -1023,7 +1077,7 @@ def import_ai_studio_json(episode_id: str, stage: str, req: ImportJsonRequest):
                 if notes:
                     s["notes"] = notes
 
-    if stage_key in ["1", "2", "bible", "idea"]:
+    if stage_key in ["1", "bible", "idea"]:
         state["bible"] = state.get("bible", {})
         if "concept_summary" in parsed:
             state["bible"]["concept_summary"] = parsed["concept_summary"]
@@ -1042,10 +1096,9 @@ def import_ai_studio_json(episode_id: str, stage: str, req: ImportJsonRequest):
         if "comedy_beats" in parsed:
             state["bible"]["comedy_beats"] = parsed["comedy_beats"]
 
-        mark_stage_waiting_approval(1, "ایده و دست با موفقیت ذخیره شد")
-        mark_stage_waiting_approval(2, "کتابچه استراتژی و جوک‌ها ذخیره شد")
+        mark_stage_waiting_approval(1, "ایده و کتابچه استراتژی و جوک‌ها ذخیره شد")
 
-    elif stage_key in ["3", "script"]:
+    elif stage_key in ["2", "script"]:
         segments = parsed.get("segments", [])
         if not segments and isinstance(parsed, list):
             segments = parsed
@@ -1081,9 +1134,9 @@ def import_ai_studio_json(episode_id: str, stage: str, req: ImportJsonRequest):
         state["audio"] = state.get("audio", {})
         state["audio"]["tracks"] = tracks
 
-        mark_stage_waiting_approval(3, "سناریوی دو متنی با اعراب TTS ذخیره شد")
+        mark_stage_waiting_approval(2, "سناریوی دو متنی با اعراب TTS ذخیره شد")
 
-    elif stage_key in ["4", "characters"]:
+    elif stage_key in ["3", "characters"]:
         char_list = parsed.get("characters", [])
         if not char_list and isinstance(parsed, list):
             char_list = parsed
@@ -1141,9 +1194,9 @@ def import_ai_studio_json(episode_id: str, stage: str, req: ImportJsonRequest):
             })
             
         state["characters"] = enriched
-        mark_stage_waiting_approval(4, "مدل شیت و لنگر استایل کاراکترها ذخیره شد")
+        mark_stage_waiting_approval(3, "مدل شیت و لنگر استایل کاراکترها ذخیره شد")
 
-    elif stage_key in ["6", "scenes"]:
+    elif stage_key in ["5", "scenes"]:
         scene_list = parsed.get("scenes", [])
         if not scene_list and isinstance(parsed, list):
             scene_list = parsed
@@ -1181,7 +1234,7 @@ def import_ai_studio_json(episode_id: str, stage: str, req: ImportJsonRequest):
             enriched_scenes.append(norm)
 
         state["scenes"] = enriched_scenes
-        mark_stage_waiting_approval(6, "بیت‌های بصری استوری‌بورد و حرکت ذخیره شد")
+        mark_stage_waiting_approval(5, "بیت‌های بصری استوری‌بورد و حرکت ذخیره شد")
         snap_path = snapshot_state(episode_id, "state.json.pre_import.bak")
         save_state(episode_id, state)
 
@@ -1216,9 +1269,9 @@ def import_ai_studio_json(episode_id: str, stage: str, req: ImportJsonRequest):
     else:
         raise HTTPException(status_code=400, detail=f"Unsupported stage '{stage}' for JSON import")
 
-    if stage_key not in ["6", "scenes"]:
+    if stage_key not in ["5", "scenes"]:
         save_state(episode_id, state)
-    if stage_key in ["3", "script"]:
+    if stage_key in ["2", "script"]:
         validation_issues = validate_segments(state.get("script", {}).get("segments", []))
 
     return {
@@ -1460,6 +1513,7 @@ async def api_regenerate_scene_image(episode_id: str, scene_id: str):
 def api_get_task_status(episode_id: str):
     get_project_path(episode_id)
     task = get_task_for_episode(episode_id)
+    _refresh_image_status(task)
     return task.to_dict()
 
 
